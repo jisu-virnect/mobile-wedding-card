@@ -32,6 +32,12 @@
 - **어디서 터졌나**: T12 `Share.tsx` 에서 `useEffect(() => setSupported(hasWebShare()), [])` 가 lint 에 걸림.
 - **고정 방법**: `const [supported] = useState(hasWebShare)` (게으른 초기자). 효과 제거.
 
+## 6b. Playwright `screenshot: 'on'` + 높은 로컬 병렬성 = RSVP/Account/Greeting 플레이크
+
+- **어디서 터졌나**: PR #24 이후 로컬 `pnpm e2e` 가 워커 ~8개로 돌 때, 스크린샷 캡처 타이밍이 겹쳐 `click → await expect(status).toHaveText(…)` 류가 간헐적으로 실패. 재실행시 다른 조합이 실패.
+- **고정 방법**: `playwright.config.ts` 에서 `workers: process.env.CI ? 1 : 4` 로 로컬 병렬성 상한을 4로 제한. CI 는 이미 `workers: 1` 이라 무관. 격리 실행(`--workers=1`) 또는 `pnpm exec playwright test <file>` 는 항상 통과.
+- **체크리스트**: 로컬에서 E2E 가 간헐 실패하면 먼저 워커 수부터 낮춰볼 것. 코드 버그가 아닐 가능성 큼.
+
 ## 6. `getByText(predicate)` 가 복수 매칭 → 조상 요소까지 같이 걸림
 
 - **어디서 터졌나**: T06 `Greeting.test.tsx` 에서 본문 인용구를 predicate 로 찾다가 `<p>`, `<div>`, `<section>` 이 모두 매칭.
