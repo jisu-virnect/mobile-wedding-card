@@ -2,18 +2,6 @@
   "version": 1,
   "tasks": [
     {
-      "id": "T12",
-      "issue": 8,
-      "title": "Share 섹션 구현",
-      "section": "Share",
-      "goal": "공유: Web Share API(navigator.share) 지원 시 네이티브 공유, 미지원 시 링크 복사 fallback. 카카오톡 공유는 딥링크 URL로 처리(SDK 생략).",
-      "acceptance": [
-        "Web Share 지원 브라우저에서 공유 시트 호출",
-        "비지원 환경에서 링크 복사 버튼이 동작",
-        "공유 URL은 현재 location.href"
-      ]
-    },
-    {
       "id": "T13",
       "issue": 9,
       "title": "스크롤 애니메이션 + 섹션 간 리듬",
@@ -149,6 +137,18 @@
         "아코디언 접기/펼치기가 aria-expanded로 반영",
         "복사 버튼 클릭 시 클립보드에 계좌번호 기록",
         "복사 성공 시각 피드백(토스트 또는 인라인)"
+      ]
+    },
+    {
+      "id": "T12",
+      "issue": 8,
+      "title": "Share 섹션 구현",
+      "section": "Share",
+      "goal": "공유: Web Share API(navigator.share) 지원 시 네이티브 공유, 미지원 시 링크 복사 fallback. 카카오톡 공유는 딥링크 URL로 처리(SDK 생략).",
+      "acceptance": [
+        "Web Share 지원 브라우저에서 공유 시트 호출",
+        "비지원 환경에서 링크 복사 버튼이 동작",
+        "공유 URL은 현재 location.href"
       ]
     }
   ],
