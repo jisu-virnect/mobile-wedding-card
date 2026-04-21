@@ -23,9 +23,11 @@ describe('formatWeddingDate', () => {
 })
 
 describe('formatWeddingTime', () => {
-  it('formats 11:00 KST as an am/pm Korean string', () => {
-    const formatted = formatWeddingTime('2026-10-10T11:00:00+09:00')
-    expect(formatted).toMatch(/오전/)
-    expect(formatted).toContain('11')
+  it('formats morning KST time as "오전 H:MM"', () => {
+    expect(formatWeddingTime('2026-10-10T11:00:00+09:00')).toBe('오전 11:00')
+  })
+
+  it('formats afternoon KST time as "오후 H:MM"', () => {
+    expect(formatWeddingTime('2026-10-10T14:30:00+09:00')).toBe('오후 2:30')
   })
 })

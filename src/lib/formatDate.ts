@@ -31,10 +31,25 @@ export function formatWeddingDate(iso: string): FormattedWeddingDate {
 
 export function formatWeddingTime(iso: string): string {
   const d = new Date(iso)
-  return new Intl.DateTimeFormat('ko-KR', {
+  if (Number.isNaN(d.getTime())) {
+    throw new Error(`Invalid date: ${iso}`)
+  }
+
+  // Go through en-US to avoid relying on full-ICU ko-KR data being available
+  // on the host runtime (some Node builds fall back to "AM/PM" literals).
+  const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: TIME_ZONE,
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
-  }).format(d)
+  }).formatToParts(d)
+
+  const pick = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value ?? ''
+
+  const hour = pick('hour')
+  const minute = pick('minute')
+  const period = pick('dayPeriod').toUpperCase() === 'PM' ? '오후' : '오전'
+
+  return `${period} ${hour}:${minute}`
 }
