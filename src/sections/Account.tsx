@@ -105,8 +105,9 @@ export function Account() {
   const fade = reduce
     ? { initial: false as const, animate: {} }
     : {
-        initial: { opacity: 0, y: 12 },
-        animate: { opacity: 1, y: 0 },
+        initial: { opacity: 0, y: 16 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, amount: 0.2 },
         transition: { duration: 0.7, ease: 'easeOut' as const },
       }
 
