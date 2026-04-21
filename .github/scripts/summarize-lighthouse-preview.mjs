@@ -15,13 +15,24 @@ import { join } from 'node:path'
 
 const MARKER = '<!-- lighthouse-preview:do-not-remove -->'
 
-const PR = process.env.PR_NUMBER
-const REPO = process.env.GITHUB_REPOSITORY
-const RUN_ID = process.env.GITHUB_RUN_ID
-const SERVER = process.env.GITHUB_SERVER_URL ?? 'https://github.com'
-const PREVIEW_URL = process.env.PREVIEW_URL ?? ''
-const LINKS_PATH = process.env.LINKS_PATH ?? '.lighthouseci/links.json'
-const MANIFEST_PATH = process.env.MANIFEST_PATH ?? '.lighthouseci/manifest.json'
+// Defend against upstream steps that accidentally pass '""' (JSON-encoded
+// empty string) rather than a genuine empty — treat both as missing.
+function clean(v) {
+  if (!v) return ''
+  const s = String(v).trim()
+  if (s === '""' || s === "''") return ''
+  return s
+}
+
+const PR = clean(process.env.PR_NUMBER)
+const REPO = clean(process.env.GITHUB_REPOSITORY)
+const RUN_ID = clean(process.env.GITHUB_RUN_ID)
+const SERVER = clean(process.env.GITHUB_SERVER_URL) || 'https://github.com'
+const PREVIEW_URL = clean(process.env.PREVIEW_URL)
+const PREVIEW_GATED = clean(process.env.PREVIEW_GATED) === 'true'
+const LINKS_PATH = clean(process.env.LINKS_PATH) || '.lighthouseci/links.json'
+const MANIFEST_PATH =
+  clean(process.env.MANIFEST_PATH) || '.lighthouseci/manifest.json'
 
 if (!PR || !REPO) {
   console.log('PR_NUMBER or GITHUB_REPOSITORY missing. Skipping comment.')
@@ -78,12 +89,23 @@ if (PREVIEW_URL) {
   lines.push(`URL: ${PREVIEW_URL}`)
   lines.push('')
 }
-if (scoreRow.length) {
+if (PREVIEW_GATED) {
+  lines.push(
+    '⚠️ Vercel Deployment Protection 이 켜져 있어 프리뷰 URL 이 로그인 페이지로 리다이렉트됩니다.',
+  )
+  lines.push(
+    'Vercel 대시보드 → Settings → Deployment Protection 에서 Preview 보호를 비활성화하거나 Protection Bypass 토큰을 워크플로우 secret 으로 추가하면 자동 감사가 동작합니다.',
+  )
+  lines.push('')
+} else if (scoreRow.length) {
   lines.push('| Category | Score |')
   lines.push('|---|---|')
   for (const [key, pct] of scoreRow) {
     lines.push(`| ${fmt(key)} | ${emoji(pct)} ${pct} |`)
   }
+  lines.push('')
+} else {
+  lines.push('Lighthouse 를 실행하지 못했습니다 (리포트 파일 없음).')
   lines.push('')
 }
 if (hostedReportUrl) {
