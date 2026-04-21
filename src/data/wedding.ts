@@ -29,26 +29,26 @@ export interface WeddingInfo {
 
 export const wedding: WeddingInfo = {
   groom: {
-    name: '김철수',
-    father: '김아버지',
-    mother: '김어머니',
-    account: { bank: '신한은행', number: '110-123-456789', holder: '김철수' },
+    name: '김지수',
+    father: '김창길',
+    mother: '김영미',
+    account: { bank: '신한은행', number: '110-000-000000', holder: '김지수' },
   },
   bride: {
-    name: '이영희',
-    father: '이아버지',
-    mother: '이어머니',
-    account: { bank: '국민은행', number: '123-45-6789-012', holder: '이영희' },
+    name: '김난슬',
+    father: '김청섭',
+    mother: '이경화',
+    account: { bank: '국민은행', number: '000-000-000000', holder: '김난슬' },
   },
-  dateTime: '2026-10-10T11:00:00+09:00',
+  dateTime: '2026-11-28T13:00:00+09:00',
   venue: {
-    name: '샘플 웨딩홀 5F 그랜드볼룸',
-    address: '서울특별시 중구 샘플로 123',
-    detail: '지하철 2호선 샘플역 3번 출구 도보 5분',
-    kakaoMapUrl: 'https://map.kakao.com/',
-    naverMapUrl: 'https://map.naver.com/',
+    name: '호텔 라뷔포레',
+    address: '경기도 수원시 팔달구 권광로134번길 44-11',
+    detail: '수원시청역 2번 출구에서 도보 10분 · 수원역에서 택시 약 10분',
+    kakaoMapUrl: 'https://map.kakao.com/?q=호텔라뷔포레',
+    naverMapUrl: 'https://map.naver.com/p/search/호텔라뷔포레',
   },
   invitation:
-    '저희 두 사람의 작은 만남이 커다란 사랑으로 이루어져\n참된 사랑과 이해로써 하나의 가정을 이루게 되었습니다.\n평생을 함께할 것을 약속하는 날, 함께 축복해 주시면 감사하겠습니다.',
-  gallery: [],
+    '저희 두 사람의 소중한 만남이\n사랑과 이해로 이어져\n한 가정을 이루게 되었습니다.\n\n평생을 함께하기로 약속하는 자리에\n귀한 걸음으로 축복해 주시면\n큰 기쁨이겠습니다.\n\n김지수 · 김난슬 드림',
+  gallery: Array.from({ length: 34 }, (_, i) => `/gallery/${String(i + 1).padStart(2, '0')}.jpg`),
 }

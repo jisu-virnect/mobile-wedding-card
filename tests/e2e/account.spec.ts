@@ -25,13 +25,13 @@ test.describe('Account section', () => {
     await expect(brideBtn).toHaveAttribute('aria-expanded', 'true')
 
     const brideCopy = section.getByRole('button', {
-      name: /신부 이영희 계좌번호 복사/,
+      name: /신부 김난슬 계좌번호 복사/,
     })
     await brideCopy.click()
     await expect(section.getByRole('status')).toHaveText(
-      /신부 이영희 계좌번호를 복사했어요\./,
+      /신부 김난슬 계좌번호를 복사했어요\./,
     )
     const copied = await page.evaluate(() => navigator.clipboard.readText())
-    expect(copied).toBe('123-45-6789-012')
+    expect(copied).toBe('000-000-000000')
   })
 })
