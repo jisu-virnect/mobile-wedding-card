@@ -39,10 +39,10 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
             className={
               'pb-2 text-center ' +
               (i === 0
-                ? 'text-rose-500'
+                ? 'text-rose-600'
                 : i === 6
-                  ? 'text-sky-500'
-                  : 'text-gray-400')
+                  ? 'text-sky-600'
+                  : 'text-gray-500')
             }
           >
             {wd}
@@ -58,9 +58,9 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
           const weekCol = i % 7
           const weekColor =
             weekCol === 0
-              ? 'text-rose-500'
+              ? 'text-rose-600'
               : weekCol === 6
-                ? 'text-sky-500'
+                ? 'text-sky-600'
                 : 'text-gray-700'
           const base =
             'mx-auto flex h-9 w-9 items-center justify-center rounded-full'
@@ -74,7 +74,7 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
               }
               className={
                 isWedding
-                  ? `${base} bg-rose-400 font-semibold text-white`
+                  ? `${base} bg-rose-600 font-semibold text-white`
                   : `${base} ${weekColor}`
               }
             >
@@ -132,7 +132,7 @@ export function When() {
       <motion.p
         {...fade}
         aria-label={`결혼식까지 ${dday}`}
-        className="inline-block rounded-full bg-rose-50 px-4 py-1 text-sm font-medium tracking-wide text-rose-600"
+        className="inline-block rounded-full bg-rose-100 px-4 py-1 text-sm font-medium tracking-wide text-rose-700"
       >
         {dday}
       </motion.p>

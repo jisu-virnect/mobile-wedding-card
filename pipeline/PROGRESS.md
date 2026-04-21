@@ -13,7 +13,8 @@
 | T10 | RSVP 섹션 구현 | [#6](https://github.com/jisu-virnect/mobile-wedding-card/issues/6) | task/T10-rsvp | [#19](https://github.com/jisu-virnect/mobile-wedding-card/pull/19) | pass | 2026-04-21T07:57Z | merged |
 | T11 | Account 섹션 구현 | [#7](https://github.com/jisu-virnect/mobile-wedding-card/issues/7) | task/T11-account | [#20](https://github.com/jisu-virnect/mobile-wedding-card/pull/20) | pass | 2026-04-21T08:11Z | merged |
 | T12 | Share 섹션 구현 | [#8](https://github.com/jisu-virnect/mobile-wedding-card/issues/8) | task/T12-share | [#21](https://github.com/jisu-virnect/mobile-wedding-card/pull/21) | pass | 2026-04-21T08:21Z | merged |
-| T13 | 스크롤 애니메이션 + 섹션 간 리듬 | [#9](https://github.com/jisu-virnect/mobile-wedding-card/issues/9) | task/T13-scroll-reveal | — | — | — | in_progress |
+| T13 | 스크롤 애니메이션 + 섹션 간 리듬 | [#9](https://github.com/jisu-virnect/mobile-wedding-card/issues/9) | task/T13-scroll-reveal | [#22](https://github.com/jisu-virnect/mobile-wedding-card/pull/22) | pass | 2026-04-21T08:32Z | merged |
+| T14 | 접근성 패스 | [#10](https://github.com/jisu-virnect/mobile-wedding-card/issues/10) | task/T14-accessibility | — | — | — | in_progress |
 
 ## 범례
 

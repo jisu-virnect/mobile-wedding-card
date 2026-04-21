@@ -101,7 +101,7 @@ export function Rsvp() {
       >
         <div>
           <label htmlFor="rsvp-name" className="mb-1 block text-xs text-gray-600">
-            이름 <span className="text-rose-500">*</span>
+            이름 <span className="text-rose-600">*</span>
           </label>
           <input
             id="rsvp-name"
@@ -116,7 +116,7 @@ export function Rsvp() {
             <p
               id="rsvp-name-error"
               role="alert"
-              className="mt-1 text-xs text-rose-500"
+              className="mt-1 text-xs text-rose-600"
             >
               {errors.name.message}
             </p>
@@ -173,7 +173,7 @@ export function Rsvp() {
             <p
               id="rsvp-guests-error"
               role="alert"
-              className="mt-1 text-xs text-rose-500"
+              className="mt-1 text-xs text-rose-600"
             >
               {errors.guests.message}
             </p>
@@ -194,7 +194,7 @@ export function Rsvp() {
             className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
           />
           {errors.message && (
-            <p role="alert" className="mt-1 text-xs text-rose-500">
+            <p role="alert" className="mt-1 text-xs text-rose-600">
               {errors.message.message}
             </p>
           )}
@@ -203,7 +203,7 @@ export function Rsvp() {
         <button
           type="submit"
           disabled={isSubmitting || state.status === 'submitting'}
-          className="mt-2 rounded-full bg-rose-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-rose-400 disabled:cursor-not-allowed disabled:bg-rose-300"
+          className="mt-2 rounded-full bg-rose-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:bg-rose-300"
         >
           {state.status === 'submitting' ? '전송 중…' : '참석 여부 전달하기'}
         </button>
@@ -214,10 +214,10 @@ export function Rsvp() {
           className={
             'min-h-[1.25rem] text-xs ' +
             (state.status === 'error'
-              ? 'text-rose-500'
+              ? 'text-rose-700'
               : state.status === 'success'
-                ? 'text-emerald-600'
-                : 'text-gray-500')
+                ? 'text-emerald-700'
+                : 'text-gray-600')
           }
         >
           {state.status === 'success' || state.status === 'error'
