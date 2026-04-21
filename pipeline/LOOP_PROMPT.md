@@ -30,6 +30,7 @@
 5. 태스크의 goal과 acceptance 기준에 따라 구현한다.
    - 큰 변경은 general-purpose 서브에이전트에 위임해도 된다.
    - 단위 테스트/E2E 테스트가 필요하면 함께 작성한다.
+   - **테스트 작성 전에 `pipeline/E2E_PLAYBOOK.md` 를 훑는다** — 동일한 실패 패턴 재반복 금지. 새로 겪은 실패는 고친 뒤 곧바로 playbook에 1 케이스 추가.
 
 6. 로컬 관문 실행: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm lighthouse`
 
