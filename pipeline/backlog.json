@@ -2,19 +2,6 @@
   "version": 1,
   "tasks": [
     {
-      "id": "T09",
-      "issue": 5,
-      "title": "Gallery 섹션 구현",
-      "section": "Gallery",
-      "goal": "갤러리: 썸네일 그리드(3열), 클릭 시 yet-another-react-lightbox 오픈. 샘플 이미지는 wedding.gallery에 있으면 사용, 없으면 placeholder 생성 유틸로 6장 기본 제공.",
-      "acceptance": [
-        "썸네일 그리드가 3열로 렌더",
-        "썸네일 클릭 시 lightbox 오픈 E2E",
-        "lightbox에서 좌/우 이동 가능",
-        "이미지 alt 텍스트 존재"
-      ]
-    },
-    {
       "id": "T10",
       "issue": 6,
       "title": "RSVP 섹션 구현",
@@ -149,6 +136,19 @@
         "카카오맵·네이버맵 버튼이 올바른 URL로 연결",
         "주소 복사 버튼 클릭 시 clipboard에 기록 (E2E 검증)",
         "지도 이미지에 alt 텍스트"
+      ]
+    },
+    {
+      "id": "T09",
+      "issue": 5,
+      "title": "Gallery 섹션 구현",
+      "section": "Gallery",
+      "goal": "갤러리: 썸네일 그리드(3열), 클릭 시 yet-another-react-lightbox 오픈. 샘플 이미지는 wedding.gallery에 있으면 사용, 없으면 placeholder 생성 유틸로 6장 기본 제공.",
+      "acceptance": [
+        "썸네일 그리드가 3열로 렌더",
+        "썸네일 클릭 시 lightbox 오픈 E2E",
+        "lightbox에서 좌/우 이동 가능",
+        "이미지 alt 텍스트 존재"
       ]
     }
   ],

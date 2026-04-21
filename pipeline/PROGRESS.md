@@ -8,7 +8,8 @@
 | T05 | Cover 섹션 구현 | [#1](https://github.com/jisu-virnect/mobile-wedding-card/issues/1) | task/T05-cover | [#14](https://github.com/jisu-virnect/mobile-wedding-card/pull/14) | pass (retry 1) | 2026-04-21T06:53Z | merged |
 | T06 | Greeting 섹션 구현 | [#2](https://github.com/jisu-virnect/mobile-wedding-card/issues/2) | task/T06-greeting | [#15](https://github.com/jisu-virnect/mobile-wedding-card/pull/15) | pass | 2026-04-21T07:07Z | merged |
 | T07 | When 섹션 구현 | [#3](https://github.com/jisu-virnect/mobile-wedding-card/issues/3) | task/T07-when | [#16](https://github.com/jisu-virnect/mobile-wedding-card/pull/16) | pass | 2026-04-21T07:31Z | merged |
-| T08 | Where 섹션 구현 | [#4](https://github.com/jisu-virnect/mobile-wedding-card/issues/4) | task/T08-where | — | — | — | in_progress |
+| T08 | Where 섹션 구현 | [#4](https://github.com/jisu-virnect/mobile-wedding-card/issues/4) | task/T08-where | [#17](https://github.com/jisu-virnect/mobile-wedding-card/pull/17) | pass | 2026-04-21T07:38Z | merged |
+| T09 | Gallery 섹션 구현 | [#5](https://github.com/jisu-virnect/mobile-wedding-card/issues/5) | task/T09-gallery | — | — | — | in_progress |
 
 ## 범례
 
