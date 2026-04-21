@@ -17,37 +17,43 @@
 
 2. pipeline/backlog.json의 `tasks` 배열에서 맨 앞 태스크를 꺼낸다.
    - 비어있으면 "BACKLOG EMPTY. STOPPING."을 출력하고 루프를 종료한다 (ScheduleWakeup 호출하지 않음).
+   - 태스크의 `issue` 필드는 대응하는 GitHub 이슈 번호다 (pipeline/issues.json에도 매핑 존재). PR 본문에 `Closes #<issue>`를 포함해 자동 종결되도록 한다.
 
 3. 태스크 전용 브랜치 생성:
    - 브랜치명: `task/{ID}-{slug}` (예: `task/T05-cover`)
    - `git checkout -b task/T05-cover`
 
-4. 태스크의 goal과 acceptance 기준에 따라 구현한다.
+4. pipeline/PROGRESS.md에 이터레이션 시작 행을 추가한다.
+   - 컬럼: ID · Title · Issue · Branch · PR · CI · Merged At (UTC) · Status
+   - 시작 시 Status=`in_progress`, PR/CI/Merged At은 `—`로 둔다.
+
+5. 태스크의 goal과 acceptance 기준에 따라 구현한다.
    - 큰 변경은 general-purpose 서브에이전트에 위임해도 된다.
    - 단위 테스트/E2E 테스트가 필요하면 함께 작성한다.
 
-5. 로컬 관문 실행: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm lighthouse`
+6. 로컬 관문 실행: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm lighthouse`
 
-6. 실패 시 자가 수정, 같은 태스크에서 최대 3번까지 시도.
+7. 실패 시 자가 수정, 같은 태스크에서 최대 3번까지 시도.
    - 3번 초과 시: 브랜치는 남겨두되 pipeline/backlog.json의 `failed` 배열로 이동.
-     실패 이유 기록 후 루프 종료. 다음 이터레이션 예약하지 않음.
+     실패 이유 기록 후 pipeline/PROGRESS.md에도 Status=`failed`로 갱신, 루프 종료. 다음 이터레이션 예약하지 않음.
 
-7. 관문 모두 통과 시:
+8. 관문 모두 통과 시:
    a. pipeline/backlog.json을 갱신: `tasks`에서 제거, `done`에 이동.
-   b. 관련 파일 + backlog.json 스테이징 → Conventional Commits로 커밋.
+   b. 관련 파일 + backlog.json + PROGRESS.md 스테이징 → Conventional Commits로 커밋.
       예: `feat(cover): implement cover section with date formatting (T05)`
    c. `git push -u origin task/T05-cover`
-   d. PR 생성:
-      - `gh pr create --base main --head task/T05-cover --title "feat(cover): ... (T05)" --body "<goal 요약 + acceptance 체크리스트>"`
+   d. PR 생성 (본문에 반드시 `Closes #<issue>` 포함):
+      - `gh pr create --base main --head task/T05-cover --title "feat(cover): ... (T05)" --body "<goal 요약 + acceptance 체크리스트 + Closes #N>"`
    e. CI(Actions) 통과 대기:
       - `gh pr checks <PR번호> --watch` 로 폴링 (타임아웃 15분).
-      - CI 실패 시: 태스크를 failed로 이동, 루프 종료.
+      - CI 실패 시: 태스크를 failed로 이동, PROGRESS.md Status=`failed`, 루프 종료.
    f. CI 통과 시 squash 머지:
       - `gh pr merge <PR번호> --squash --delete-branch`
    g. 로컬 main으로 돌아가 pull:
       - `git checkout main && git pull --ff-only origin main`
+   h. 머지 직후에는 main에 직접 커밋할 수 없으므로, PROGRESS.md의 이전 행을 Status=`merged` + PR URL + CI 결과 + Merged At 으로 보정하는 작업은 **다음 이터레이션의 브랜치**에서 함께 커밋한다 (즉, 매 이터레이션 시작 시점에 "이전 이터레이션 마감" + "이번 이터레이션 시작 행" 을 같은 작업 브랜치에 쓴다). 마지막 태스크의 경우 별도 `chore(pipeline): close last iteration` PR을 만든다.
 
-8. 다음 이터레이션 예약. 짧은 간격(60-120초)으로 ScheduleWakeup.
+9. 다음 이터레이션 예약. 짧은 간격(60-120초)으로 ScheduleWakeup.
 
 중요:
 - 커밋 하나에 여러 태스크를 묶지 말 것 (태스크당 1 PR 1커밋 원칙).
