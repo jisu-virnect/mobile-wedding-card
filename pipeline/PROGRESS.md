@@ -5,7 +5,8 @@
 | ID  | Title | Issue | Branch | PR | CI | Merged At (UTC) | Status |
 |-----|-------|-------|--------|----|----|-----------------|--------|
 | -   | Pipeline bootstrap: progress log + issue linkage | — | task/infra-progress-tracking | [#13](https://github.com/jisu-virnect/mobile-wedding-card/pull/13) | pass | 2026-04-21T06:44Z | merged |
-| T05 | Cover 섹션 구현 | [#1](https://github.com/jisu-virnect/mobile-wedding-card/issues/1) | task/T05-cover | — | — | — | in_progress |
+| T05 | Cover 섹션 구현 | [#1](https://github.com/jisu-virnect/mobile-wedding-card/issues/1) | task/T05-cover | [#14](https://github.com/jisu-virnect/mobile-wedding-card/pull/14) | pass (retry 1) | 2026-04-21T06:53Z | merged |
+| T06 | Greeting 섹션 구현 | [#2](https://github.com/jisu-virnect/mobile-wedding-card/issues/2) | task/T06-greeting | — | — | — | in_progress |
 
 ## 범례
 

@@ -2,18 +2,6 @@
   "version": 1,
   "tasks": [
     {
-      "id": "T06",
-      "issue": 2,
-      "title": "Greeting 섹션 구현",
-      "section": "Greeting",
-      "goal": "인사말 섹션 완성: wedding.invitation 본문 렌더링(줄바꿈 보존), 양가 부모 성함을 좌(신랑측)/우(신부측) 2컬럼으로 표시. 섹션 구분선(ornament) 추가.",
-      "acceptance": [
-        "인사말 본문이 줄바꿈 유지하며 렌더",
-        "신랑측/신부측 부모 정보가 구분되어 표시",
-        "jsx-a11y 오류 없음"
-      ]
-    },
-    {
       "id": "T07",
       "issue": 3,
       "title": "When 섹션 구현",
@@ -149,6 +137,18 @@
         "예식 날짜가 YYYY.MM.DD · 요일 형식으로 표시됨",
         "스크롤 유도 인디케이터에 aria-label 있음",
         "모바일 뷰포트에서 화면 높이 가득 채움"
+      ]
+    },
+    {
+      "id": "T06",
+      "issue": 2,
+      "title": "Greeting 섹션 구현",
+      "section": "Greeting",
+      "goal": "인사말 섹션 완성: wedding.invitation 본문 렌더링(줄바꿈 보존), 양가 부모 성함을 좌(신랑측)/우(신부측) 2컬럼으로 표시. 섹션 구분선(ornament) 추가.",
+      "acceptance": [
+        "인사말 본문이 줄바꿈 유지하며 렌더",
+        "신랑측/신부측 부모 정보가 구분되어 표시",
+        "jsx-a11y 오류 없음"
       ]
     }
   ],
