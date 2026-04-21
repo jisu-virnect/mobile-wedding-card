@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "tasks": [
+    {
+      "id": "T05",
+      "title": "Cover 섹션 구현",
+      "section": "Cover",
+      "goal": "표지 섹션을 완성: 상단 장식/부드러운 그라디언트 배경, 신랑·신부 이름 강조 타이포그래피, 예식 날짜 포맷팅(2026.10.10 · 토요일), 하단 스크롤 유도 인디케이터. framer-motion 등장 애니메이션.",
+      "acceptance": [
+        "h1에 신랑·신부 이름이 렌더됨",
+        "예식 날짜가 YYYY.MM.DD · 요일 형식으로 표시됨",
+        "스크롤 유도 인디케이터에 aria-label 있음",
+        "모바일 뷰포트에서 화면 높이 가득 채움"
+      ]
+    },
+    {
+      "id": "T06",
+      "title": "Greeting 섹션 구현",
+      "section": "Greeting",
+      "goal": "인사말 섹션 완성: wedding.invitation 본문 렌더링(줄바꿈 보존), 양가 부모 성함을 좌(신랑측)/우(신부측) 2컬럼으로 표시. 섹션 구분선(ornament) 추가.",
+      "acceptance": [
+        "인사말 본문이 줄바꿈 유지하며 렌더",
+        "신랑측/신부측 부모 정보가 구분되어 표시",
+        "jsx-a11y 오류 없음"
+      ]
+    },
+    {
+      "id": "T07",
+      "title": "When 섹션 구현",
+      "section": "When",
+      "goal": "예식 일시 카드: 2026년 10월 10일 토요일 오전 11시 형식으로 표시, 월간 캘린더 뷰(해당 날짜 하이라이트), 디데이 카운터(D-N / D-Day).",
+      "acceptance": [
+        "날짜/요일/시간이 한국어로 정확하게 포맷됨",
+        "캘린더에 해당 날짜가 시각적으로 하이라이트",
+        "디데이 카운터가 오늘 기준으로 계산됨",
+        "디데이 로직 단위 테스트 존재"
+      ]
+    },
+    {
+      "id": "T08",
+      "title": "Where 섹션 구현",
+      "section": "Where",
+      "goal": "오시는 길: 장소명/주소/상세(지하철) 표시, 지도 이미지 placeholder + 카카오맵/네이버맵 딥링크 버튼, 주소 복사 버튼(클립보드).",
+      "acceptance": [
+        "venue 정보가 정확하게 표시됨",
+        "카카오맵·네이버맵 버튼이 올바른 URL로 연결",
+        "주소 복사 버튼 클릭 시 clipboard에 기록 (E2E 검증)",
+        "지도 이미지에 alt 텍스트"
+      ]
+    },
+    {
+      "id": "T09",
+      "title": "Gallery 섹션 구현",
+      "section": "Gallery",
+      "goal": "갤러리: 썸네일 그리드(3열), 클릭 시 yet-another-react-lightbox 오픈. 샘플 이미지는 wedding.gallery에 있으면 사용, 없으면 placeholder 생성 유틸로 6장 기본 제공.",
+      "acceptance": [
+        "썸네일 그리드가 3열로 렌더",
+        "썸네일 클릭 시 lightbox 오픈 E2E",
+        "lightbox에서 좌/우 이동 가능",
+        "이미지 alt 텍스트 존재"
+      ]
+    },
+    {
+      "id": "T10",
+      "title": "RSVP 섹션 구현",
+      "section": "Rsvp",
+      "goal": "참석 여부 폼: react-hook-form + zod. 필드(이름/신랑측·신부측/참석여부/동반인원/메시지). 제출 시 POST /api/rsvp (MSW 핸들러). 성공/실패 UI. 개발 환경에서만 MSW 활성화.",
+      "acceptance": [
+        "폼 유효성 검증 (이름 필수, 인원 0-10)",
+        "MSW 핸들러로 POST /api/rsvp 흐름이 작동 (E2E)",
+        "제출 성공 시 성공 메시지 표시",
+        "네트워크 에러 시 재시도 안내"
+      ]
+    },
+    {
+      "id": "T11",
+      "title": "Account 섹션 구현",
+      "section": "Account",
+      "goal": "계좌번호 아코디언: 신랑측/신부측 접기·펼치기. 각 항목: 은행/계좌번호/예금주 + 복사 버튼. 복사 성공 시 토스트.",
+      "acceptance": [
+        "아코디언 접기/펼치기가 aria-expanded로 반영",
+        "복사 버튼 클릭 시 클립보드에 계좌번호 기록",
+        "복사 성공 시각 피드백(토스트 또는 인라인)"
+      ]
+    },
+    {
+      "id": "T12",
+      "title": "Share 섹션 구현",
+      "section": "Share",
+      "goal": "공유: Web Share API(navigator.share) 지원 시 네이티브 공유, 미지원 시 링크 복사 fallback. 카카오톡 공유는 딥링크 URL로 처리(SDK 생략).",
+      "acceptance": [
+        "Web Share 지원 브라우저에서 공유 시트 호출",
+        "비지원 환경에서 링크 복사 버튼이 동작",
+        "공유 URL은 현재 location.href"
+      ]
+    },
+    {
+      "id": "T13",
+      "title": "스크롤 애니메이션 + 섹션 간 리듬",
+      "section": "Global",
+      "goal": "IntersectionObserver 또는 framer-motion useInView로 섹션 진입 시 페이드·슬라이드 인. 섹션 간 패딩/구분 조정으로 호흡감 개선.",
+      "acceptance": [
+        "각 섹션이 진입 시 자연스럽게 등장",
+        "prefers-reduced-motion 존중",
+        "Lighthouse Performance ≥ 0.9 유지"
+      ]
+    },
+    {
+      "id": "T14",
+      "title": "접근성 패스",
+      "section": "Global",
+      "goal": "jsx-a11y 전체 오류 0 유지, 포커스 순서 확인, 색 대비(WCAG AA), 모든 상호작용 요소에 aria-label 또는 레이블, 키보드 내비게이션 E2E.",
+      "acceptance": [
+        "Lighthouse Accessibility = 1.0",
+        "Tab 키로 전체 상호작용 요소 순회 가능 (E2E)",
+        "alt/aria-label 누락 없음"
+      ]
+    },
+    {
+      "id": "T15",
+      "title": "성능 튜닝 + Lighthouse 90+ 달성",
+      "section": "Global",
+      "goal": "이미지 lazy loading, 폰트 preload, 번들 크기 점검. Lighthouse 모바일 Performance/Best Practices ≥ 0.9.",
+      "acceptance": [
+        "Lighthouse Performance ≥ 0.9",
+        "Lighthouse Best Practices ≥ 0.9",
+        "번들 JS < 250KB gzip"
+      ]
+    },
+    {
+      "id": "T16",
+      "title": "Vercel 프리뷰 + Lighthouse on preview URL",
+      "section": "Infra",
+      "goal": "Vercel GitHub 연동으로 프리뷰 URL 자동 생성 확인. PR 봇 코멘트에 URL 노출. Lighthouse CI를 프리뷰 URL에 대고 돌리는 옵션 워크플로우 추가.",
+      "acceptance": [
+        "PR마다 Vercel 프리뷰 URL 생성",
+        "프리뷰 URL에 대한 Lighthouse 결과가 PR에 부착"
+      ]
+    }
+  ],
+  "done": [],
+  "failed": []
+}
