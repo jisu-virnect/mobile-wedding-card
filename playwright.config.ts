@@ -5,8 +5,15 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: [['html', { open: 'never' }], ['list']],
+  // CI is single-worker for determinism; locally we cap at 4 because
+  // screenshot: 'on' adds enough overhead that high concurrency becomes
+  // the flake source.
+  workers: process.env.CI ? 1 : 4,
+  reporter: [
+    ['html', { open: 'never' }],
+    ['list'],
+    ['json', { outputFile: 'playwright-report/results.json' }],
+  ],
   use: {
     baseURL: 'http://127.0.0.1:5173',
     // Always capture an end-of-test screenshot (success + failure) so we can
