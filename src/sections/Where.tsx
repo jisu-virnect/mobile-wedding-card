@@ -102,7 +102,7 @@ export function Where() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="네이버지도로 열기"
-            className="inline-flex items-center gap-1 rounded-full bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-400"
+            className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
           >
             네이버지도
           </a>
@@ -122,7 +122,7 @@ export function Where() {
         aria-live="polite"
         className={
           'mt-3 min-h-[1.25rem] text-xs ' +
-          (error ? 'text-rose-500' : 'text-gray-500')
+          (error ? 'text-rose-700' : 'text-gray-700')
         }
       >
         {feedback}

@@ -2,18 +2,6 @@
   "version": 1,
   "tasks": [
     {
-      "id": "T14",
-      "issue": 10,
-      "title": "접근성 패스",
-      "section": "Global",
-      "goal": "jsx-a11y 전체 오류 0 유지, 포커스 순서 확인, 색 대비(WCAG AA), 모든 상호작용 요소에 aria-label 또는 레이블, 키보드 내비게이션 E2E.",
-      "acceptance": [
-        "Lighthouse Accessibility = 1.0",
-        "Tab 키로 전체 상호작용 요소 순회 가능 (E2E)",
-        "alt/aria-label 누락 없음"
-      ]
-    },
-    {
       "id": "T15",
       "issue": 11,
       "title": "성능 튜닝 + Lighthouse 90+ 달성",
@@ -149,6 +137,18 @@
         "각 섹션이 진입 시 자연스럽게 등장",
         "prefers-reduced-motion 존중",
         "Lighthouse Performance ≥ 0.9 유지"
+      ]
+    },
+    {
+      "id": "T14",
+      "issue": 10,
+      "title": "접근성 패스",
+      "section": "Global",
+      "goal": "jsx-a11y 전체 오류 0 유지, 포커스 순서 확인, 색 대비(WCAG AA), 모든 상호작용 요소에 aria-label 또는 레이블, 키보드 내비게이션 E2E.",
+      "acceptance": [
+        "Lighthouse Accessibility = 1.0",
+        "Tab 키로 전체 상호작용 요소 순회 가능 (E2E)",
+        "alt/aria-label 누락 없음"
       ]
     }
   ],

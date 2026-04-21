@@ -52,12 +52,12 @@ function ParentColumn({
             : '')
       }
     >
-      <p className="text-[11px] tracking-[0.3em] text-gray-400 uppercase">
+      <p className="text-[11px] tracking-[0.3em] text-gray-500 uppercase">
         {label}
       </p>
       <p className="mt-3 text-sm text-gray-700">
         {father}
-        <span className="mx-1 text-gray-400">·</span>
+        <span className="mx-1 text-gray-500">·</span>
         {mother}
       </p>
       <p className="mt-1 text-xs text-gray-500">의 {relation}</p>

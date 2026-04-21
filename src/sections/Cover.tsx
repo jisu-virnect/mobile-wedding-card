@@ -57,7 +57,7 @@ export function Cover() {
         <span className="block">{wedding.groom.name}</span>
         <span
           aria-hidden="true"
-          className="my-3 block text-base tracking-[0.3em] text-gray-400"
+          className="my-3 block text-base tracking-[0.3em] text-gray-500"
         >
           &amp;
         </span>
@@ -79,7 +79,7 @@ export function Cover() {
         initial={reduce ? false : { opacity: 0 }}
         animate={reduce ? {} : { opacity: 1 }}
         transition={reduce ? undefined : { duration: 1.2, delay: 0.9 }}
-        className="absolute bottom-8 flex flex-col items-center gap-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gray-500"
+        className="absolute bottom-8 flex flex-col items-center gap-1 text-gray-500 transition-colors hover:text-gray-700 focus-visible:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gray-500"
       >
         <span aria-hidden="true" className="text-xs tracking-widest uppercase">
           Scroll

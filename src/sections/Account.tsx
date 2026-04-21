@@ -176,7 +176,7 @@ export function Account() {
         aria-live="polite"
         className={
           'mx-auto mt-4 min-h-[1.25rem] max-w-sm text-xs ' +
-          (error ? 'text-rose-500' : 'text-emerald-600')
+          (error ? 'text-rose-700' : 'text-emerald-700')
         }
       >
         {toast}

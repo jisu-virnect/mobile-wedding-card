@@ -91,7 +91,7 @@ export function Share() {
             type="button"
             onClick={handleNativeShare}
             aria-label="기기 공유 시트로 공유하기"
-            className="inline-flex items-center gap-1 rounded-full bg-rose-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400"
+            className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
           >
             <svg
               aria-hidden="true"
@@ -140,7 +140,7 @@ export function Share() {
         aria-live="polite"
         className={
           'mx-auto mt-4 min-h-[1.25rem] max-w-sm text-xs ' +
-          (feedback?.kind === 'error' ? 'text-rose-500' : 'text-emerald-600')
+          (feedback?.kind === 'error' ? 'text-rose-700' : 'text-emerald-700')
         }
       >
         {feedback?.message ?? ''}
