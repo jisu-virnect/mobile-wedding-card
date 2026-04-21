@@ -2,18 +2,6 @@
   "version": 1,
   "tasks": [
     {
-      "id": "T13",
-      "issue": 9,
-      "title": "스크롤 애니메이션 + 섹션 간 리듬",
-      "section": "Global",
-      "goal": "IntersectionObserver 또는 framer-motion useInView로 섹션 진입 시 페이드·슬라이드 인. 섹션 간 패딩/구분 조정으로 호흡감 개선.",
-      "acceptance": [
-        "각 섹션이 진입 시 자연스럽게 등장",
-        "prefers-reduced-motion 존중",
-        "Lighthouse Performance ≥ 0.9 유지"
-      ]
-    },
-    {
       "id": "T14",
       "issue": 10,
       "title": "접근성 패스",
@@ -149,6 +137,18 @@
         "Web Share 지원 브라우저에서 공유 시트 호출",
         "비지원 환경에서 링크 복사 버튼이 동작",
         "공유 URL은 현재 location.href"
+      ]
+    },
+    {
+      "id": "T13",
+      "issue": 9,
+      "title": "스크롤 애니메이션 + 섹션 간 리듬",
+      "section": "Global",
+      "goal": "IntersectionObserver 또는 framer-motion useInView로 섹션 진입 시 페이드·슬라이드 인. 섹션 간 패딩/구분 조정으로 호흡감 개선.",
+      "acceptance": [
+        "각 섹션이 진입 시 자연스럽게 등장",
+        "prefers-reduced-motion 존중",
+        "Lighthouse Performance ≥ 0.9 유지"
       ]
     }
   ],
