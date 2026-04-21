@@ -2,19 +2,6 @@
   "version": 1,
   "tasks": [
     {
-      "id": "T10",
-      "issue": 6,
-      "title": "RSVP 섹션 구현",
-      "section": "Rsvp",
-      "goal": "참석 여부 폼: react-hook-form + zod. 필드(이름/신랑측·신부측/참석여부/동반인원/메시지). 제출 시 POST /api/rsvp (MSW 핸들러). 성공/실패 UI. 개발 환경에서만 MSW 활성화.",
-      "acceptance": [
-        "폼 유효성 검증 (이름 필수, 인원 0-10)",
-        "MSW 핸들러로 POST /api/rsvp 흐름이 작동 (E2E)",
-        "제출 성공 시 성공 메시지 표시",
-        "네트워크 에러 시 재시도 안내"
-      ]
-    },
-    {
       "id": "T11",
       "issue": 7,
       "title": "Account 섹션 구현",
@@ -149,6 +136,19 @@
         "썸네일 클릭 시 lightbox 오픈 E2E",
         "lightbox에서 좌/우 이동 가능",
         "이미지 alt 텍스트 존재"
+      ]
+    },
+    {
+      "id": "T10",
+      "issue": 6,
+      "title": "RSVP 섹션 구현",
+      "section": "Rsvp",
+      "goal": "참석 여부 폼: react-hook-form + zod. 필드(이름/신랑측·신부측/참석여부/동반인원/메시지). 제출 시 POST /api/rsvp (MSW 핸들러). 성공/실패 UI. 개발 환경에서만 MSW 활성화.",
+      "acceptance": [
+        "폼 유효성 검증 (이름 필수, 인원 0-10)",
+        "MSW 핸들러로 POST /api/rsvp 흐름이 작동 (E2E)",
+        "제출 성공 시 성공 메시지 표시",
+        "네트워크 에러 시 재시도 안내"
       ]
     }
   ],
