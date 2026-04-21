@@ -38,6 +38,16 @@
 - **고정 방법**: `playwright.config.ts` 에서 `workers: process.env.CI ? 1 : 4` 로 로컬 병렬성 상한을 4로 제한. CI 는 이미 `workers: 1` 이라 무관. 격리 실행(`--workers=1`) 또는 `pnpm exec playwright test <file>` 는 항상 통과.
 - **체크리스트**: 로컬에서 E2E 가 간헐 실패하면 먼저 워커 수부터 낮춰볼 것. 코드 버그가 아닐 가능성 큼.
 
+## 7. `actions/github-script@v7` 의 `return ''` 이 `'""'` 로 JSON-인코딩되어 downstream `if: != ''` 가드 통과
+
+- **어디서 터졌나**: T16 `lighthouse-preview.yml` 에서 "SHA 에 매칭되는 PR이 없으면 return ''" 했는데 `steps.pr.outputs.result` 가 길이 2의 `""` 문자열이라 `if: steps.pr.outputs.result != ''` 가 true 로 평가되어 다음 스텝이 실행됨.
+- **고정 방법**: `with: result-encoding: string` 추가. 추가 안전책으로 파서 스크립트에서도 `""`/`''` 를 빈 값으로 정규화.
+
+## 8. Vercel Deployment Protection 이 켜진 프로젝트의 프리뷰 URL 은 로그인 페이지로 리다이렉트됨
+
+- **어디서 터졌나**: T16 Lighthouse-on-preview 워크플로우가 `https://*.vercel.app` 대신 `https://vercel.com/login?...` 를 감사. 접근성 0.82 로 단정 실패, 실제 앱 점수는 아예 못 얻음.
+- **고정 방법**: 사전에 `curl -sLo /dev/null -w '%{url_effective}' $URL` 로 최종 리다이렉트 URL 을 확인 → `vercel.com/login|sso-api` 로 끝나면 감사를 건너뛰고 PR 코멘트에 설정 안내만 포스팅. 프로젝트 레벨에서 고치려면 Vercel Dashboard → Deployment Protection 해제 또는 Bypass 토큰 발급해서 워크플로우 secret 추가.
+
 ## 6. `getByText(predicate)` 가 복수 매칭 → 조상 요소까지 같이 걸림
 
 - **어디서 터졌나**: T06 `Greeting.test.tsx` 에서 본문 인용구를 predicate 로 찾다가 `<p>`, `<div>`, `<section>` 이 모두 매칭.

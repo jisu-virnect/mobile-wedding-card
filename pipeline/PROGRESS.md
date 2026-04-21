@@ -17,7 +17,8 @@
 | T14 | 접근성 패스 | [#10](https://github.com/jisu-virnect/mobile-wedding-card/issues/10) | task/T14-accessibility | [#23](https://github.com/jisu-virnect/mobile-wedding-card/pull/23) | pass | 2026-04-21T08:43Z | merged |
 | -   | chore: E2E 스크린샷 + 플레이북 | — | chore/e2e-screenshots-playbook | [#24](https://github.com/jisu-virnect/mobile-wedding-card/pull/24) | pass | 2026-04-21T08:50Z | merged |
 | -   | chore: E2E PR 코멘트 자동화 | — | chore/e2e-pr-comment | [#25](https://github.com/jisu-virnect/mobile-wedding-card/pull/25) | pass | 2026-04-21T09:02Z | merged |
-| T15 | 성능 튜닝 + Lighthouse 90+ 달성 | [#11](https://github.com/jisu-virnect/mobile-wedding-card/issues/11) | task/T15-performance | — | — | — | in_progress |
+| T15 | 성능 튜닝 + Lighthouse 90+ 달성 | [#11](https://github.com/jisu-virnect/mobile-wedding-card/issues/11) | task/T15-performance | [#26](https://github.com/jisu-virnect/mobile-wedding-card/pull/26) | pass | 2026-04-21T09:17Z | merged |
+| T16 | Vercel 프리뷰 + Lighthouse on preview URL | [#12](https://github.com/jisu-virnect/mobile-wedding-card/issues/12) | task/T16-vercel-lighthouse | — | — | — | in_progress |
 
 ## 범례
 
