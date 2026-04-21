@@ -1,18 +1,6 @@
 {
   "version": 1,
-  "tasks": [
-    {
-      "id": "T16",
-      "issue": 12,
-      "title": "Vercel 프리뷰 + Lighthouse on preview URL",
-      "section": "Infra",
-      "goal": "Vercel GitHub 연동으로 프리뷰 URL 자동 생성 확인. PR 봇 코멘트에 URL 노출. Lighthouse CI를 프리뷰 URL에 대고 돌리는 옵션 워크플로우 추가.",
-      "acceptance": [
-        "PR마다 Vercel 프리뷰 URL 생성",
-        "프리뷰 URL에 대한 Lighthouse 결과가 PR에 부착"
-      ]
-    }
-  ],
+  "tasks": [],
   "done": [
     {
       "id": "T05",
@@ -149,6 +137,17 @@
         "Lighthouse Performance ≥ 0.9",
         "Lighthouse Best Practices ≥ 0.9",
         "번들 JS < 250KB gzip"
+      ]
+    },
+    {
+      "id": "T16",
+      "issue": 12,
+      "title": "Vercel 프리뷰 + Lighthouse on preview URL",
+      "section": "Infra",
+      "goal": "Vercel GitHub 연동으로 프리뷰 URL 자동 생성 확인. PR 봇 코멘트에 URL 노출. Lighthouse CI를 프리뷰 URL에 대고 돌리는 옵션 워크플로우 추가.",
+      "acceptance": [
+        "PR마다 Vercel 프리뷰 URL 생성",
+        "프리뷰 URL에 대한 Lighthouse 결과가 PR에 부착"
       ]
     }
   ],

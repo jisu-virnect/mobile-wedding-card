@@ -1,0 +1,87 @@
+name: Lighthouse on Vercel Preview
+
+on:
+  deployment_status:
+
+concurrency:
+  group: lh-preview-${{ github.event.deployment.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  audit:
+    # Vercel's GitHub App marks its deployments with environment "Preview"
+    # (lower case "preview" sometimes). Only run on a successful preview.
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      (contains(github.event.deployment.environment, 'Preview') ||
+       contains(github.event.deployment.environment, 'preview'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Resolve PR number from deployment SHA
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.payload.deployment.sha
+            const { data } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            })
+            const match = data.find((p) => p.head.sha === sha)
+            if (!match) {
+              core.info(`No open PR matches deployment SHA ${sha}; skipping.`)
+              return ''
+            }
+            return String(match.number)
+
+      - name: Short-circuit when no PR matched
+        if: steps.pr.outputs.result == ''
+        run: |
+          echo "Not a PR preview — nothing to do."
+          exit 0
+
+      - name: Run Lighthouse against preview URL
+        if: steps.pr.outputs.result != ''
+        env:
+          PREVIEW_URL: ${{ github.event.deployment_status.target_url || github.event.deployment_status.environment_url }}
+        run: |
+          echo "Auditing $PREVIEW_URL"
+          pnpm exec lhci autorun \
+            --config=./lighthouserc.preview.json \
+            --collect.url="$PREVIEW_URL"
+
+      - name: Post Lighthouse preview summary to PR
+        if: always() && steps.pr.outputs.result != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.result }}
+          PREVIEW_URL: ${{ github.event.deployment_status.target_url || github.event.deployment_status.environment_url }}
+        run: node .github/scripts/summarize-lighthouse-preview.mjs
+
+      - name: Upload Lighthouse preview reports
+        if: always() && steps.pr.outputs.result != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-preview-report
+          path: .lighthouseci
+          retention-days: 7
