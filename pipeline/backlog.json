@@ -3,6 +3,7 @@
   "tasks": [
     {
       "id": "T05",
+      "issue": 1,
       "title": "Cover 섹션 구현",
       "section": "Cover",
       "goal": "표지 섹션을 완성: 상단 장식/부드러운 그라디언트 배경, 신랑·신부 이름 강조 타이포그래피, 예식 날짜 포맷팅(2026.10.10 · 토요일), 하단 스크롤 유도 인디케이터. framer-motion 등장 애니메이션.",
@@ -15,6 +16,7 @@
     },
     {
       "id": "T06",
+      "issue": 2,
       "title": "Greeting 섹션 구현",
       "section": "Greeting",
       "goal": "인사말 섹션 완성: wedding.invitation 본문 렌더링(줄바꿈 보존), 양가 부모 성함을 좌(신랑측)/우(신부측) 2컬럼으로 표시. 섹션 구분선(ornament) 추가.",
@@ -26,6 +28,7 @@
     },
     {
       "id": "T07",
+      "issue": 3,
       "title": "When 섹션 구현",
       "section": "When",
       "goal": "예식 일시 카드: 2026년 10월 10일 토요일 오전 11시 형식으로 표시, 월간 캘린더 뷰(해당 날짜 하이라이트), 디데이 카운터(D-N / D-Day).",
@@ -38,6 +41,7 @@
     },
     {
       "id": "T08",
+      "issue": 4,
       "title": "Where 섹션 구현",
       "section": "Where",
       "goal": "오시는 길: 장소명/주소/상세(지하철) 표시, 지도 이미지 placeholder + 카카오맵/네이버맵 딥링크 버튼, 주소 복사 버튼(클립보드).",
@@ -50,6 +54,7 @@
     },
     {
       "id": "T09",
+      "issue": 5,
       "title": "Gallery 섹션 구현",
       "section": "Gallery",
       "goal": "갤러리: 썸네일 그리드(3열), 클릭 시 yet-another-react-lightbox 오픈. 샘플 이미지는 wedding.gallery에 있으면 사용, 없으면 placeholder 생성 유틸로 6장 기본 제공.",
@@ -62,6 +67,7 @@
     },
     {
       "id": "T10",
+      "issue": 6,
       "title": "RSVP 섹션 구현",
       "section": "Rsvp",
       "goal": "참석 여부 폼: react-hook-form + zod. 필드(이름/신랑측·신부측/참석여부/동반인원/메시지). 제출 시 POST /api/rsvp (MSW 핸들러). 성공/실패 UI. 개발 환경에서만 MSW 활성화.",
@@ -74,6 +80,7 @@
     },
     {
       "id": "T11",
+      "issue": 7,
       "title": "Account 섹션 구현",
       "section": "Account",
       "goal": "계좌번호 아코디언: 신랑측/신부측 접기·펼치기. 각 항목: 은행/계좌번호/예금주 + 복사 버튼. 복사 성공 시 토스트.",
@@ -85,6 +92,7 @@
     },
     {
       "id": "T12",
+      "issue": 8,
       "title": "Share 섹션 구현",
       "section": "Share",
       "goal": "공유: Web Share API(navigator.share) 지원 시 네이티브 공유, 미지원 시 링크 복사 fallback. 카카오톡 공유는 딥링크 URL로 처리(SDK 생략).",
@@ -96,6 +104,7 @@
     },
     {
       "id": "T13",
+      "issue": 9,
       "title": "스크롤 애니메이션 + 섹션 간 리듬",
       "section": "Global",
       "goal": "IntersectionObserver 또는 framer-motion useInView로 섹션 진입 시 페이드·슬라이드 인. 섹션 간 패딩/구분 조정으로 호흡감 개선.",
@@ -107,6 +116,7 @@
     },
     {
       "id": "T14",
+      "issue": 10,
       "title": "접근성 패스",
       "section": "Global",
       "goal": "jsx-a11y 전체 오류 0 유지, 포커스 순서 확인, 색 대비(WCAG AA), 모든 상호작용 요소에 aria-label 또는 레이블, 키보드 내비게이션 E2E.",
@@ -118,6 +128,7 @@
     },
     {
       "id": "T15",
+      "issue": 11,
       "title": "성능 튜닝 + Lighthouse 90+ 달성",
       "section": "Global",
       "goal": "이미지 lazy loading, 폰트 preload, 번들 크기 점검. Lighthouse 모바일 Performance/Best Practices ≥ 0.9.",
@@ -129,6 +140,7 @@
     },
     {
       "id": "T16",
+      "issue": 12,
       "title": "Vercel 프리뷰 + Lighthouse on preview URL",
       "section": "Infra",
       "goal": "Vercel GitHub 연동으로 프리뷰 URL 자동 생성 확인. PR 봇 코멘트에 URL 노출. Lighthouse CI를 프리뷰 URL에 대고 돌리는 옵션 워크플로우 추가.",

@@ -33,3 +33,6 @@ test-results
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code local session state
+.claude/
