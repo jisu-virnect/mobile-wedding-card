@@ -11,16 +11,16 @@ test.describe('Greeting section', () => {
       greeting.getByRole('heading', { level: 2, name: '초대합니다' }),
     ).toBeVisible()
 
-    await expect(greeting.getByText(/평생을 함께할 것을 약속하는 날/)).toBeVisible()
+    await expect(greeting.getByText(/평생을 함께하기로 약속하는 자리/)).toBeVisible()
 
     const groomSide = greeting.getByRole('group', { name: '신랑측 가족 정보' })
-    await expect(groomSide).toContainText('김철수')
-    await expect(groomSide).toContainText('김아버지')
-    await expect(groomSide).toContainText('김어머니')
+    await expect(groomSide).toContainText('김지수')
+    await expect(groomSide).toContainText('김창길')
+    await expect(groomSide).toContainText('김영미')
 
     const brideSide = greeting.getByRole('group', { name: '신부측 가족 정보' })
-    await expect(brideSide).toContainText('이영희')
-    await expect(brideSide).toContainText('이아버지')
-    await expect(brideSide).toContainText('이어머니')
+    await expect(brideSide).toContainText('김난슬')
+    await expect(brideSide).toContainText('김청섭')
+    await expect(brideSide).toContainText('이경화')
   })
 })

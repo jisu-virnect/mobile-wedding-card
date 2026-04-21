@@ -21,26 +21,32 @@ test.describe('Where section', () => {
       where.getByRole('heading', { level: 2, name: '오시는 길' }),
     ).toBeVisible()
 
+    await expect(where.getByText('호텔 라뷔포레')).toBeVisible()
     await expect(
-      where.getByText('샘플 웨딩홀 5F 그랜드볼룸'),
+      where.getByText('경기도 수원시 팔달구 권광로134번길 44-11'),
     ).toBeVisible()
-    await expect(where.getByText('서울특별시 중구 샘플로 123')).toBeVisible()
 
     const kakao = where.getByRole('link', { name: '카카오맵으로 열기' })
     await expect(kakao).toBeVisible()
-    await expect(kakao).toHaveAttribute('href', 'https://map.kakao.com/')
+    await expect(kakao).toHaveAttribute(
+      'href',
+      'https://map.kakao.com/?q=호텔라뷔포레',
+    )
 
     const naver = where.getByRole('link', { name: '네이버지도로 열기' })
-    await expect(naver).toHaveAttribute('href', 'https://map.naver.com/')
+    await expect(naver).toHaveAttribute(
+      'href',
+      'https://map.naver.com/p/search/호텔라뷔포레',
+    )
 
     await where.getByRole('button', { name: '주소 복사' }).click()
 
     await expect(where.getByRole('status')).toHaveText('주소를 복사했어요.')
     const clipText = await page.evaluate(() => navigator.clipboard.readText())
-    expect(clipText).toBe('서울특별시 중구 샘플로 123')
+    expect(clipText).toBe('경기도 수원시 팔달구 권광로134번길 44-11')
 
     await expect(
-      where.getByRole('img', { name: '샘플 웨딩홀 5F 그랜드볼룸 약도 이미지' }),
+      where.getByRole('img', { name: '호텔 라뷔포레 약도 이미지' }),
     ).toBeVisible()
   })
 })

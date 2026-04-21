@@ -11,7 +11,7 @@ describe('<Greeting />', () => {
     // The raw text node keeps the literal "\n"s; the CSS (whitespace-pre-line)
     // is what renders them as line breaks in the browser.
     expect(body!.textContent).toContain('\n')
-    expect(body!.textContent).toContain('평생을 함께할 것을 약속하는 날')
+    expect(body!.textContent).toContain('평생을 함께하기로 약속하는 자리')
   })
 
   it('shows both sets of parents grouped by side', () => {
