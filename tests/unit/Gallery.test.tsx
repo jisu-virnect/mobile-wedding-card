@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { Gallery } from '../../src/sections/Gallery'
 
@@ -29,14 +29,20 @@ describe('<Gallery />', () => {
     })
   })
 
-  it('opens a lightbox when a thumbnail is clicked', () => {
+  it('opens a lightbox when a thumbnail is clicked', async () => {
     render(<Gallery />)
     const firstThumb = screen.getAllByRole('button', { name: /크게 보기$/ })[0]
     fireEvent.click(firstThumb)
-    // yet-another-react-lightbox exposes role=presentation on its portal root
-    // and role=button close controls once open — look for any of its controls.
-    expect(
-      document.querySelector('.yarl__container'),
-    ).toBeInTheDocument()
+    // The lightbox is code-split behind a React.lazy boundary; wait for the
+    // chunk to load before asserting the portal root is mounted. Full-suite
+    // parallel runs occasionally stretch the dynamic import, so we lift the
+    // default timeout.
+    await waitFor(
+      () =>
+        expect(
+          document.querySelector('.yarl__container'),
+        ).toBeInTheDocument(),
+      { timeout: 5000 },
+    )
   })
 })

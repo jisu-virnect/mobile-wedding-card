@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import Lightbox from 'yet-another-react-lightbox'
-import 'yet-another-react-lightbox/styles.css'
 
 import { wedding } from '../data/wedding'
 import { buildGalleryImages } from '../lib/galleryPlaceholders'
+
+// The lightbox bundle (+ its CSS) only loads after the user opens a photo,
+// keeping the initial gallery paint lean.
+const LightboxView = lazy(() => import('./gallery/LightboxView'))
 
 export function Gallery() {
   const reduce = useReducedMotion()
@@ -63,14 +65,17 @@ export function Gallery() {
         ))}
       </motion.ul>
 
-      <Lightbox
-        open={open}
-        close={() => setOpen(false)}
-        index={index}
-        on={{ view: ({ index: i }) => setIndex(i) }}
-        slides={images.map((img) => ({ src: img.src, alt: img.alt }))}
-        controller={{ closeOnBackdropClick: true }}
-      />
+      {open && (
+        <Suspense fallback={null}>
+          <LightboxView
+            images={images}
+            open={open}
+            index={index}
+            onClose={() => setOpen(false)}
+            onView={(i) => setIndex(i)}
+          />
+        </Suspense>
+      )}
     </section>
   )
 }
