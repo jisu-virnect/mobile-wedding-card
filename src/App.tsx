@@ -13,22 +13,21 @@ function SectionDivider() {
   return (
     <div
       aria-hidden="true"
-      className="mx-auto my-2 flex items-center justify-center gap-2 text-gray-200"
+      className="mx-auto flex items-center justify-center gap-2 py-1 text-sage/40"
     >
-      <span className="h-px w-8 bg-gray-200" />
-      <svg className="h-1.5 w-1.5" viewBox="0 0 8 8" fill="currentColor">
-        <circle cx="4" cy="4" r="2" />
+      <span className="h-px w-10 bg-line" />
+      <svg className="h-2 w-2" viewBox="0 0 8 8" fill="currentColor">
+        <path d="M4 0 L5 3 L8 4 L5 5 L4 8 L3 5 L0 4 L3 3 Z" />
       </svg>
-      <span className="h-px w-8 bg-gray-200" />
+      <span className="h-px w-10 bg-line" />
     </div>
   )
 }
 
 function App() {
   return (
-    <main className="mx-auto flex min-h-svh max-w-[480px] flex-col bg-white shadow-sm">
+    <main className="mx-auto flex min-h-svh max-w-[480px] flex-col bg-ivory shadow-[0_0_60px_rgba(0,0,0,0.04)]">
       <Cover />
-      <SectionDivider />
       <Greeting />
       <SectionDivider />
       <When />

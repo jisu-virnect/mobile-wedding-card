@@ -6,6 +6,7 @@ import {
   kstYmd,
 } from '../lib/formatDate'
 import { formatDDay } from '../lib/dday'
+import { SectionHeader } from './SectionHeader'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'] as const
 
@@ -29,20 +30,20 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
       aria-label={`${year}년 ${month}월 캘린더`}
       role="group"
     >
-      <div className="mb-3 text-center text-sm font-medium tracking-widest text-gray-500">
-        {year}. {String(month).padStart(2, '0')}
+      <div className="mb-4 text-center font-display text-base tracking-[0.3em] text-ink-soft">
+        {year}.{String(month).padStart(2, '0')}
       </div>
-      <div className="grid grid-cols-7 text-xs">
+      <div className="grid grid-cols-7 text-[11px]">
         {WEEKDAYS.map((wd, i) => (
           <div
             key={wd}
             className={
-              'pb-2 text-center ' +
+              'pb-2 text-center tracking-widest ' +
               (i === 0
-                ? 'text-rose-600'
+                ? 'text-sun/80'
                 : i === 6
-                  ? 'text-sky-600'
-                  : 'text-gray-500')
+                  ? 'text-sat/80'
+                  : 'text-ink-mute')
             }
           >
             {wd}
@@ -58,12 +59,12 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
           const weekCol = i % 7
           const weekColor =
             weekCol === 0
-              ? 'text-rose-600'
+              ? 'text-sun/80'
               : weekCol === 6
-                ? 'text-sky-600'
-                : 'text-gray-700'
+                ? 'text-sat/80'
+                : 'text-ink-soft'
           const base =
-            'mx-auto flex h-9 w-9 items-center justify-center rounded-full'
+            'mx-auto flex h-9 w-9 items-center justify-center rounded-full transition-colors'
           return (
             <span
               key={i}
@@ -74,7 +75,7 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
               }
               className={
                 isWedding
-                  ? `${base} bg-rose-600 font-semibold text-white`
+                  ? `${base} bg-sage-strong font-medium text-paper ring-4 ring-sage-soft`
                   : `${base} ${weekColor}`
               }
             >
@@ -107,22 +108,23 @@ export function When() {
     <section
       id="when"
       aria-labelledby="when-heading"
-      className="px-6 py-20 text-center"
+      className="px-6 pt-24 pb-20 text-center"
     >
-      <motion.h2
-        id="when-heading"
-        {...fade}
-        className="mb-8 text-xl font-semibold tracking-wide text-gray-900"
-      >
-        예식 일시
-      </motion.h2>
+      <SectionHeader
+        index="03"
+        eyebrow="When"
+        title="예식 일시"
+        headingId="when-heading"
+      />
 
       <motion.div
         {...fade}
-        className="mx-auto mb-10 max-w-xs rounded-lg bg-white/80 px-6 py-5 shadow-sm ring-1 ring-gray-100"
+        className="mx-auto mb-12 max-w-xs border-y border-line py-6"
       >
-        <p className="text-base text-gray-900">{longDate}</p>
-        <p className="mt-2 text-sm text-gray-600">{time}</p>
+        <p className="font-serif text-lg text-ink">{longDate}</p>
+        <p className="mt-2 font-display text-sm tracking-[0.25em] text-ink-soft">
+          {time}
+        </p>
       </motion.div>
 
       <motion.div {...fade} className="mb-10">
@@ -132,7 +134,7 @@ export function When() {
       <motion.p
         {...fade}
         aria-label={`결혼식까지 ${dday}`}
-        className="inline-block rounded-full bg-rose-100 px-4 py-1 text-sm font-medium tracking-wide text-rose-700"
+        className="inline-block rounded-full bg-sage-soft px-5 py-1.5 font-display text-sm font-medium tracking-[0.2em] text-sage-strong"
       >
         {dday}
       </motion.p>

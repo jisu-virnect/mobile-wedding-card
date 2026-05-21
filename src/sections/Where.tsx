@@ -1,21 +1,22 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import { useClipboard } from '../lib/useClipboard'
+import { SectionHeader } from './SectionHeader'
 
 function MapPlaceholder({ venueName }: { venueName: string }) {
   return (
     <div
       role="img"
       aria-label={`${venueName} 약도 이미지`}
-      className="mx-auto flex aspect-[4/3] w-full max-w-sm items-center justify-center rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 ring-1 ring-gray-200"
+      className="mx-auto flex aspect-[4/3] w-full max-w-sm items-center justify-center rounded-sm bg-paper ring-1 ring-line"
     >
       <svg
         aria-hidden="true"
-        className="h-12 w-12 text-gray-400"
+        className="h-10 w-10 text-sage/70"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.2"
       >
         <path
           strokeLinecap="round"
@@ -61,29 +62,32 @@ export function Where() {
     <section
       id="where"
       aria-labelledby="where-heading"
-      className="px-6 py-20 text-center"
+      className="px-6 pt-24 pb-20 text-center"
     >
-      <motion.h2
-        id="where-heading"
-        {...fade}
-        className="mb-8 text-xl font-semibold tracking-wide text-gray-900"
-      >
-        오시는 길
-      </motion.h2>
+      <SectionHeader
+        index="04"
+        eyebrow="Where"
+        title="오시는 길"
+        headingId="where-heading"
+      />
 
       <motion.div {...fade} className="mb-6">
         <MapPlaceholder venueName={name} />
       </motion.div>
 
-      <motion.div {...fade} className="space-y-1">
-        <p className="text-base font-semibold text-gray-900">{name}</p>
-        <p className="text-sm text-gray-700">{address}</p>
-        {detail && <p className="text-xs text-gray-500">{detail}</p>}
+      <motion.div {...fade} className="space-y-1.5">
+        <p className="font-serif text-lg text-ink">{name}</p>
+        <p className="text-sm text-ink-soft">{address}</p>
+        {detail && (
+          <p className="mx-auto max-w-[30ch] text-xs leading-relaxed text-ink-mute">
+            {detail}
+          </p>
+        )}
       </motion.div>
 
       <motion.div
         {...fade}
-        className="mt-6 flex flex-wrap items-center justify-center gap-2"
+        className="mt-7 flex flex-wrap items-center justify-center gap-2"
       >
         {kakaoMapUrl && (
           <a
@@ -91,7 +95,7 @@ export function Where() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="카카오맵으로 열기"
-            className="inline-flex items-center gap-1 rounded-full bg-yellow-300 px-4 py-2 text-sm font-medium text-gray-900 transition hover:bg-yellow-200"
+            className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-4 py-2 text-sm font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
           >
             카카오맵
           </a>
@@ -102,7 +106,7 @@ export function Where() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="네이버지도로 열기"
-            className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
+            className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-4 py-2 text-sm font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
           >
             네이버지도
           </a>
@@ -111,7 +115,7 @@ export function Where() {
           type="button"
           onClick={handleCopy}
           aria-label="주소 복사"
-          className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+          className="inline-flex items-center gap-1 rounded-full bg-sage-strong px-4 py-2 text-sm font-medium tracking-wide text-paper transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
         >
           주소 복사
         </button>
@@ -122,7 +126,7 @@ export function Where() {
         aria-live="polite"
         className={
           'mt-3 min-h-[1.25rem] text-xs ' +
-          (error ? 'text-rose-700' : 'text-gray-700')
+          (error ? 'text-sun' : 'text-ink-soft')
         }
       >
         {feedback}

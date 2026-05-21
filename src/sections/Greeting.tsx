@@ -1,23 +1,24 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
+import { SectionHeader } from './SectionHeader'
 
 function Ornament() {
   return (
     <div
       aria-hidden="true"
-      className="my-10 flex items-center justify-center gap-3 text-gray-300"
+      className="my-12 flex items-center justify-center gap-3 text-sage/50"
     >
-      <span className="h-px w-16 bg-gray-200" />
+      <span className="h-px w-14 bg-line" />
       <svg
-        className="h-3 w-3"
+        className="h-3 w-3 text-sage"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.2"
       >
-        <path d="M12 3 L14 11 L22 12 L14 13 L12 21 L10 13 L2 12 L10 11 Z" />
+        <path d="M12 4 C 13 9 15 11 20 12 C 15 13 13 15 12 20 C 11 15 9 13 4 12 C 9 11 11 9 12 4 Z" />
       </svg>
-      <span className="h-px w-16 bg-gray-200" />
+      <span className="h-px w-14 bg-line" />
     </div>
   )
 }
@@ -46,22 +47,22 @@ function ParentColumn({
       className={
         'flex-1 px-4 ' +
         (divider === 'right'
-          ? 'border-r border-gray-200'
+          ? 'border-r border-line'
           : divider === 'left'
-            ? 'border-l border-gray-200'
+            ? 'border-l border-line'
             : '')
       }
     >
-      <p className="text-[11px] tracking-[0.3em] text-gray-500 uppercase">
+      <p className="font-display text-[10px] tracking-[0.4em] text-ink-mute uppercase">
         {label}
       </p>
-      <p className="mt-3 text-sm text-gray-700">
+      <p className="mt-3 text-sm text-ink-soft">
         {father}
-        <span className="mx-1 text-gray-500">·</span>
+        <span className="mx-1 text-ink-mute">·</span>
         {mother}
       </p>
-      <p className="mt-1 text-xs text-gray-500">의 {relation}</p>
-      <p className="mt-2 text-base font-semibold text-gray-900">{child}</p>
+      <p className="mt-1 text-xs text-ink-mute">의 {relation}</p>
+      <p className="mt-2 font-serif text-base font-medium text-ink">{child}</p>
     </div>
   )
 }
@@ -81,18 +82,18 @@ export function Greeting() {
     <section
       id="greeting"
       aria-labelledby="greeting-heading"
-      className="px-6 py-20 text-center"
+      className="px-6 pt-24 pb-20 text-center"
     >
-      <motion.h2
-        id="greeting-heading"
-        {...fade}
-        className="mb-8 text-xl font-semibold tracking-wide text-gray-900"
-      >
-        초대합니다
-      </motion.h2>
+      <SectionHeader
+        index="02"
+        eyebrow="Greeting"
+        title="초대합니다"
+        headingId="greeting-heading"
+      />
+
       <motion.p
         {...fade}
-        className="mx-auto max-w-[28ch] text-sm leading-relaxed whitespace-pre-line text-gray-600"
+        className="mx-auto max-w-[28ch] text-[15px] leading-[2] whitespace-pre-line text-ink-soft"
       >
         {wedding.invitation}
       </motion.p>

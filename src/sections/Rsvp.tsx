@@ -7,6 +7,7 @@ import {
   rsvpSchema,
   type RsvpFormValues,
 } from '../lib/rsvpSchema'
+import { SectionHeader } from './SectionHeader'
 
 type SubmitState =
   | { status: 'idle' }
@@ -60,7 +61,7 @@ export function Rsvp() {
       })
       setState({
         status: 'success',
-        message: '참석 여부를 전달했어요. 감사합니다 💐',
+        message: '참석 여부를 전달했어요. 감사합니다.',
       })
       reset(rsvpDefaults)
     } catch {
@@ -72,25 +73,22 @@ export function Rsvp() {
     }
   })
 
+  const inputCls =
+    'w-full rounded-sm border border-line bg-paper px-3 py-2 text-sm text-ink outline-none transition focus:border-sage focus:ring-2 focus:ring-sage-soft'
+
   return (
     <section
       id="rsvp"
       aria-labelledby="rsvp-heading"
-      className="px-6 py-20 text-center"
+      className="px-6 pt-24 pb-20 text-center"
     >
-      <motion.h2
-        id="rsvp-heading"
-        {...fade}
-        className="mb-6 text-xl font-semibold tracking-wide text-gray-900"
-      >
-        참석 여부 전달
-      </motion.h2>
-      <motion.p
-        {...fade}
-        className="mx-auto mb-8 max-w-sm text-sm text-gray-600"
-      >
-        정성껏 준비한 자리에 함께해 주실 수 있다면 미리 알려주세요.
-      </motion.p>
+      <SectionHeader
+        index="06"
+        eyebrow="RSVP"
+        title="참석 여부 전달"
+        subtitle="정성껏 준비한 자리에 함께해 주실 수 있다면 미리 알려주세요."
+        headingId="rsvp-heading"
+      />
 
       <motion.form
         {...fade}
@@ -100,8 +98,8 @@ export function Rsvp() {
         className="mx-auto grid max-w-sm gap-4 text-left"
       >
         <div>
-          <label htmlFor="rsvp-name" className="mb-1 block text-xs text-gray-600">
-            이름 <span className="text-rose-600">*</span>
+          <label htmlFor="rsvp-name" className="mb-1 block text-xs tracking-wide text-ink-mute">
+            이름 <span className="text-sage-strong">*</span>
           </label>
           <input
             id="rsvp-name"
@@ -110,42 +108,62 @@ export function Rsvp() {
             aria-invalid={errors.name ? 'true' : undefined}
             aria-describedby={errors.name ? 'rsvp-name-error' : undefined}
             {...register('name')}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+            className={inputCls}
           />
           {errors.name && (
             <p
               id="rsvp-name-error"
               role="alert"
-              className="mt-1 text-xs text-rose-600"
+              className="mt-1 text-xs text-sun"
             >
               {errors.name.message}
             </p>
           )}
         </div>
 
-        <fieldset className="rounded-md border border-gray-200 p-3">
-          <legend className="px-1 text-xs text-gray-600">소속</legend>
-          <div className="flex gap-4 text-sm">
+        <fieldset className="rounded-sm border border-line bg-paper p-3">
+          <legend className="px-1 text-xs tracking-wide text-ink-mute">소속</legend>
+          <div className="flex gap-4 text-sm text-ink-soft">
             <label className="flex items-center gap-2">
-              <input type="radio" value="groom" {...register('side')} />
+              <input
+                type="radio"
+                value="groom"
+                {...register('side')}
+                className="accent-sage"
+              />
               신랑측
             </label>
             <label className="flex items-center gap-2">
-              <input type="radio" value="bride" {...register('side')} />
+              <input
+                type="radio"
+                value="bride"
+                {...register('side')}
+                className="accent-sage"
+              />
               신부측
             </label>
           </div>
         </fieldset>
 
-        <fieldset className="rounded-md border border-gray-200 p-3">
-          <legend className="px-1 text-xs text-gray-600">참석 여부</legend>
-          <div className="flex gap-4 text-sm">
+        <fieldset className="rounded-sm border border-line bg-paper p-3">
+          <legend className="px-1 text-xs tracking-wide text-ink-mute">참석 여부</legend>
+          <div className="flex gap-4 text-sm text-ink-soft">
             <label className="flex items-center gap-2">
-              <input type="radio" value="yes" {...register('attending')} />
+              <input
+                type="radio"
+                value="yes"
+                {...register('attending')}
+                className="accent-sage"
+              />
               참석
             </label>
             <label className="flex items-center gap-2">
-              <input type="radio" value="no" {...register('attending')} />
+              <input
+                type="radio"
+                value="no"
+                {...register('attending')}
+                className="accent-sage"
+              />
               불참
             </label>
           </div>
@@ -154,7 +172,7 @@ export function Rsvp() {
         <div>
           <label
             htmlFor="rsvp-guests"
-            className="mb-1 block text-xs text-gray-600"
+            className="mb-1 block text-xs tracking-wide text-ink-mute"
           >
             동반 인원 (본인 포함)
           </label>
@@ -167,13 +185,13 @@ export function Rsvp() {
             aria-invalid={errors.guests ? 'true' : undefined}
             aria-describedby={errors.guests ? 'rsvp-guests-error' : undefined}
             {...register('guests', { valueAsNumber: true })}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+            className={inputCls}
           />
           {errors.guests && (
             <p
               id="rsvp-guests-error"
               role="alert"
-              className="mt-1 text-xs text-rose-600"
+              className="mt-1 text-xs text-sun"
             >
               {errors.guests.message}
             </p>
@@ -183,7 +201,7 @@ export function Rsvp() {
         <div>
           <label
             htmlFor="rsvp-message"
-            className="mb-1 block text-xs text-gray-600"
+            className="mb-1 block text-xs tracking-wide text-ink-mute"
           >
             전하고 싶은 말
           </label>
@@ -191,10 +209,10 @@ export function Rsvp() {
             id="rsvp-message"
             rows={3}
             {...register('message')}
-            className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+            className={inputCls + ' resize-none'}
           />
           {errors.message && (
-            <p role="alert" className="mt-1 text-xs text-rose-600">
+            <p role="alert" className="mt-1 text-xs text-sun">
               {errors.message.message}
             </p>
           )}
@@ -203,21 +221,22 @@ export function Rsvp() {
         <button
           type="submit"
           disabled={isSubmitting || state.status === 'submitting'}
-          className="mt-2 rounded-full bg-rose-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:bg-rose-300"
+          aria-label="참석 여부 전달하기"
+          className="mt-2 rounded-full bg-sage-strong px-6 py-2.5 font-display text-sm font-medium tracking-[0.25em] text-paper uppercase transition hover:bg-ink disabled:cursor-not-allowed disabled:bg-sage/40"
         >
-          {state.status === 'submitting' ? '전송 중…' : '참석 여부 전달하기'}
+          {state.status === 'submitting' ? 'sending…' : 'send'}
         </button>
 
         <p
           role="status"
           aria-live="polite"
           className={
-            'min-h-[1.25rem] text-xs ' +
+            'min-h-[1.25rem] text-center text-xs ' +
             (state.status === 'error'
-              ? 'text-rose-700'
+              ? 'text-sun'
               : state.status === 'success'
-                ? 'text-emerald-700'
-                : 'text-gray-600')
+                ? 'text-sage-strong'
+                : 'text-ink-mute')
           }
         >
           {state.status === 'success' || state.status === 'error'

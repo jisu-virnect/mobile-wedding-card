@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import type { BankAccount } from '../data/wedding'
 import { useClipboard } from '../lib/useClipboard'
+import { SectionHeader } from './SectionHeader'
 
 interface AccountItemProps {
   label: string
@@ -12,19 +13,19 @@ interface AccountItemProps {
 
 function AccountItem({ label, account, onCopy }: AccountItemProps) {
   return (
-    <li className="flex items-center justify-between gap-3 border-t border-gray-100 py-3 first:border-t-0">
+    <li className="flex items-center justify-between gap-3 border-t border-line py-3 first:border-t-0">
       <div className="text-left">
-        <p className="text-xs text-gray-500">{label}</p>
-        <p className="mt-0.5 text-sm font-medium text-gray-900">
+        <p className="text-xs tracking-wide text-ink-mute">{label}</p>
+        <p className="mt-0.5 font-serif text-sm text-ink">
           {account.bank} {account.number}
         </p>
-        <p className="mt-0.5 text-xs text-gray-500">예금주 {account.holder}</p>
+        <p className="mt-0.5 text-xs text-ink-mute">예금주 {account.holder}</p>
       </div>
       <button
         type="button"
         aria-label={`${label} 계좌번호 복사`}
         onClick={() => onCopy(account.number, label)}
-        className="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400"
+        className="shrink-0 rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
       >
         복사
       </button>
@@ -52,26 +53,26 @@ function SidePanel({
   const panelId = `${sideId}-panel`
   const buttonId = `${sideId}-button`
   return (
-    <div className="overflow-hidden rounded-lg ring-1 ring-gray-200">
+    <div className="overflow-hidden rounded-sm border border-line bg-paper">
       <button
         type="button"
         id={buttonId}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onToggle}
-        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-gray-900 transition hover:bg-gray-50"
+        className="flex w-full items-center justify-between px-4 py-3 text-left font-serif text-sm font-medium text-ink transition hover:bg-sage-soft"
       >
         <span>{label}</span>
         <svg
           aria-hidden="true"
           className={
-            'h-4 w-4 text-gray-500 transition-transform ' +
+            'h-4 w-4 text-ink-mute transition-transform ' +
             (open ? 'rotate-180' : '')
           }
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -131,18 +132,15 @@ export function Account() {
     <section
       id="account"
       aria-labelledby="account-heading"
-      className="px-6 py-20 text-center"
+      className="px-6 pt-24 pb-20 text-center"
     >
-      <motion.h2
-        id="account-heading"
-        {...fade}
-        className="mb-2 text-xl font-semibold tracking-wide text-gray-900"
-      >
-        마음 전하실 곳
-      </motion.h2>
-      <motion.p {...fade} className="mb-8 text-xs text-gray-500">
-        축하의 마음을 전하고 싶으신 분은 아래를 이용해 주세요.
-      </motion.p>
+      <SectionHeader
+        index="07"
+        eyebrow="With Love"
+        title="마음 전하실 곳"
+        subtitle="축하의 마음을 전하고 싶으신 분은 아래를 이용해 주세요."
+        headingId="account-heading"
+      />
 
       <motion.div {...fade} className="mx-auto grid max-w-sm gap-3 text-left">
         {groomAccounts.length > 0 && (
@@ -176,7 +174,7 @@ export function Account() {
         aria-live="polite"
         className={
           'mx-auto mt-4 min-h-[1.25rem] max-w-sm text-xs ' +
-          (error ? 'text-rose-700' : 'text-emerald-700')
+          (error ? 'text-sun' : 'text-sage-strong')
         }
       >
         {toast}

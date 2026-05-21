@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import { useClipboard } from '../lib/useClipboard'
+import { SectionHeader } from './SectionHeader'
 
 function hasWebShare(): boolean {
   return (
@@ -28,7 +29,7 @@ export function Share() {
         transition: { duration: 0.7, ease: 'easeOut' as const },
       }
 
-  const shareTitle = `${wedding.groom.name} ♥ ${wedding.bride.name} 결혼식 초대`
+  const shareTitle = `${wedding.groom.name} · ${wedding.bride.name} 결혼식 초대`
   const shareText = '저희의 결혼식에 초대합니다.'
   const shareUrl =
     typeof window !== 'undefined' ? window.location.href : ''
@@ -57,7 +58,10 @@ export function Share() {
     const ok = await copy(shareUrl)
     setFeedback(
       ok
-        ? { kind: 'success', message: '링크를 복사했어요. 원하는 곳에 붙여넣어 전해주세요.' }
+        ? {
+            kind: 'success',
+            message: '링크를 복사했어요. 원하는 곳에 붙여넣어 전해주세요.',
+          }
         : {
             kind: 'error',
             message: '복사에 실패했어요. 주소 표시줄에서 직접 복사해 주세요.',
@@ -69,18 +73,15 @@ export function Share() {
     <section
       id="share"
       aria-labelledby="share-heading"
-      className="px-6 py-20 text-center"
+      className="px-6 pt-24 pb-28 text-center"
     >
-      <motion.h2
-        id="share-heading"
-        {...fade}
-        className="mb-2 text-xl font-semibold tracking-wide text-gray-900"
-      >
-        청첩장 공유하기
-      </motion.h2>
-      <motion.p {...fade} className="mb-8 text-xs text-gray-500">
-        주변 분들께 이 초대장을 전해주세요.
-      </motion.p>
+      <SectionHeader
+        index="08"
+        eyebrow="Share"
+        title="청첩장 공유하기"
+        subtitle="주변 분들께 이 초대장을 전해주세요."
+        headingId="share-heading"
+      />
 
       <motion.div
         {...fade}
@@ -91,7 +92,7 @@ export function Share() {
             type="button"
             onClick={handleNativeShare}
             aria-label="기기 공유 시트로 공유하기"
-            className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
+            className="inline-flex items-center gap-1.5 rounded-full bg-sage-strong px-5 py-2.5 text-sm font-medium tracking-wide text-paper transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
           >
             <svg
               aria-hidden="true"
@@ -99,7 +100,7 @@ export function Share() {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="1.6"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -116,7 +117,7 @@ export function Share() {
           type="button"
           onClick={handleCopyLink}
           aria-label="초대장 링크 복사"
-          className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-5 py-2.5 text-sm font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
         >
           <svg
             aria-hidden="true"
@@ -124,7 +125,7 @@ export function Share() {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.6"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
@@ -140,11 +141,22 @@ export function Share() {
         aria-live="polite"
         className={
           'mx-auto mt-4 min-h-[1.25rem] max-w-sm text-xs ' +
-          (feedback?.kind === 'error' ? 'text-rose-700' : 'text-emerald-700')
+          (feedback?.kind === 'error' ? 'text-sun' : 'text-sage-strong')
         }
       >
         {feedback?.message ?? ''}
       </p>
+
+      <div
+        aria-hidden="true"
+        className="mx-auto mt-16 flex items-center justify-center gap-3"
+      >
+        <span className="h-px w-12 bg-line" />
+        <span className="font-display text-xs tracking-[0.5em] text-sage-strong uppercase">
+          Thank you
+        </span>
+        <span className="h-px w-12 bg-line" />
+      </div>
     </section>
   )
 }
