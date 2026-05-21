@@ -16,7 +16,8 @@
     "e2e": "playwright test",
     "e2e:install": "playwright install chromium",
     "lighthouse": "lhci autorun",
-    "gates": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm lighthouse"
+    "gates": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm lighthouse",
+    "gen-og": "node scripts/gen-og-image.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
