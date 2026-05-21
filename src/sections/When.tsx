@@ -5,7 +5,7 @@ import {
   formatWeddingTimeHuman,
   kstYmd,
 } from '../lib/formatDate'
-import { formatDDay } from '../lib/dday'
+import { useFinalDayCountdown, useLiveDDay } from '../lib/dday'
 import { SectionHeader } from './SectionHeader'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'] as const
@@ -101,7 +101,8 @@ export function When() {
 
   const longDate = formatWeddingLongDate(wedding.dateTime)
   const time = formatWeddingTimeHuman(wedding.dateTime)
-  const dday = formatDDay(wedding.dateTime)
+  const dday = useLiveDDay(wedding.dateTime)
+  const finalCountdown = useFinalDayCountdown(wedding.dateTime)
   const { year, month, day } = kstYmd(wedding.dateTime)
 
   return (
@@ -131,13 +132,22 @@ export function When() {
         <MonthCalendar year={year} month={month} highlight={day} />
       </motion.div>
 
-      <motion.p
-        {...fade}
-        aria-label={`결혼식까지 ${dday}`}
-        className="inline-block rounded-full bg-sage-soft px-5 py-1.5 font-display text-sm font-medium tracking-[0.2em] text-sage-strong"
-      >
-        {dday}
-      </motion.p>
+      <motion.div {...fade} className="flex flex-col items-center gap-2">
+        <p
+          aria-label={`결혼식까지 ${dday}`}
+          className="inline-block rounded-full bg-sage-soft px-5 py-1.5 font-display text-sm font-medium tracking-[0.2em] text-sage-strong"
+        >
+          {dday}
+        </p>
+        {finalCountdown && (
+          <p
+            aria-live="polite"
+            className="font-serif text-xs tracking-wide text-sage-strong"
+          >
+            {finalCountdown}
+          </p>
+        )}
+      </motion.div>
     </section>
   )
 }
