@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('RSVP section', () => {
-  test('validates name, submits via /api/rsvp, and shows success message', async ({
+  test('validates name + attending, submits via /api/rsvp, and shows success', async ({
     page,
   }) => {
     let received: unknown
@@ -18,18 +18,24 @@ test.describe('RSVP section', () => {
     const rsvp = page.locator('#rsvp')
     await rsvp.scrollIntoViewIfNeeded()
 
-    // Empty-name submit surfaces an inline error and does not hit the network.
-    await rsvp.getByRole('button', { name: /참석 여부/ }).click()
+    // Empty submit shows the name error and does not hit the network.
+    await rsvp.getByRole('button', { name: /참석 여부 전달하기/ }).click()
     await expect(rsvp.getByText('이름을 입력해주세요.')).toBeVisible()
     expect(received).toBeUndefined()
 
     await rsvp.getByLabel(/이름/).fill('홍길동')
-    await rsvp.getByLabel('신부측').check()
-    await rsvp.getByLabel('불참').check()
-    await rsvp.getByLabel(/동반 인원/).fill('2')
+
+    // Name filled but attending not picked → still blocked.
+    await rsvp.getByRole('button', { name: /참석 여부 전달하기/ }).click()
+    await expect(rsvp.getByText('참석 여부를 선택해주세요.')).toBeVisible()
+    expect(received).toBeUndefined()
+
+    await rsvp.getByRole('radio', { name: '신부측' }).check()
+    await rsvp.getByRole('radio', { name: '불참' }).check()
+    await rsvp.getByLabel(/참석 인원/).fill('2')
     await rsvp.getByLabel(/전하고 싶은 말/).fill('축하드려요')
 
-    await rsvp.getByRole('button', { name: /참석 여부/ }).click()
+    await rsvp.getByRole('button', { name: /참석 여부 전달하기/ }).click()
 
     await expect(rsvp.getByRole('status')).toHaveText(
       /참석 여부를 전달했어요/,
@@ -49,7 +55,9 @@ test.describe('RSVP section', () => {
     const rsvp = page.locator('#rsvp')
     await rsvp.scrollIntoViewIfNeeded()
     await rsvp.getByLabel(/이름/).fill('이나라')
-    await rsvp.getByRole('button', { name: /참석 여부/ }).click()
+    await rsvp.getByRole('radio', { name: '신랑측' }).check()
+    await rsvp.getByRole('radio', { name: '참석' }).check()
+    await rsvp.getByRole('button', { name: /참석 여부 전달하기/ }).click()
     await expect(rsvp.getByRole('status')).toHaveText(
       /잠시 후 다시 시도해주세요/,
     )

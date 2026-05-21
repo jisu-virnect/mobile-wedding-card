@@ -95,10 +95,13 @@ export function Rsvp() {
         onSubmit={onSubmit}
         noValidate
         aria-label="참석 여부 전달 폼"
-        className="mx-auto grid max-w-sm gap-4 text-left"
+        className="mx-auto grid max-w-sm gap-5 text-left"
       >
         <div>
-          <label htmlFor="rsvp-name" className="mb-1 block text-xs tracking-wide text-ink-mute">
+          <label
+            htmlFor="rsvp-name"
+            className="mb-1 block text-xs tracking-wide text-ink-mute"
+          >
             이름 <span className="text-sage-strong">*</span>
           </label>
           <input
@@ -122,14 +125,17 @@ export function Rsvp() {
         </div>
 
         <fieldset className="rounded-sm border border-line bg-paper p-3">
-          <legend className="px-1 text-xs tracking-wide text-ink-mute">소속</legend>
-          <div className="flex gap-4 text-sm text-ink-soft">
+          <legend className="px-1 text-xs tracking-wide text-ink-mute">
+            어느 쪽 손님이신가요?{' '}
+            <span className="text-ink-mute/70">(선택)</span>
+          </legend>
+          <div className="mt-1 flex gap-5 text-sm text-ink-soft">
             <label className="flex items-center gap-2">
               <input
                 type="radio"
                 value="groom"
                 {...register('side')}
-                className="accent-sage"
+                className="h-4 w-4 accent-sage-strong"
               />
               신랑측
             </label>
@@ -138,7 +144,7 @@ export function Rsvp() {
                 type="radio"
                 value="bride"
                 {...register('side')}
-                className="accent-sage"
+                className="h-4 w-4 accent-sage-strong"
               />
               신부측
             </label>
@@ -146,14 +152,16 @@ export function Rsvp() {
         </fieldset>
 
         <fieldset className="rounded-sm border border-line bg-paper p-3">
-          <legend className="px-1 text-xs tracking-wide text-ink-mute">참석 여부</legend>
-          <div className="flex gap-4 text-sm text-ink-soft">
+          <legend className="px-1 text-xs tracking-wide text-ink-mute">
+            참석 여부 <span className="text-sage-strong">*</span>
+          </legend>
+          <div className="mt-1 flex gap-5 text-sm text-ink-soft">
             <label className="flex items-center gap-2">
               <input
                 type="radio"
                 value="yes"
                 {...register('attending')}
-                className="accent-sage"
+                className="h-4 w-4 accent-sage-strong"
               />
               참석
             </label>
@@ -162,11 +170,16 @@ export function Rsvp() {
                 type="radio"
                 value="no"
                 {...register('attending')}
-                className="accent-sage"
+                className="h-4 w-4 accent-sage-strong"
               />
               불참
             </label>
           </div>
+          {errors.attending && (
+            <p role="alert" className="mt-2 text-xs text-sun">
+              {errors.attending.message}
+            </p>
+          )}
         </fieldset>
 
         <div>
@@ -174,7 +187,8 @@ export function Rsvp() {
             htmlFor="rsvp-guests"
             className="mb-1 block text-xs tracking-wide text-ink-mute"
           >
-            동반 인원 (본인 포함)
+            참석 인원{' '}
+            <span className="text-ink-mute/70">(본인 포함)</span>
           </label>
           <input
             id="rsvp-guests"
@@ -203,7 +217,8 @@ export function Rsvp() {
             htmlFor="rsvp-message"
             className="mb-1 block text-xs tracking-wide text-ink-mute"
           >
-            전하고 싶은 말
+            전하고 싶은 말{' '}
+            <span className="text-ink-mute/70">(선택)</span>
           </label>
           <textarea
             id="rsvp-message"
@@ -222,10 +237,14 @@ export function Rsvp() {
           type="submit"
           disabled={isSubmitting || state.status === 'submitting'}
           aria-label="참석 여부 전달하기"
-          className="mt-2 rounded-full bg-sage-strong px-6 py-2.5 font-display text-sm font-medium tracking-[0.25em] text-paper uppercase transition hover:bg-ink disabled:cursor-not-allowed disabled:bg-sage/40"
+          className="mt-1 rounded-full bg-sage-strong px-6 py-3 font-serif text-sm font-medium tracking-[0.3em] text-paper transition hover:bg-ink disabled:cursor-not-allowed disabled:bg-sage/40"
         >
-          {state.status === 'submitting' ? 'sending…' : 'send'}
+          {state.status === 'submitting' ? '전달 중…' : '전달하기'}
         </button>
+
+        <p className="-mt-2 text-center text-[11px] tracking-wide text-ink-mute">
+          전달된 정보는 신랑·신부에게만 안내됩니다.
+        </p>
 
         <p
           role="status"

@@ -43,6 +43,13 @@
 - **어디서 터졌나**: T16 `lighthouse-preview.yml` 에서 "SHA 에 매칭되는 PR이 없으면 return ''" 했는데 `steps.pr.outputs.result` 가 길이 2의 `""` 문자열이라 `if: steps.pr.outputs.result != ''` 가 true 로 평가되어 다음 스텝이 실행됨.
 - **고정 방법**: `with: result-encoding: string` 추가. 추가 안전책으로 파서 스크립트에서도 `""`/`''` 를 빈 값으로 정규화.
 
+## 10. jsdom+RHF+React 19 — 세션 첫 라디오 클릭이 가끔 전파 안 됨
+
+- **어디서 터졌나**: RSVP 폼에서 `defaultValues` 에서 라디오 사전선택을 제거한 뒤, `userEvent.click(getByLabelText('참석'))` 로 라디오 하나만 클릭해서 submit 하면 fetch 가 호출 안 됨. `radio.checked` 는 true 인데 RHF 가 change 를 인지 못 함.
+- **근본 원인**: 추정 — userEvent v14 + React 19 동시성 + jsdom 의 radio change 이벤트 처리 조합 문제. 두 번째 라디오 클릭부터는 항상 정상.
+- **고정 방법**: 첫 라디오 클릭은 "warmup" 으로 다른 라디오 그룹의 옵션 하나 먼저 누르기. 그 뒤 실제 검증 대상 라디오 누르면 됨. (예: `await user.click(getByLabelText('신랑측'))` 으로 priming → 그 다음 `await user.click(getByLabelText('참석'))`)
+- **체크리스트**: jsdom 환경에서 라디오 하나만 클릭하는 시나리오는 첫 라디오를 "사전 priming" 한 뒤 본 테스트하기. E2E (Playwright + 실제 Chromium) 에서는 발생 안 함.
+
 ## 9. 백그라운드 `pnpm dev` 가 살아있으면 `pnpm e2e` 의 MSW가 `page.route` mock 을 우회
 
 - **어디서 터졌나**: Cover 슬라이드 + Account 카드 리디자인 이터레이션. `pnpm dev --host` 가 5173 에 살아있는 채로 `pnpm e2e` 를 돌리니 Playwright config 의 `reuseExistingServer: !process.env.CI` 가 true 라 dev 서버 그대로 재사용. dev 모드는 MSW 가 활성화되어 있어 `/api/rsvp` 호출이 SW 단에서 가로채져 Playwright `page.route('**/api/rsvp', ...)` 가 절대 발화 안 함. RSVP success/error 시나리오 둘 다 깨짐 + keyboard 테스트도 어쩐 일인지 0 tabbables (SW 캐시 영향 의심).

@@ -14,6 +14,22 @@ describe('rsvpSchema', () => {
     expect(rsvpSchema.safeParse(valid).success).toBe(true)
   })
 
+  it('accepts payload without `side` (it is optional)', () => {
+    const { side: _omitSide, ...rest } = valid
+    void _omitSide
+    expect(rsvpSchema.safeParse(rest).success).toBe(true)
+  })
+
+  it('rejects payload without `attending`', () => {
+    const { attending: _omit, ...rest } = valid
+    void _omit
+    const result = rsvpSchema.safeParse(rest)
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].path).toEqual(['attending'])
+    }
+  })
+
   it('rejects empty name', () => {
     const result = rsvpSchema.safeParse({ ...valid, name: '' })
     expect(result.success).toBe(false)
