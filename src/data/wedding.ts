@@ -1,15 +1,24 @@
+export interface BankAccount {
+  bank: string
+  number: string
+  holder: string
+}
+
+/** Optional account info for a parent. Falsy → parent's row is omitted. */
+export interface ParentAccount {
+  name: string
+  account?: BankAccount
+}
+
 export interface Person {
   name: string
   father: string
   mother: string
   phone?: string
   account?: BankAccount
-}
-
-export interface BankAccount {
-  bank: string
-  number: string
-  holder: string
+  /** Bridegroom / bride side parents' optional account info. */
+  fatherAccount?: BankAccount
+  motherAccount?: BankAccount
 }
 
 export interface WeddingInfo {
@@ -44,13 +53,34 @@ export const wedding: WeddingInfo = {
     name: '김지수',
     father: '김창길',
     mother: '김영미',
+    // TODO(jisu): 실제 계좌번호로 교체. 빈 객체로 두면 카드 자체가 렌더되지 않음.
     account: { bank: '신한은행', number: '110-000-000000', holder: '김지수' },
+    fatherAccount: {
+      bank: '신한은행',
+      number: '110-000-000000',
+      holder: '김창길',
+    },
+    motherAccount: {
+      bank: '신한은행',
+      number: '110-000-000000',
+      holder: '김영미',
+    },
   },
   bride: {
     name: '김난슬',
     father: '김청섭',
     mother: '이경화',
     account: { bank: '국민은행', number: '000-000-000000', holder: '김난슬' },
+    fatherAccount: {
+      bank: '국민은행',
+      number: '000-000-000000',
+      holder: '김청섭',
+    },
+    motherAccount: {
+      bank: '국민은행',
+      number: '000-000-000000',
+      holder: '이경화',
+    },
   },
   dateTime: '2026-11-28T13:00:00+09:00',
   venue: {

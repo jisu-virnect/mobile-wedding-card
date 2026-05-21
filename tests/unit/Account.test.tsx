@@ -23,8 +23,14 @@ describe('<Account />', () => {
   it('shows both sides as always-open cards (no accordion)', () => {
     render(<Account />)
     // Both sides' account numbers visible without any toggle interaction.
-    expect(screen.getByText(wedding.groom.account!.number)).toBeInTheDocument()
-    expect(screen.getByText(wedding.bride.account!.number)).toBeInTheDocument()
+    // Use getAllByText because parent accounts (placeholder) share the same
+    // number string until real data is filled in.
+    expect(
+      screen.getAllByText(wedding.groom.account!.number).length,
+    ).toBeGreaterThan(0)
+    expect(
+      screen.getAllByText(wedding.bride.account!.number).length,
+    ).toBeGreaterThan(0)
   })
 
   it('shows both sides side-by-side with their holder names', () => {

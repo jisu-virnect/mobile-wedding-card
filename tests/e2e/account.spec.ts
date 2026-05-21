@@ -17,8 +17,9 @@ test.describe('Account section', () => {
     await section.scrollIntoViewIfNeeded()
 
     // Both sides' numbers should be visible immediately — no accordion.
-    await expect(section.getByText('110-000-000000')).toBeVisible()
-    await expect(section.getByText('000-000-000000')).toBeVisible()
+    // first() handles the placeholder dupes from parent rows.
+    await expect(section.getByText('110-000-000000').first()).toBeVisible()
+    await expect(section.getByText('000-000-000000').first()).toBeVisible()
 
     const brideCopy = section.getByRole('button', {
       name: /신부 김난슬 계좌번호 복사/,
