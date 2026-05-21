@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import { formatWeddingDate, formatWeddingTimeHuman } from '../lib/formatDate'
@@ -6,6 +7,30 @@ export function Cover() {
   const { combined } = formatWeddingDate(wedding.dateTime)
   const time = formatWeddingTimeHuman(wedding.dateTime)
   const reduce = useReducedMotion()
+
+  const slides = wedding.cover.slides
+  const interval = wedding.cover.interval ?? 5000
+  const [active, setActive] = useState(0)
+  // Delay mounting non-first slides until after first paint so the LCP image
+  // (slide[0], also preloaded via index.html) gets the full network budget.
+  // Non-first slides are still cross-faded once they're in the DOM.
+  const [extraSlidesReady, setExtraSlidesReady] = useState(false)
+
+  useEffect(() => {
+    if (slides.length <= 1) return
+    const id = window.setTimeout(() => setExtraSlidesReady(true), 800)
+    return () => window.clearTimeout(id)
+  }, [slides.length])
+
+  // Cross-fade between cover slides. Honor prefers-reduced-motion by
+  // sticking to the first slide (no setInterval at all).
+  useEffect(() => {
+    if (reduce || slides.length <= 1 || !extraSlidesReady) return
+    const id = window.setInterval(() => {
+      setActive((i) => (i + 1) % slides.length)
+    }, interval)
+    return () => window.clearInterval(id)
+  }, [reduce, slides.length, interval, extraSlidesReady])
 
   const base = reduce
     ? { initial: false as const, animate: {} }
@@ -29,15 +54,27 @@ export function Cover() {
       aria-labelledby="cover-heading"
       className="relative flex min-h-svh flex-col overflow-hidden bg-ink text-paper"
     >
-      <img
-        src={wedding.cover.src}
-        alt=""
-        aria-hidden="true"
-        className="photo-tone absolute inset-0 h-full w-full object-cover"
-        style={{ objectPosition: wedding.cover.objectPosition ?? 'center' }}
-        fetchPriority="high"
-        decoding="async"
-      />
+      <div className="absolute inset-0">
+        {slides.map((slide, i) => {
+          if (i > 0 && !extraSlidesReady) return null
+          return (
+            <img
+              key={slide.src}
+              src={slide.src}
+              alt=""
+              aria-hidden="true"
+              className={
+                'photo-tone ken-burns absolute inset-0 h-full w-full object-cover transition-opacity duration-[1500ms] ease-in-out ' +
+                (i === active ? 'opacity-100' : 'opacity-0')
+              }
+              style={{ objectPosition: slide.objectPosition ?? 'center' }}
+              fetchPriority={i === 0 ? 'high' : 'low'}
+              decoding="async"
+              loading={i === 0 ? 'eager' : 'lazy'}
+            />
+          )
+        })}
+      </div>
 
       <div className="grain-overlay" aria-hidden="true" />
 
@@ -92,6 +129,25 @@ export function Cover() {
           </p>
         </motion.div>
 
+        {slides.length > 1 && (
+          <motion.div
+            {...base}
+            transition={t(0.7)}
+            aria-hidden="true"
+            className="mt-8 flex items-center gap-1.5"
+          >
+            {slides.map((_, i) => (
+              <span
+                key={i}
+                className={
+                  'h-1 rounded-full transition-all duration-500 ' +
+                  (i === active ? 'w-6 bg-paper/90' : 'w-1 bg-paper/40')
+                }
+              />
+            ))}
+          </motion.div>
+        )}
+
         <motion.button
           type="button"
           onClick={scrollToNext}
@@ -99,7 +155,7 @@ export function Cover() {
           initial={reduce ? false : { opacity: 0 }}
           animate={reduce ? {} : { opacity: 1 }}
           transition={reduce ? undefined : { duration: 1.2, delay: 1 }}
-          className="mt-12 flex flex-col items-center gap-1.5 text-paper/75 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper/80"
+          className="mt-10 flex flex-col items-center gap-1.5 text-paper/75 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper/80"
         >
           <span
             aria-hidden="true"

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Account section', () => {
-  test('toggles accordion sides via aria-expanded and copies account number', async ({
+  test('shows both sides without an accordion and copies an account number', async ({
     page,
     context,
     browserName,
@@ -16,13 +16,9 @@ test.describe('Account section', () => {
     const section = page.locator('#account')
     await section.scrollIntoViewIfNeeded()
 
-    const groomBtn = section.getByRole('button', { name: /신랑측/ })
-    const brideBtn = section.getByRole('button', { name: /신부측/ })
-    await expect(groomBtn).toHaveAttribute('aria-expanded', 'true')
-    await expect(brideBtn).toHaveAttribute('aria-expanded', 'false')
-
-    await brideBtn.click()
-    await expect(brideBtn).toHaveAttribute('aria-expanded', 'true')
+    // Both sides' numbers should be visible immediately — no accordion.
+    await expect(section.getByText('110-000-000000')).toBeVisible()
+    await expect(section.getByText('000-000-000000')).toBeVisible()
 
     const brideCopy = section.getByRole('button', {
       name: /신부 김난슬 계좌번호 복사/,

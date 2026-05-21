@@ -26,10 +26,17 @@ export interface WeddingInfo {
   invitation: string
   gallery: string[]
   cover: {
-    src: string
-    /** CSS object-position. Tune if the chosen photo crops a face oddly. */
-    objectPosition?: string
+    /** Slides that cross-fade on the cover hero. 1+ entries; 3-5 recommended. */
+    slides: CoverSlide[]
+    /** ms each slide stays before crossfading. Default 5000. */
+    interval?: number
   }
+}
+
+export interface CoverSlide {
+  src: string
+  /** CSS object-position. Tune if a face crops oddly in the 2:3 frame. */
+  objectPosition?: string
 }
 
 export const wedding: WeddingInfo = {
@@ -57,7 +64,13 @@ export const wedding: WeddingInfo = {
     '저희 두 사람의 소중한 만남이\n사랑과 이해로 이어져\n한 가정을 이루게 되었습니다.\n\n평생을 함께하기로 약속하는 자리에\n귀한 걸음으로 축복해 주시면\n큰 기쁨이겠습니다.\n\n김지수 · 김난슬 드림',
   gallery: Array.from({ length: 34 }, (_, i) => `/gallery/${String(i + 1).padStart(2, '0')}.jpg`),
   cover: {
-    src: '/gallery/01.jpg',
-    objectPosition: 'center',
+    // 3 photos spread across the gallery as a starting pick — swap these
+    // for your favorite shots once you've reviewed all 34.
+    slides: [
+      { src: '/gallery/01.jpg', objectPosition: 'center' },
+      { src: '/gallery/12.jpg', objectPosition: 'center' },
+      { src: '/gallery/23.jpg', objectPosition: 'center' },
+    ],
+    interval: 5000,
   },
 }

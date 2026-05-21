@@ -1,5 +1,4 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { Account } from '../../src/sections/Account'
@@ -21,24 +20,18 @@ describe('<Account />', () => {
     vi.unstubAllGlobals()
   })
 
-  it('renders both side accordion buttons with aria-expanded', () => {
+  it('shows both sides as always-open cards (no accordion)', () => {
     render(<Account />)
-    const groom = screen.getByRole('button', { name: /신랑측/ })
-    const bride = screen.getByRole('button', { name: /신부측/ })
-    // Default: groom open, bride closed.
-    expect(groom).toHaveAttribute('aria-expanded', 'true')
-    expect(bride).toHaveAttribute('aria-expanded', 'false')
+    // Both sides' account numbers visible without any toggle interaction.
+    expect(screen.getByText(wedding.groom.account!.number)).toBeInTheDocument()
+    expect(screen.getByText(wedding.bride.account!.number)).toBeInTheDocument()
   })
 
-  it('toggles aria-expanded when an accordion button is clicked', async () => {
-    const user = userEvent.setup()
+  it('shows both sides side-by-side with their holder names', () => {
     render(<Account />)
-    const bride = screen.getByRole('button', { name: /신부측/ })
-    expect(bride).toHaveAttribute('aria-expanded', 'false')
-    await user.click(bride)
-    expect(bride).toHaveAttribute('aria-expanded', 'true')
-    await user.click(bride)
-    expect(bride).toHaveAttribute('aria-expanded', 'false')
+    // Holder name appears in each card header.
+    expect(screen.getAllByText(wedding.groom.account!.holder).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(wedding.bride.account!.holder).length).toBeGreaterThan(0)
   })
 
   it('copies the account number when the copy button is clicked', async () => {

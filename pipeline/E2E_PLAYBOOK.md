@@ -43,6 +43,13 @@
 - **어디서 터졌나**: T16 `lighthouse-preview.yml` 에서 "SHA 에 매칭되는 PR이 없으면 return ''" 했는데 `steps.pr.outputs.result` 가 길이 2의 `""` 문자열이라 `if: steps.pr.outputs.result != ''` 가 true 로 평가되어 다음 스텝이 실행됨.
 - **고정 방법**: `with: result-encoding: string` 추가. 추가 안전책으로 파서 스크립트에서도 `""`/`''` 를 빈 값으로 정규화.
 
+## 9. 백그라운드 `pnpm dev` 가 살아있으면 `pnpm e2e` 의 MSW가 `page.route` mock 을 우회
+
+- **어디서 터졌나**: Cover 슬라이드 + Account 카드 리디자인 이터레이션. `pnpm dev --host` 가 5173 에 살아있는 채로 `pnpm e2e` 를 돌리니 Playwright config 의 `reuseExistingServer: !process.env.CI` 가 true 라 dev 서버 그대로 재사용. dev 모드는 MSW 가 활성화되어 있어 `/api/rsvp` 호출이 SW 단에서 가로채져 Playwright `page.route('**/api/rsvp', ...)` 가 절대 발화 안 함. RSVP success/error 시나리오 둘 다 깨짐 + keyboard 테스트도 어쩐 일인지 0 tabbables (SW 캐시 영향 의심).
+- **근본 원인**: dev 서버는 MSW를 띄우고 preview 서버는 안 띄움. `reuseExistingServer` 가 두 서버를 구분 못 함.
+- **고정 방법**: E2E 돌리기 전 `pnpm dev` 백그라운드 잡 종료. 또는 dev 는 다른 포트(5174)에서 띄우기.
+- **체크리스트**: dev 서버를 실행 중인 채로 E2E 가 갑자기 깨지면 먼저 `lsof -i :5173` / `Get-NetTCPConnection -LocalPort 5173` 로 누가 듣고 있는지 확인.
+
 ## 8. Vercel Deployment Protection 이 켜진 프로젝트의 프리뷰 URL 은 로그인 페이지로 리다이렉트됨
 
 - **어디서 터졌나**: T16 Lighthouse-on-preview 워크플로우가 `https://*.vercel.app` 대신 `https://vercel.com/login?...` 를 감사. 접근성 0.82 로 단정 실패, 실제 앱 점수는 아예 못 얻음.

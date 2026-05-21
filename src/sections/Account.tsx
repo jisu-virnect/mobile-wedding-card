@@ -5,102 +5,65 @@ import type { BankAccount } from '../data/wedding'
 import { useClipboard } from '../lib/useClipboard'
 import { SectionHeader } from './SectionHeader'
 
-interface AccountItemProps {
+interface AccountCardProps {
+  side: 'groom' | 'bride'
   label: string
   account: BankAccount
-  onCopy: (accountNumber: string, label: string) => void
+  onCopy: (number: string, label: string) => Promise<boolean>
 }
 
-function AccountItem({ label, account, onCopy }: AccountItemProps) {
+function CopyIcon() {
   return (
-    <li className="flex items-center justify-between gap-3 border-t border-line py-3 first:border-t-0">
-      <div className="text-left">
-        <p className="text-xs tracking-wide text-ink-mute">{label}</p>
-        <p className="mt-0.5 font-serif text-sm text-ink">
-          {account.bank} {account.number}
-        </p>
-        <p className="mt-0.5 text-xs text-ink-mute">예금주 {account.holder}</p>
-      </div>
-      <button
-        type="button"
-        aria-label={`${label} 계좌번호 복사`}
-        onClick={() => onCopy(account.number, label)}
-        className="shrink-0 rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
-      >
-        복사
-      </button>
-    </li>
+    <svg
+      aria-hidden="true"
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
   )
 }
 
-interface SidePanelProps {
-  sideId: string
-  label: string
-  open: boolean
-  onToggle: () => void
-  accounts: { label: string; account: BankAccount }[]
-  onCopy: (accountNumber: string, label: string) => void
-}
-
-function SidePanel({
-  sideId,
-  label,
-  open,
-  onToggle,
-  accounts,
-  onCopy,
-}: SidePanelProps) {
-  const panelId = `${sideId}-panel`
-  const buttonId = `${sideId}-button`
+function AccountCard({ side, label, account, onCopy }: AccountCardProps) {
   return (
-    <div className="overflow-hidden rounded-sm border border-line bg-paper">
-      <button
-        type="button"
-        id={buttonId}
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={onToggle}
-        className="flex w-full items-center justify-between px-4 py-3 text-left font-serif text-sm font-medium text-ink transition hover:bg-sage-soft"
-      >
-        <span>{label}</span>
-        <svg
-          aria-hidden="true"
-          className={
-            'h-4 w-4 text-ink-mute transition-transform ' +
-            (open ? 'rotate-180' : '')
-          }
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
-      {open && (
-        <div id={panelId} role="region" aria-labelledby={buttonId}>
-          <ul className="mx-4 mb-3">
-            {accounts.map((entry) => (
-              <AccountItem
-                key={entry.label}
-                label={entry.label}
-                account={entry.account}
-                onCopy={onCopy}
-              />
-            ))}
-          </ul>
+    <article className="overflow-hidden rounded-sm border border-line bg-paper text-left">
+      <header className="flex items-center justify-between border-b border-line px-5 py-2.5">
+        <span className="font-display text-[10px] tracking-[0.4em] text-ink-mute uppercase">
+          {side === 'groom' ? '신랑측' : '신부측'}
+        </span>
+        <span className="font-serif text-xs text-ink-soft">{account.holder}</span>
+      </header>
+      <div className="flex items-center justify-between gap-4 px-5 py-4">
+        <div className="min-w-0">
+          <p className="text-[11px] tracking-wide text-ink-mute">{account.bank}</p>
+          <p className="mt-1 truncate font-serif text-[15px] tracking-[0.02em] text-ink">
+            {account.number}
+          </p>
         </div>
-      )}
-    </div>
+        <button
+          type="button"
+          aria-label={`${label} 계좌번호 복사`}
+          onClick={() => {
+            void onCopy(account.number, label)
+          }}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+        >
+          <CopyIcon />
+        </button>
+      </div>
+    </article>
   )
 }
 
 export function Account() {
   const reduce = useReducedMotion()
   const { copy, error } = useClipboard(2500)
-  const [openSide, setOpenSide] = useState<'groom' | 'bride' | null>('groom')
   const [toast, setToast] = useState<string>('')
 
   const fade = reduce
@@ -112,13 +75,6 @@ export function Account() {
         transition: { duration: 0.7, ease: 'easeOut' as const },
       }
 
-  const groomAccounts = wedding.groom.account
-    ? [{ label: `신랑 ${wedding.groom.name}`, account: wedding.groom.account }]
-    : []
-  const brideAccounts = wedding.bride.account
-    ? [{ label: `신부 ${wedding.bride.name}`, account: wedding.bride.account }]
-    : []
-
   const handleCopy = async (accountNumber: string, label: string) => {
     const ok = await copy(accountNumber)
     setToast(
@@ -126,6 +82,7 @@ export function Account() {
         ? `${label} 계좌번호를 복사했어요.`
         : '복사에 실패했어요. 길게 눌러 직접 복사해주세요.',
     )
+    return ok
   }
 
   return (
@@ -138,32 +95,24 @@ export function Account() {
         index="07"
         eyebrow="With Love"
         title="마음 전하실 곳"
-        subtitle="축하의 마음을 전하고 싶으신 분은 아래를 이용해 주세요."
+        subtitle="축하의 마음을 전하고 싶으신 분은 아래 계좌로 부탁드립니다."
         headingId="account-heading"
       />
 
-      <motion.div {...fade} className="mx-auto grid max-w-sm gap-3 text-left">
-        {groomAccounts.length > 0 && (
-          <SidePanel
-            sideId="account-groom"
-            label="신랑측"
-            open={openSide === 'groom'}
-            onToggle={() =>
-              setOpenSide((prev) => (prev === 'groom' ? null : 'groom'))
-            }
-            accounts={groomAccounts}
+      <motion.div {...fade} className="mx-auto grid max-w-sm gap-3">
+        {wedding.groom.account && (
+          <AccountCard
+            side="groom"
+            label={`신랑 ${wedding.groom.name}`}
+            account={wedding.groom.account}
             onCopy={handleCopy}
           />
         )}
-        {brideAccounts.length > 0 && (
-          <SidePanel
-            sideId="account-bride"
-            label="신부측"
-            open={openSide === 'bride'}
-            onToggle={() =>
-              setOpenSide((prev) => (prev === 'bride' ? null : 'bride'))
-            }
-            accounts={brideAccounts}
+        {wedding.bride.account && (
+          <AccountCard
+            side="bride"
+            label={`신부 ${wedding.bride.name}`}
+            account={wedding.bride.account}
             onCopy={handleCopy}
           />
         )}
@@ -173,7 +122,7 @@ export function Account() {
         role="status"
         aria-live="polite"
         className={
-          'mx-auto mt-4 min-h-[1.25rem] max-w-sm text-xs ' +
+          'mx-auto mt-5 min-h-[1.25rem] max-w-sm text-xs ' +
           (error ? 'text-sun' : 'text-sage-strong')
         }
       >
