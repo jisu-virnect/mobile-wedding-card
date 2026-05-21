@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import { formatWeddingDate, formatWeddingTimeHuman } from '../lib/formatDate'
@@ -22,15 +22,27 @@ export function Cover() {
     return () => window.clearTimeout(id)
   }, [slides.length])
 
-  // Cross-fade between cover slides. Honor prefers-reduced-motion by
-  // sticking to the first slide (no setInterval at all).
+  // Schedule the next auto-advance whenever `active` changes — whether from
+  // the previous auto-tick or a manual click. This way manual interaction
+  // implicitly resets the timer (clicks don't fire and then immediately get
+  // overridden by a stale auto-tick).
   useEffect(() => {
     if (reduce || slides.length <= 1 || !extraSlidesReady) return
-    const id = window.setInterval(() => {
+    const id = window.setTimeout(() => {
       setActive((i) => (i + 1) % slides.length)
     }, interval)
-    return () => window.clearInterval(id)
-  }, [reduce, slides.length, interval, extraSlidesReady])
+    return () => window.clearTimeout(id)
+  }, [active, reduce, slides.length, interval, extraSlidesReady])
+
+  const goTo = useCallback(
+    (idx: number) => {
+      if (slides.length <= 1) return
+      setActive(((idx % slides.length) + slides.length) % slides.length)
+    },
+    [slides.length],
+  )
+  const next = useCallback(() => goTo(active + 1), [goTo, active])
+  const prev = useCallback(() => goTo(active - 1), [goTo, active])
 
   const base = reduce
     ? { initial: false as const, animate: {} }
@@ -83,7 +95,33 @@ export function Cover() {
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15 via-black/10 to-black/70"
       />
 
-      <div className="relative z-10 flex min-h-svh flex-col items-center justify-end px-6 pt-24 pb-20 text-center">
+      {/* Tap zones: left half = previous slide, right half = next slide.
+          tabIndex={-1} keeps them out of the keyboard tab order (the cover's
+          only keyboard target stays the "다음 섹션으로 스크롤" button below).
+          Mounted only when there's more than one slide. */}
+      {slides.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={prev}
+            aria-label="이전 슬라이드"
+            tabIndex={-1}
+            className="absolute inset-y-0 left-0 z-10 w-1/2 cursor-pointer focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={next}
+            aria-label="다음 슬라이드"
+            tabIndex={-1}
+            className="absolute inset-y-0 right-0 z-10 w-1/2 cursor-pointer focus:outline-none"
+          />
+        </>
+      )}
+
+      {/* pointer-events: none on the container so the tap zones underneath
+          still receive clicks in the (mostly empty) flex padding area; each
+          actually interactive child opts back in with pointer-events-auto. */}
+      <div className="pointer-events-none relative z-20 flex min-h-svh flex-col items-center justify-end px-6 pt-24 pb-20 text-center">
         <motion.p
           {...base}
           transition={t(0)}
@@ -133,15 +171,18 @@ export function Cover() {
           <motion.div
             {...base}
             transition={t(0.7)}
-            aria-hidden="true"
-            className="mt-8 flex items-center gap-1.5"
+            className="pointer-events-auto mt-8 flex items-center gap-1.5"
           >
             {slides.map((_, i) => (
-              <span
+              <button
                 key={i}
+                type="button"
+                onClick={() => goTo(i)}
+                aria-label={`슬라이드 ${i + 1}로 이동`}
+                tabIndex={-1}
                 className={
-                  'h-1 rounded-full transition-all duration-500 ' +
-                  (i === active ? 'w-6 bg-paper/90' : 'w-1 bg-paper/40')
+                  'h-1 cursor-pointer rounded-full transition-all duration-500 focus:outline-none ' +
+                  (i === active ? 'w-6 bg-paper/90' : 'w-2 bg-paper/40')
                 }
               />
             ))}
@@ -155,7 +196,7 @@ export function Cover() {
           initial={reduce ? false : { opacity: 0 }}
           animate={reduce ? {} : { opacity: 1 }}
           transition={reduce ? undefined : { duration: 1.2, delay: 1 }}
-          className="mt-10 flex flex-col items-center gap-1.5 text-paper/75 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper/80"
+          className="pointer-events-auto mt-10 flex flex-col items-center gap-1.5 text-paper/75 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper/80"
         >
           <span
             aria-hidden="true"
