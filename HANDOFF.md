@@ -96,3 +96,85 @@ git log --oneline -10 # 최근 변경 보기
 - 갤러리 사진 톤은 CSS filter (`saturate 0.9`) 로만 통일됨. 강하게 가고 싶으면 `src/index.css` 의 `.photo-tone` 수정.
 
 수고하셨어요. 깨어나서 천천히 보시고 다음 단계 알려주세요.
+
+---
+
+# 2026-05-22 추가 — 방명록·BGM·영상 결정 상태
+
+본인 깨고 나서 방명록 시작 의향 + 욕설/삭제/BGM/영상 후속 질문 → 아래로 정리. 다음 세션에 그대로 이어가면 됩니다.
+
+## 방명록 — 설계 확정 (구현 대기)
+
+### 욕설 대응 — 4계층 (사전승인 X, 사후 대응 위주)
+
+| 계층 | 비용 | 효과 |
+|---|---|---|
+| 레이트 리밋 (IP 1분 1건, 1시간 5건) | 코드 5줄 | 봇 차단 ~90% |
+| 한국어 욕설 단어 필터 (사전 ~300개) | npm 패키지 | 노골적 욕설 50~70% |
+| 본인에게 즉시 알림 (이메일/카톡) | 무료(Resend) | 24h 내 발견 |
+| 어드민 삭제 | 코드 30줄 | 진짜 문제 글 제거 |
+
+### 어드민 삭제 — 비밀 URL 방식
+
+```
+/admin?token=jisu-nanseul-x7k4q9p2
+```
+- 토큰 알면 빨간 삭제 버튼 표시
+- 본인이 결혼식 동안 카톡 즐겨찾기에 보관
+
+### 본인 글 삭제 — 선택 4자리 PIN
+
+- 작성 시 PIN (선택). 입력하면 본인이 자기 글 지울 수 있음
+- 비워도 작성 가능 — friction 최소
+
+### 백엔드 — Supabase 무료티어 (Phase 2 호환)
+
+```sql
+create table guestbook_entries (
+  id uuid primary key,
+  name text not null,
+  side text,             -- 'groom' | 'bride' | null
+  message text not null,
+  pin_hash text,          -- bcrypt(4-digit), null 가능
+  ip_hash text,
+  created_at timestamptz default now()
+);
+```
+
+### UI 위치
+
+`07 · Account` 와 `09 · Share` 사이에 **`08 · Guestbook`** 삽입.
+
+## BGM (방명록 이후)
+
+- 자동재생 X (한국 손님이 가장 싫어함)
+- 기본 OFF + 좌상단 작은 음표 아이콘 + 1탭 재생
+- localStorage 로 mute 기억
+- 음악 라이센스: YouTube Audio Library / Pixabay Music / FreePD
+- 비용: ~2h
+
+## 영상 (방명록 이후)
+
+- 갤러리에 인라인 비디오 카드 1~2개
+- HTML5 video, playsinline + muted + loop
+- IntersectionObserver로 화면 들어오면 재생, 벗어나면 정지
+- 클릭 시 라이트박스에서 소리 켜기 가능
+- 본인이 짧은 영상(10~30초, 360p) 인코딩해서 `public/videos/` 에 배치
+- 비용: ~3h 코드 + 영상 인코딩
+
+## 다음 세션 첫 질문 (시작 지점)
+
+방명록 백엔드 옵션 결정:
+
+- **A**: 본인이 Supabase 가입(2분) + URL/anon key 알려주기 → T17 실제 백엔드 진행 (3~6h)
+- **B**: localStorage 데모 모드 UI 먼저 → 검수 후 마이그레이션 (2h + 추후 3h)
+- **C**: 욕설 정책 본인 의견 반영 (사전승인 모드 추가 등)
+
+이거 답하시면 바로 시작. 안 답해도 B 디폴트로 진행 가능.
+
+## 영구 자산 위치 (참조용)
+
+- 코드 상태: `git log --oneline preview/jisu-nanseul`
+- 배포 가이드: `DEPLOY.md`
+- 자율 루프 자산: `pipeline/{LOOP_PROMPT,PROGRESS,E2E_PLAYBOOK}.md`
+- 결정 메모리(다음 세션 자동 회상): `C:\Users\VIRNECT\.claude\projects\C--Users-VIRNECT-Desktop-sandbox-claude-cli-mobile-wedding-card\memory\` (방명록·BGM·영상·스타일 가이드 모두 저장됨)
