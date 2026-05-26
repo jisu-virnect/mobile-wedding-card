@@ -127,10 +127,10 @@ export const wedding: WeddingInfo = {
   // Drop video clips into `public/videos/` and uncomment to enable.
   // Each video should be MP4 H.264 baseline, 480p, 30s max, 3~5MB.
   // The `poster` should be a still frame (JPEG, ~150KB) for fast thumbnails.
-  // videos: [
-  //   { src: '/videos/01.mp4', poster: '/videos/01.jpg', alt: '본식 하이라이트' },
-  //   { src: '/videos/02.mp4', poster: '/videos/02.jpg', alt: '프로포즈 순간' },
-  // ],
+  videos: [
+    { src: '/videos/01.mp4', poster: '/videos/01.jpg', alt: '본식 하이라이트' },
+    { src: '/videos/02.mp4', poster: '/videos/02.jpg', alt: '프로포즈 순간' },
+  ],
   cover: {
     // 3 photos spread across the gallery as a starting pick — swap these
     // for your favorite shots once you've reviewed all 34.
@@ -144,5 +144,5 @@ export const wedding: WeddingInfo = {
   // BGM: drop /public/bgm.mp3 (or change the path) and uncomment.
   // The toggle button only renders when this field is defined, so the
   // section stays clean until you've actually picked music.
-  // bgm: { src: '/bgm.mp3', volume: 0.4, title: '잔잔한 피아노' },
+  bgm: { src: '/bgm.mp3', volume: 0.4, title: '잔잔한 피아노' },
 }
