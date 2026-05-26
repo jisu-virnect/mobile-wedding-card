@@ -14,9 +14,12 @@ export interface Person {
   name: string
   father: string
   mother: string
+  /** Bride/groom's own phone (used for tel: + sms: buttons in Greeting). */
   phone?: string
+  /** Father/mother phones — same buttons rendered next to their names. */
+  fatherPhone?: string
+  motherPhone?: string
   account?: BankAccount
-  /** Bridegroom / bride side parents' optional account info. */
   fatherAccount?: BankAccount
   motherAccount?: BankAccount
 }
@@ -84,7 +87,10 @@ export const wedding: WeddingInfo = {
     name: '김지수',
     father: '김창길',
     mother: '김영미',
-    // TODO(jisu): 실제 계좌번호로 교체. 빈 객체로 두면 카드 자체가 렌더되지 않음.
+    // TODO(jisu): 실제 번호로 교체. 필드 삭제하면 ☎/✉ 버튼이 안 보임.
+    phone: '010-0000-0000',
+    fatherPhone: '010-0000-0000',
+    motherPhone: '010-0000-0000',
     account: { bank: '신한은행', number: '110-000-000000', holder: '김지수' },
     fatherAccount: {
       bank: '신한은행',
@@ -101,6 +107,9 @@ export const wedding: WeddingInfo = {
     name: '김난슬',
     father: '김청섭',
     mother: '이경화',
+    phone: '010-0000-0000',
+    fatherPhone: '010-0000-0000',
+    motherPhone: '010-0000-0000',
     account: { bank: '국민은행', number: '000-000-000000', holder: '김난슬' },
     fatherAccount: {
       bank: '국민은행',

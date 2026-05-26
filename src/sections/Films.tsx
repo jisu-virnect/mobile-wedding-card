@@ -152,7 +152,11 @@ export function Films() {
       aria-labelledby="films-heading"
       className="px-6 pt-24 pb-20 text-center"
     >
-      <SectionHeader index="06" title="영상" headingId="films-heading" />
+      <SectionHeader
+        index="06"
+        title="움직이는 추억"
+        headingId="films-heading"
+      />
 
       <motion.div
         {...fade}

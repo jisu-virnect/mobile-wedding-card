@@ -113,7 +113,7 @@ export function When() {
     >
       <SectionHeader
         index="03"
-        title="예식 일시"
+        title="함께할 시간"
         headingId="when-heading"
       />
 

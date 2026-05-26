@@ -84,7 +84,7 @@ export function Rsvp() {
     >
       <SectionHeader
         index="07"
-        title="참석 여부 전달"
+        title="함께해 주세요"
         subtitle="정성껏 준비한 자리에 함께해 주실 수 있다면 미리 알려주세요."
         headingId="rsvp-heading"
       />

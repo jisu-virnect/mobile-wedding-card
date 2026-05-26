@@ -17,7 +17,11 @@ test.describe('Share section', () => {
     await section.scrollIntoViewIfNeeded()
 
     await expect(
-      section.getByRole('heading', { level: 2, name: '청첩장 공유하기' }),
+      section.getByRole('heading', { level: 2, name: '이 초대장 전하기' }),
+    ).toBeVisible()
+
+    await expect(
+      section.getByRole('button', { name: '카카오톡으로 공유하기' }),
     ).toBeVisible()
 
     const copyBtn = section.getByRole('button', { name: '초대장 링크 복사' })

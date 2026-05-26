@@ -10,7 +10,7 @@ test.describe('When section', () => {
     await expect(when).toBeVisible()
 
     await expect(
-      when.getByRole('heading', { level: 2, name: '예식 일시' }),
+      when.getByRole('heading', { level: 2, name: '함께할 시간' }),
     ).toBeVisible()
 
     await expect(when.getByText('2026년 11월 28일 토요일')).toBeVisible()
