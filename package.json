@@ -18,6 +18,7 @@
     "lighthouse": "lhci autorun",
     "gates": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm lighthouse",
     "gen-og": "node scripts/gen-og-image.mjs",
+    "gen-cover-slides": "node scripts/gen-cover-slides.mjs",
     "resize-gallery": "node scripts/resize-gallery.mjs",
     "encode-video": "node scripts/encode-video.mjs"
   },

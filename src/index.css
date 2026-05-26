@@ -15,13 +15,12 @@
   --color-sat: #5b7a93;
 
   --font-sans:
-    "Pretendard Variable", "Pretendard", system-ui, -apple-system, "Segoe UI",
-    Roboto, "Noto Sans KR", sans-serif;
+    "Nanum Gothic", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --font-serif:
-    "Noto Serif KR", "Pretendard Variable", "Apple SD Gothic Neo",
-    "Malgun Gothic", serif;
+    "Nanum Myeongjo", "Apple SD Gothic Neo", "Malgun Gothic", serif;
   --font-display:
-    "Cormorant Garamond", "Noto Serif KR", Georgia, serif;
+    "Cormorant Garamond", "Nanum Myeongjo", Georgia, serif;
 }
 
 html,

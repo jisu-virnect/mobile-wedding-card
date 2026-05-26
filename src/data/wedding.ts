@@ -132,12 +132,14 @@ export const wedding: WeddingInfo = {
     { src: '/videos/02.mp4', poster: '/videos/02.jpg', alt: '프로포즈 순간' },
   ],
   cover: {
-    // 3 photos spread across the gallery as a starting pick — swap these
-    // for your favorite shots once you've reviewed all 34.
+    // Cover slides use a smaller resized variant (~100-200KB each) instead
+    // of the full gallery jpegs (~300KB) to keep LCP fast. The lightbox
+    // gallery still uses the full /gallery/NN.jpg.
+    // Regenerate via: node scripts/gen-cover-slides.mjs
     slides: [
-      { src: '/gallery/01.jpg', objectPosition: 'center' },
-      { src: '/gallery/12.jpg', objectPosition: 'center' },
-      { src: '/gallery/23.jpg', objectPosition: 'center' },
+      { src: '/cover-01.jpg', objectPosition: 'center' },
+      { src: '/cover-12.jpg', objectPosition: 'center' },
+      { src: '/cover-23.jpg', objectPosition: 'center' },
     ],
     interval: 5000,
   },
