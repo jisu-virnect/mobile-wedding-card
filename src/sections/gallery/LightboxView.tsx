@@ -1,17 +1,38 @@
 import Lightbox from 'yet-another-react-lightbox'
+import Video from 'yet-another-react-lightbox/plugins/video'
 import 'yet-another-react-lightbox/styles.css'
-import type { GalleryImage } from '../../lib/galleryPlaceholders'
+import type { GalleryItem } from '../../lib/galleryPlaceholders'
 
 interface LightboxViewProps {
-  images: GalleryImage[]
+  items: GalleryItem[]
   open: boolean
   index: number
   onClose: () => void
   onView: (index: number) => void
 }
 
+// yet-another-react-lightbox slide shape for video:
+//   { type: 'video', sources: [{ src, type }], poster, autoPlay, ... }
+// We unify both photo and video into the lightbox's `slides` array.
+function toSlide(item: GalleryItem) {
+  if (item.type === 'video') {
+    return {
+      type: 'video' as const,
+      sources: [{ src: item.src, type: 'video/mp4' }],
+      poster: item.poster,
+      width: 1280,
+      height: 720,
+      autoPlay: true,
+      controls: true,
+      playsInline: true,
+      loop: false,
+    }
+  }
+  return { src: item.src, alt: item.alt }
+}
+
 export default function LightboxView({
-  images,
+  items,
   open,
   index,
   onClose,
@@ -22,8 +43,9 @@ export default function LightboxView({
       open={open}
       close={onClose}
       index={index}
+      plugins={[Video]}
       on={{ view: ({ index: i }) => onView(i) }}
-      slides={images.map((img) => ({ src: img.src, alt: img.alt }))}
+      slides={items.map(toSlide)}
       controller={{ closeOnBackdropClick: true }}
     />
   )

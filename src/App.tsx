@@ -1,5 +1,6 @@
 import {
   Account,
+  BGMToggle,
   Cover,
   Gallery,
   Greeting,
@@ -8,6 +9,7 @@ import {
   When,
   Where,
 } from './sections'
+import { wedding } from './data/wedding'
 
 function SectionDivider() {
   return (
@@ -27,6 +29,7 @@ function SectionDivider() {
 function App() {
   return (
     <main className="mx-auto flex min-h-svh max-w-[480px] flex-col bg-ivory shadow-[0_0_60px_rgba(0,0,0,0.04)]">
+      {wedding.bgm && <BGMToggle config={wedding.bgm} />}
       <Cover />
       <Greeting />
       <SectionDivider />

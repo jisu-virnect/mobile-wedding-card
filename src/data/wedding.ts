@@ -34,12 +34,43 @@ export interface WeddingInfo {
   }
   invitation: string
   gallery: string[]
+  /** Short video clips mixed into the photo gallery. Omit to skip. */
+  videos?: VideoItem[]
   cover: {
     /** Slides that cross-fade on the cover hero. 1+ entries; 3-5 recommended. */
     slides: CoverSlide[]
     /** ms each slide stays before crossfading. Default 5000. */
     interval?: number
   }
+  /**
+   * Optional background music. Omit (or set to undefined) to hide the toggle
+   * entirely. Drop the audio file into `public/` and reference it here.
+   *
+   * Recommended free sources (no attribution needed):
+   *   - Pixabay Music: https://pixabay.com/music/search/wedding/
+   *   - YouTube Audio Library (login → Audio library)
+   *   - FreePD: https://freepd.com/
+   *   - Bensound (with attribution): https://www.bensound.com/
+   *
+   * Mood: 잔잔한 피아노 / 어쿠스틱 기타 / 스트링 / 보사노바. 30~60s loop OK.
+   */
+  bgm?: BgmConfig
+}
+
+export interface VideoItem {
+  src: string
+  /** Static frame shown as the thumbnail (and lightbox poster). */
+  poster: string
+  alt: string
+}
+
+export interface BgmConfig {
+  /** Path under /public, e.g. '/bgm.mp3'. */
+  src: string
+  /** 0.0 ~ 1.0, default 0.5. Pick a low value — BGM should be ambient. */
+  volume?: number
+  /** Optional title shown in the toggle tooltip. */
+  title?: string
 }
 
 export interface CoverSlide {
@@ -93,6 +124,13 @@ export const wedding: WeddingInfo = {
   invitation:
     '저희 두 사람의 소중한 만남이\n사랑과 이해로 이어져\n한 가정을 이루게 되었습니다.\n\n평생을 함께하기로 약속하는 자리에\n귀한 걸음으로 축복해 주시면\n큰 기쁨이겠습니다.\n\n김지수 · 김난슬 드림',
   gallery: Array.from({ length: 34 }, (_, i) => `/gallery/${String(i + 1).padStart(2, '0')}.jpg`),
+  // Drop video clips into `public/videos/` and uncomment to enable.
+  // Each video should be MP4 H.264 baseline, 480p, 30s max, 3~5MB.
+  // The `poster` should be a still frame (JPEG, ~150KB) for fast thumbnails.
+  // videos: [
+  //   { src: '/videos/01.mp4', poster: '/videos/01.jpg', alt: '본식 하이라이트' },
+  //   { src: '/videos/02.mp4', poster: '/videos/02.jpg', alt: '프로포즈 순간' },
+  // ],
   cover: {
     // 3 photos spread across the gallery as a starting pick — swap these
     // for your favorite shots once you've reviewed all 34.
@@ -103,4 +141,8 @@ export const wedding: WeddingInfo = {
     ],
     interval: 5000,
   },
+  // BGM: drop /public/bgm.mp3 (or change the path) and uncomment.
+  // The toggle button only renders when this field is defined, so the
+  // section stays clean until you've actually picked music.
+  // bgm: { src: '/bgm.mp3', volume: 0.4, title: '잔잔한 피아노' },
 }
