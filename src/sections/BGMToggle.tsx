@@ -67,6 +67,48 @@ export function BGMToggle({ config }: BGMToggleProps) {
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [playing])
 
+  // First-tap autoplay unlock. Browser autoplay policy refuses sound until
+  // the page has received a user gesture; we hijack the user's very first
+  // tap (anywhere on the document) to start BGM. Skipped if the user has
+  // previously chosen to mute, so we don't override their preference.
+  useEffect(() => {
+    let userMutedBefore = false
+    try {
+      userMutedBefore = window.localStorage.getItem(STORAGE_KEY) === 'true'
+    } catch {
+      /* ignore */
+    }
+    if (userMutedBefore) return
+
+    function startOnFirstGesture() {
+      const audio = audioRef.current
+      if (!audio || !audio.paused) return
+      const p = audio.play()
+      if (p && typeof p.then === 'function') {
+        p.then(
+          () => {
+            setPlaying(true)
+            setTouched(true)
+            try {
+              window.localStorage.setItem(STORAGE_KEY, 'false')
+            } catch {
+              /* ignore */
+            }
+          },
+          () => {
+            /* still blocked — give up silently */
+          },
+        )
+      }
+    }
+    // `pointerdown` covers mouse + touch. { once: true } so listener
+    // self-removes after the first event.
+    document.addEventListener('pointerdown', startOnFirstGesture, { once: true })
+    return () => {
+      document.removeEventListener('pointerdown', startOnFirstGesture)
+    }
+  }, [])
+
   const toggle = () => {
     const audio = audioRef.current
     if (!audio) return

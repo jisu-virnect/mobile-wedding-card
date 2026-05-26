@@ -65,6 +65,24 @@ describe('<BGMToggle />', () => {
     expect(window.localStorage.getItem('bgm:muted')).toBe('false')
   })
 
+  it('starts on first pointerdown anywhere on the document (autoplay unlock)', async () => {
+    render(<BGMToggle config={{ src: '/bgm.mp3' }} />)
+    // First user gesture anywhere → BGM should attempt to play.
+    fireEvent.pointerDown(document.body)
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(play).toHaveBeenCalledTimes(1)
+  })
+
+  it('skips first-gesture autoplay if user previously muted', async () => {
+    window.localStorage.setItem('bgm:muted', 'true')
+    render(<BGMToggle config={{ src: '/bgm.mp3' }} />)
+    fireEvent.pointerDown(document.body)
+    await Promise.resolve()
+    // play() not called — respect the user's prior mute preference.
+    expect(play).not.toHaveBeenCalled()
+  })
+
   it('uses the configured volume', () => {
     let captured: number | undefined
     const Spy = class extends (window.Audio as unknown as new () => {
