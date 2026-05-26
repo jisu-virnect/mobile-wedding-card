@@ -8,7 +8,7 @@ test.describe('Greeting section', () => {
     await expect(greeting).toBeVisible()
 
     await expect(
-      greeting.getByRole('heading', { level: 2, name: '초대합니다' }),
+      greeting.getByRole('heading', { level: 2, name: '결혼합니다' }),
     ).toBeVisible()
 
     await expect(greeting.getByText(/평생을 함께하기로 약속하는 자리/)).toBeVisible()

@@ -30,7 +30,7 @@ describe('<Greeting />', () => {
   it('has a labelled h2 heading', () => {
     render(<Greeting />)
     expect(
-      screen.getByRole('heading', { level: 2, name: '초대합니다' }),
+      screen.getByRole('heading', { level: 2, name: '결혼합니다' }),
     ).toBeInTheDocument()
   })
 })

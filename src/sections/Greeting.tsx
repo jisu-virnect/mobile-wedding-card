@@ -155,7 +155,7 @@ export function Greeting() {
     >
       <SectionHeader
         index="02"
-        title="초대합니다"
+        title="결혼합니다"
         headingId="greeting-heading"
       />
 
