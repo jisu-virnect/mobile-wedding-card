@@ -154,7 +154,7 @@ export function Films() {
     >
       <SectionHeader
         index="06"
-        title="움직이는 추억"
+        title="함께한 순간"
         headingId="films-heading"
       />
 
