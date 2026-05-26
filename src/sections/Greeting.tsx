@@ -53,16 +53,16 @@ function ParentColumn({
             : '')
       }
     >
-      <p className="font-display text-[10px] tracking-[0.4em] text-ink-mute uppercase">
+      <p className="font-display text-[12px] tracking-[0.35em] text-ink-mute uppercase">
         {label}
       </p>
-      <p className="mt-3 text-sm text-ink-soft">
+      <p className="mt-3 text-[15px] text-ink-soft">
         {father}
         <span className="mx-1 text-ink-mute">·</span>
         {mother}
       </p>
-      <p className="mt-1 text-xs text-ink-mute">의 {relation}</p>
-      <p className="mt-2 font-serif text-base font-medium text-ink">{child}</p>
+      <p className="mt-1 text-[13px] text-ink-mute">의 {relation}</p>
+      <p className="mt-2 font-serif text-[17px] font-medium text-ink">{child}</p>
     </div>
   )
 }
@@ -86,14 +86,13 @@ export function Greeting() {
     >
       <SectionHeader
         index="02"
-        eyebrow="Greeting"
         title="초대합니다"
         headingId="greeting-heading"
       />
 
       <motion.p
         {...fade}
-        className="mx-auto max-w-[28ch] text-[15px] leading-[2] whitespace-pre-line text-ink-soft"
+        className="mx-auto max-w-[28ch] text-base leading-[2] whitespace-pre-line text-ink-soft"
       >
         {wedding.invitation}
       </motion.p>

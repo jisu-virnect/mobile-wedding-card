@@ -17,9 +17,9 @@ export function formatDDay(
   reference: Date = new Date(),
 ): string {
   const diff = daysUntilWedding(targetIso, reference)
-  if (diff > 0) return `D-${diff}`
-  if (diff === 0) return 'D-Day'
-  return `D+${-diff}`
+  if (diff > 0) return `결혼식까지 ${diff}일 남았어요`
+  if (diff === 0) return '오늘이 결혼식이에요'
+  return `결혼한 지 ${-diff}일이 지났어요`
 }
 
 /**

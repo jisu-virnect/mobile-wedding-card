@@ -2,6 +2,7 @@ import {
   Account,
   BGMToggle,
   Cover,
+  Films,
   Gallery,
   Greeting,
   Rsvp,
@@ -38,6 +39,8 @@ function App() {
       <Where />
       <SectionDivider />
       <Gallery />
+      <SectionDivider />
+      <Films />
       <SectionDivider />
       <Rsvp />
       <SectionDivider />

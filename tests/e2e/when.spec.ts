@@ -20,6 +20,8 @@ test.describe('When section', () => {
     await expect(highlightedDay).toBeVisible()
     await expect(highlightedDay).toHaveText('28')
 
-    await expect(when.getByText(/^D[-+]\d+$|^D-Day$/)).toBeVisible()
+    await expect(
+      when.getByText(/결혼식까지 \d+일 남았어요|오늘이 결혼식이에요|결혼한 지 \d+일이 지났어요/),
+    ).toBeVisible()
   })
 })

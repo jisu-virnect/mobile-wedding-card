@@ -1,8 +1,6 @@
 // Network-free placeholder images as data:image/svg+xml URIs.
 // Kept inline so first-paint stays instant and Lighthouse Performance holds.
 
-import type { VideoItem } from '../data/wedding'
-
 const PALETTE = [
   { bg: '#fecdd3', fg: '#be123c' },
   { bg: '#fed7aa', fg: '#c2410c' },
@@ -12,15 +10,6 @@ const PALETTE = [
   { bg: '#e9d5ff', fg: '#6b21a8' },
 ] as const
 
-/**
- * A unified gallery item — either a still photo or a short video. Videos
- * have a poster (used as the grid thumbnail + lightbox preview frame).
- */
-export type GalleryItem =
-  | { type: 'photo'; src: string; alt: string }
-  | { type: 'video'; src: string; poster: string; alt: string }
-
-/** Back-compat alias — still photos use this shape. */
 export interface GalleryImage {
   src: string
   alt: string
@@ -55,27 +44,3 @@ export function buildGalleryImages(
   }))
 }
 
-/**
- * Compose video items + photos into a single ordered gallery feed. Videos
- * (if present) come first so the gallery opens with movement, then the
- * still photos. Each entry carries its `type` for the renderer to branch.
- */
-export function buildGalleryFeed(
-  urls: readonly string[] | undefined,
-  videos: readonly VideoItem[] | undefined,
-): GalleryItem[] {
-  const photos: GalleryItem[] = buildGalleryImages(urls).map((img) => ({
-    type: 'photo' as const,
-    src: img.src,
-    alt: img.alt,
-  }))
-  const vids: GalleryItem[] = (videos ?? []).map((v) => ({
-    type: 'video' as const,
-    src: v.src,
-    poster: v.poster,
-    alt: v.alt,
-  }))
-  // Videos first; if user wants them in another position they can splice
-  // into the array after this call.
-  return [...vids, ...photos]
-}

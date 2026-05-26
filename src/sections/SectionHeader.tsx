@@ -3,8 +3,6 @@ import { motion, useReducedMotion } from 'framer-motion'
 interface SectionHeaderProps {
   /** Two-digit index like "02"; rendered in Cormorant Garamond italic. */
   index: string
-  /** Tiny english eyebrow above the Korean title, e.g. "Greeting". */
-  eyebrow: string
   /** Korean title rendered in Noto Serif KR. */
   title: string
   /** Optional subtitle paragraph. */
@@ -13,9 +11,14 @@ interface SectionHeaderProps {
   headingId: string
 }
 
+/**
+ * Section eyebrow: minimal numeral + hairline + serif Korean title. The
+ * English "Greeting / When / Where" labels were removed — the Korean title
+ * already names the section, and dropping the English makes the eyebrow
+ * feel more intentional + native.
+ */
 export function SectionHeader({
   index,
-  eyebrow,
   title,
   subtitle,
   headingId,
@@ -35,13 +38,9 @@ export function SectionHeader({
     <div className="mb-10 flex flex-col items-center text-center">
       <motion.p
         {...fade}
-        className="font-display text-[11px] tracking-[0.5em] text-ink-mute uppercase"
+        className="font-display text-base italic tracking-[0.25em] text-ink-mute"
       >
-        <span className="italic">{index}</span>
-        <span aria-hidden="true" className="mx-2 text-ink-mute/60">
-          ·
-        </span>
-        {eyebrow}
+        {index}
       </motion.p>
 
       <motion.span
@@ -53,7 +52,7 @@ export function SectionHeader({
       <motion.h2
         id={headingId}
         {...fade}
-        className="mt-6 font-serif text-[1.5rem] leading-tight font-normal text-ink"
+        className="mt-6 font-serif text-[1.65rem] leading-tight font-normal text-ink"
       >
         {title}
       </motion.h2>
@@ -61,7 +60,7 @@ export function SectionHeader({
       {subtitle && (
         <motion.p
           {...fade}
-          className="mx-auto mt-3 max-w-[28ch] text-sm leading-relaxed text-ink-soft"
+          className="mx-auto mt-3 max-w-[28ch] text-[15px] leading-relaxed text-ink-soft"
         >
           {subtitle}
         </motion.p>

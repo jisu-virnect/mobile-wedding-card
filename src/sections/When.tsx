@@ -113,7 +113,6 @@ export function When() {
     >
       <SectionHeader
         index="03"
-        eyebrow="When"
         title="예식 일시"
         headingId="when-heading"
       />
@@ -122,8 +121,8 @@ export function When() {
         {...fade}
         className="mx-auto mb-12 max-w-xs border-y border-line py-6"
       >
-        <p className="font-serif text-lg text-ink">{longDate}</p>
-        <p className="mt-2 font-display text-sm tracking-[0.25em] text-ink-soft">
+        <p className="font-serif text-xl text-ink">{longDate}</p>
+        <p className="mt-2 font-display text-[15px] tracking-[0.22em] text-ink-soft">
           {time}
         </p>
       </motion.div>
@@ -132,17 +131,17 @@ export function When() {
         <MonthCalendar year={year} month={month} highlight={day} />
       </motion.div>
 
-      <motion.div {...fade} className="flex flex-col items-center gap-2">
+      <motion.div {...fade} className="flex flex-col items-center gap-2.5">
         <p
-          aria-label={`결혼식까지 ${dday}`}
-          className="inline-block rounded-full bg-sage-soft px-5 py-1.5 font-display text-sm font-medium tracking-[0.2em] text-sage-strong"
+          aria-label={dday}
+          className="inline-block rounded-full bg-sage-soft px-6 py-2 font-serif text-[15px] font-medium tracking-wide text-sage-strong"
         >
           {dday}
         </p>
         {finalCountdown && (
           <p
             aria-live="polite"
-            className="font-serif text-xs tracking-wide text-sage-strong"
+            className="font-serif text-[13px] tracking-wide text-sage-strong"
           >
             {finalCountdown}
           </p>

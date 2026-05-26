@@ -125,9 +125,9 @@ export function Cover() {
         <motion.p
           {...base}
           transition={t(0)}
-          className="font-display text-[11px] tracking-[0.55em] text-paper/80 uppercase"
+          className="font-display text-[13px] italic tracking-[0.32em] text-paper/85"
         >
-          We invite you · 01
+          저희의 결혼식에 초대합니다
         </motion.p>
 
         <motion.span
@@ -200,9 +200,9 @@ export function Cover() {
         >
           <span
             aria-hidden="true"
-            className="font-display text-[10px] tracking-[0.4em] uppercase"
+            className="font-display text-[11px] italic tracking-[0.3em]"
           >
-            Scroll
+            아래로
           </span>
           <svg
             aria-hidden="true"

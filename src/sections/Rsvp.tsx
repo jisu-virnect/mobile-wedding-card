@@ -83,8 +83,7 @@ export function Rsvp() {
       className="px-6 pt-24 pb-20 text-center"
     >
       <SectionHeader
-        index="06"
-        eyebrow="RSVP"
+        index="07"
         title="참석 여부 전달"
         subtitle="정성껏 준비한 자리에 함께해 주실 수 있다면 미리 알려주세요."
         headingId="rsvp-heading"
@@ -100,7 +99,7 @@ export function Rsvp() {
         <div>
           <label
             htmlFor="rsvp-name"
-            className="mb-1 block text-xs tracking-wide text-ink-mute"
+            className="mb-1 block text-[13px] tracking-wide text-ink-mute"
           >
             이름 <span className="text-sage-strong">*</span>
           </label>
@@ -125,7 +124,7 @@ export function Rsvp() {
         </div>
 
         <fieldset className="rounded-sm border border-line bg-paper p-3">
-          <legend className="px-1 text-xs tracking-wide text-ink-mute">
+          <legend className="px-1 text-[13px] tracking-wide text-ink-mute">
             어느 쪽 손님이신가요?{' '}
             <span className="text-ink-mute/70">(선택)</span>
           </legend>
@@ -152,7 +151,7 @@ export function Rsvp() {
         </fieldset>
 
         <fieldset className="rounded-sm border border-line bg-paper p-3">
-          <legend className="px-1 text-xs tracking-wide text-ink-mute">
+          <legend className="px-1 text-[13px] tracking-wide text-ink-mute">
             참석 여부 <span className="text-sage-strong">*</span>
           </legend>
           <div className="mt-1 flex gap-5 text-sm text-ink-soft">
@@ -185,7 +184,7 @@ export function Rsvp() {
         <div>
           <label
             htmlFor="rsvp-guests"
-            className="mb-1 block text-xs tracking-wide text-ink-mute"
+            className="mb-1 block text-[13px] tracking-wide text-ink-mute"
           >
             참석 인원{' '}
             <span className="text-ink-mute/70">(본인 포함)</span>
@@ -215,7 +214,7 @@ export function Rsvp() {
         <div>
           <label
             htmlFor="rsvp-message"
-            className="mb-1 block text-xs tracking-wide text-ink-mute"
+            className="mb-1 block text-[13px] tracking-wide text-ink-mute"
           >
             전하고 싶은 말{' '}
             <span className="text-ink-mute/70">(선택)</span>

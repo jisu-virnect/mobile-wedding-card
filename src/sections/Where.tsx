@@ -66,7 +66,6 @@ export function Where() {
     >
       <SectionHeader
         index="04"
-        eyebrow="Where"
         title="오시는 길"
         headingId="where-heading"
       />
@@ -76,10 +75,10 @@ export function Where() {
       </motion.div>
 
       <motion.div {...fade} className="space-y-1.5">
-        <p className="font-serif text-lg text-ink">{name}</p>
-        <p className="text-sm text-ink-soft">{address}</p>
+        <p className="font-serif text-xl text-ink">{name}</p>
+        <p className="text-[15px] text-ink-soft">{address}</p>
         {detail && (
-          <p className="mx-auto max-w-[30ch] text-xs leading-relaxed text-ink-mute">
+          <p className="mx-auto max-w-[30ch] text-[13px] leading-relaxed text-ink-mute">
             {detail}
           </p>
         )}

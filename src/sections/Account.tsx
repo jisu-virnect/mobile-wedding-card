@@ -38,19 +38,21 @@ function AccountCard({ side, role, label, account, onCopy }: AccountCardProps) {
   return (
     <article className="overflow-hidden rounded-sm border border-line bg-paper text-left">
       <header className="flex items-baseline justify-between gap-2 border-b border-line px-5 py-2.5">
-        <span className="font-display text-[10px] tracking-[0.35em] text-ink-mute uppercase">
+        <span className="font-display text-[12px] tracking-[0.3em] text-ink-mute uppercase">
           {sideLabel}
           <span aria-hidden="true" className="mx-1.5 text-ink-mute/50">
             ·
           </span>
           {role}
         </span>
-        <span className="font-serif text-xs text-ink-soft">{account.holder}</span>
+        <span className="font-serif text-[13px] text-ink-soft">
+          {account.holder}
+        </span>
       </header>
       <div className="flex items-center justify-between gap-4 px-5 py-4">
         <div className="min-w-0">
-          <p className="text-[11px] tracking-wide text-ink-mute">{account.bank}</p>
-          <p className="mt-1 truncate font-serif text-[15px] tracking-[0.02em] text-ink">
+          <p className="text-[12px] tracking-wide text-ink-mute">{account.bank}</p>
+          <p className="mt-1 truncate font-serif text-base tracking-[0.02em] text-ink">
             {account.number}
           </p>
         </div>
@@ -116,7 +118,7 @@ function SideHeading({ children }: { children: React.ReactNode }) {
       className="mt-2 mb-1 flex items-center justify-center gap-3 first:mt-0"
     >
       <span className="h-px w-8 bg-line" />
-      <span className="font-display text-[10px] tracking-[0.5em] text-ink-mute uppercase">
+      <span className="font-display text-[12px] tracking-[0.5em] text-ink-mute uppercase">
         {children}
       </span>
       <span className="h-px w-8 bg-line" />
@@ -158,8 +160,7 @@ export function Account() {
       className="px-6 pt-24 pb-20 text-center"
     >
       <SectionHeader
-        index="07"
-        eyebrow="With Love"
+        index="08"
         title="마음 전하실 곳"
         subtitle="축하의 마음을 전하고 싶으신 분은 아래 계좌로 부탁드립니다."
         headingId="account-heading"

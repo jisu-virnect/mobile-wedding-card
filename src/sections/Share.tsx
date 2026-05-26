@@ -76,8 +76,7 @@ export function Share() {
       className="px-6 pt-24 pb-28 text-center"
     >
       <SectionHeader
-        index="08"
-        eyebrow="Share"
+        index="09"
         title="청첩장 공유하기"
         subtitle="주변 분들께 이 초대장을 전해주세요."
         headingId="share-heading"
@@ -152,8 +151,8 @@ export function Share() {
         className="mx-auto mt-16 flex items-center justify-center gap-3"
       >
         <span className="h-px w-12 bg-line" />
-        <span className="font-display text-xs tracking-[0.5em] text-sage-strong uppercase">
-          Thank you
+        <span className="font-serif text-[13px] tracking-[0.3em] text-sage-strong">
+          감사합니다
         </span>
         <span className="h-px w-12 bg-line" />
       </div>
