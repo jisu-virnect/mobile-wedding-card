@@ -5,6 +5,7 @@ import {
   Films,
   Gallery,
   Greeting,
+  PreEvent,
   Rsvp,
   Share,
   When,
@@ -45,6 +46,8 @@ function App() {
       <Rsvp />
       <SectionDivider />
       <Account />
+      {wedding.preEvent && <SectionDivider />}
+      <PreEvent />
       <SectionDivider />
       <Share />
     </main>

@@ -58,6 +58,25 @@ export interface WeddingInfo {
    * Mood: 잔잔한 피아노 / 어쿠스틱 기타 / 스트링 / 보사노바. 30~60s loop OK.
    */
   bgm?: BgmConfig
+  /**
+   * Regional pre-wedding gathering (앞잔치) — typically for the bride's side
+   * family + relatives who can't travel to the main venue. Optional;
+   * omit to hide the section entirely.
+   */
+  preEvent?: PreEvent
+}
+
+export interface PreEvent {
+  /** Multi-line explanation/audience note. \n preserved. */
+  description: string
+  dateTime: string
+  venue: {
+    name: string
+    address: string
+    detail?: string
+    kakaoMapUrl?: string
+    naverMapUrl?: string
+  }
 }
 
 export interface VideoItem {
@@ -160,4 +179,16 @@ export const wedding: WeddingInfo = {
   // The toggle button only renders when this field is defined, so the
   // section stays clean until you've actually picked music.
   bgm: { src: '/bgm.mp3', volume: 0.4, title: '잔잔한 피아노' },
+  // 앞잔치 (pre-wedding gathering in 고창). Section only renders if preEvent
+  // is defined. TODO: 실제 장소·주소·시간 확정 후 업데이트.
+  preEvent: {
+    description:
+      '수원까지 오시기 어려운 신부측 가족과 친지를 위해\n고창에 먼저 자리를 마련하였습니다.\n\n앞잔치라 부르는 이 자리에서\n저희의 시작을 함께 축복해 주시면 큰 기쁨이겠습니다.',
+    dateTime: '2026-10-01T12:00:00+09:00',
+    venue: {
+      name: '신부 본가',
+      address: '전라북도 고창군',
+      detail: '주차 가능',
+    },
+  },
 }

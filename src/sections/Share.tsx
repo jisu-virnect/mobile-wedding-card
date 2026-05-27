@@ -101,7 +101,7 @@ export function Share() {
       className="px-6 pt-24 pb-28 text-center"
     >
       <SectionHeader
-        index="09"
+        index="10"
         title="이 초대장 전하기"
         subtitle="주변 분들께 우리의 소식을 전해주세요."
         headingId="share-heading"

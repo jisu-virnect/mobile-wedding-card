@@ -3,6 +3,8 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import { formatWeddingDate, formatWeddingTimeHuman } from '../lib/formatDate'
 
+const PRE_EVENT_ID = 'pre-event'
+
 export function Cover() {
   const { combined } = formatWeddingDate(wedding.dateTime)
   const time = formatWeddingTimeHuman(wedding.dateTime)
@@ -59,6 +61,14 @@ export function Cover() {
       .getElementById('greeting')
       ?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' })
   }
+
+  const scrollToPreEvent = () => {
+    document
+      .getElementById(PRE_EVENT_ID)
+      ?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' })
+  }
+
+  const hasPreEvent = Boolean(wedding.preEvent)
 
   return (
     <section
@@ -217,6 +227,32 @@ export function Cover() {
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </motion.button>
+
+        {hasPreEvent && (
+          <motion.button
+            type="button"
+            onClick={scrollToPreEvent}
+            aria-label="고창 앞잔치 안내로 바로 이동"
+            initial={reduce ? false : { opacity: 0 }}
+            animate={reduce ? {} : { opacity: 1 }}
+            transition={reduce ? undefined : { duration: 1.2, delay: 1.15 }}
+            className="pointer-events-auto mt-4 inline-flex items-center gap-1.5 rounded-full border border-paper/30 px-3.5 py-1.5 font-serif text-[12px] text-paper/85 transition hover:border-paper/60 hover:bg-paper/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper/80"
+          >
+            <span>고창 앞잔치 안내</span>
+            <svg
+              aria-hidden="true"
+              className="h-3 w-3"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </motion.button>
+        )}
       </div>
     </section>
   )
