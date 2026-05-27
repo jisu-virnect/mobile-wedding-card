@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import type { BankAccount, Person } from '../data/wedding'
-import { kakaoPaySendUrl, tossSendUrl } from '../lib/paySchemes'
+import { tossSendUrl } from '../lib/paySchemes'
 import { useClipboard } from '../lib/useClipboard'
 import { ContactButtons } from './ContactButtons'
 import { SectionHeader } from './SectionHeader'
@@ -36,10 +36,11 @@ function CopyIcon() {
 }
 
 function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) {
-  // Deep-link URLs are null when the bank isn't in paySchemes' BANK_CODE map
-  // → hide the corresponding button. Copy stays visible as a universal fallback.
+  // Toss deep-link returns null when the bank isn't in paySchemes' BANK_CODE
+  // map → hide the Toss pill. Copy stays visible as universal fallback.
+  // (KakaoPay was previously here but its scheme only opens KakaoTalk
+  // without filling the send screen — removed in favor of the cleaner row.)
   const tossUrl = tossSendUrl(account)
-  const kakaoUrl = kakaoPaySendUrl(account)
 
   return (
     <article className="overflow-hidden rounded-sm border border-line bg-paper text-left">
@@ -63,21 +64,14 @@ function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) 
         </p>
         <div className="mt-2 flex items-center justify-end gap-1">
           {tossUrl && (
+            // Outlined pill in the card's sage palette — Toss brand blue
+            // (#0064FF) clashed with the rest of the invitation tone.
             <a
               href={tossUrl}
               aria-label={`${label} Toss 로 송금`}
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0064FF] text-[10px] font-bold tracking-tight text-paper transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0064FF]"
+              className="flex h-7 items-center rounded-full border border-line bg-paper px-2.5 text-[11px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
             >
-              toss
-            </a>
-          )}
-          {kakaoUrl && (
-            <a
-              href={kakaoUrl}
-              aria-label={`${label} 카카오페이로 송금`}
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FFE812] text-[10px] font-bold tracking-tight text-[#3C1E1E] transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFE812]"
-            >
-              pay
+              토스 송금
             </a>
           )}
           <button

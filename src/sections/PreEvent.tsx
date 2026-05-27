@@ -7,8 +7,9 @@ import {
   formatWeddingTimeHuman,
 } from '../lib/formatDate'
 import { renderInlineBold } from '../lib/inlineBold'
-import { kakaoPaySendUrl, tossSendUrl } from '../lib/paySchemes'
+import { tossSendUrl } from '../lib/paySchemes'
 import { useClipboard } from '../lib/useClipboard'
+import { ContactButtons } from './ContactButtons'
 import { KakaoMap } from './KakaoMap'
 import { SectionHeader } from './SectionHeader'
 
@@ -55,15 +56,16 @@ function HairlineDivider({ label }: { label: string }) {
 function PreEventAccountCard({
   role,
   account,
+  phone,
   onCopy,
 }: {
   role: string
   account: BankAccount
+  phone?: string
   onCopy: () => void
 }) {
   const label = `${role} ${account.holder}`
   const tossUrl = tossSendUrl(account)
-  const kakaoUrl = kakaoPaySendUrl(account)
 
   return (
     <article className="mx-auto w-full max-w-sm overflow-hidden rounded-sm border border-line bg-paper text-left">
@@ -71,45 +73,36 @@ function PreEventAccountCard({
         <span className="font-display text-[12px] tracking-[0.3em] text-ink-mute uppercase">
           {role}
         </span>
-        <span className="font-serif text-[13px] text-ink-soft">
+        <span className="inline-flex items-center font-serif text-[13px] text-ink-soft">
           {account.holder}
+          {phone && <ContactButtons name={account.holder} phone={phone} />}
         </span>
       </header>
-      <div className="flex items-center justify-between gap-3 px-5 py-4">
-        <div className="min-w-0">
-          <p className="text-[12px] tracking-wide text-ink-mute">
-            {account.bank}
-          </p>
-          <p className="mt-1 break-all font-serif text-base tracking-[0.02em] text-ink">
-            {account.number}
-          </p>
-        </div>
-        <div className="flex shrink-0 flex-col items-center gap-1.5">
+      <div className="px-5 py-4">
+        <p className="text-[12px] tracking-wide text-ink-mute">
+          {account.bank}
+        </p>
+        <p className="mt-1 break-all font-serif text-base tracking-[0.02em] text-ink">
+          {account.number}
+        </p>
+        <div className="mt-3 flex items-center justify-end gap-1.5">
           {tossUrl && (
             <a
               href={tossUrl}
               aria-label={`${label} Toss 로 송금`}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0064FF] text-[11px] font-bold tracking-tight text-paper transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0064FF]"
+              className="flex h-8 items-center rounded-full border border-line bg-paper px-3 text-[12px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
             >
-              toss
-            </a>
-          )}
-          {kakaoUrl && (
-            <a
-              href={kakaoUrl}
-              aria-label={`${label} 카카오페이로 송금`}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFE812] text-[11px] font-bold tracking-tight text-[#3C1E1E] transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFE812]"
-            >
-              pay
+              토스 송금
             </a>
           )}
           <button
             type="button"
             onClick={onCopy}
             aria-label={`${label} 계좌번호 복사`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-sage-soft text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+            className="flex h-8 items-center gap-1 rounded-full bg-sage-soft px-3 text-[12px] font-medium tracking-wide text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
           >
             <CopyIcon />
+            복사
           </button>
         </div>
       </div>
@@ -303,6 +296,7 @@ export function PreEvent() {
                 key={`${entry.role}-${entry.account.holder}`}
                 role={entry.role}
                 account={entry.account}
+                phone={entry.phone}
                 onCopy={() =>
                   handleAccountCopy(
                     entry.account.number,

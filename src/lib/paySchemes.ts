@@ -1,11 +1,14 @@
 import type { BankAccount } from '../data/wedding'
 
 /**
- * Korean standard 3-digit bank codes (금융결제원). Used by both Toss's
- * `supertoss://send` scheme and KakaoPay's `kakaotalk://kakaopay/money/to/bank`
- * scheme, so a single map covers both.
+ * Korean standard 3-digit bank codes (금융결제원), used by Toss's
+ * `supertoss://send` deep-link scheme. Add new banks here as wedding.ts
+ * gains them.
  *
- * Add new banks here as wedding.ts gains them.
+ * KakaoPay was previously supported via `kakaotalk://kakaopay/money/to/bank`
+ * but the scheme only opens KakaoTalk without populating the send screen
+ * (undocumented and unstable across KakaoTalk versions), so it was dropped.
+ * The copy-to-clipboard fallback covers anyone who prefers KakaoPay.
  */
 const BANK_CODE: Record<string, string> = {
   신한은행: '088',
@@ -32,21 +35,4 @@ export function tossSendUrl(account: BankAccount): string | null {
   if (!code) return null
   const accountNo = account.number.replace(/\D/g, '')
   return `supertoss://send?bank=${code}&accountNo=${accountNo}&origin=wedding`
-}
-
-/**
- * KakaoPay `kakaotalk://kakaopay/money/to/bank` deep link. Less stable
- * than Toss — exact param shape is undocumented and has shifted across
- * KakaoTalk versions. Copy-button fallback covers the breakage case.
- */
-export function kakaoPaySendUrl(account: BankAccount): string | null {
-  const code = BANK_CODE[account.bank]
-  if (!code) return null
-  const params = new URLSearchParams({
-    bank_name: account.bank,
-    bank_code: code,
-    account_number: account.number,
-    account_holder_name: account.holder,
-  })
-  return `kakaotalk://kakaopay/money/to/bank?${params.toString()}`
 }

@@ -60,26 +60,32 @@ describe('<PreEvent />', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders Toss / KakaoPay send links on each account card', () => {
+  it('renders Toss send links on each account card', () => {
     render(<PreEvent />)
-    // 신부 김난슬 = 카카오뱅크 → both buttons should appear.
+    // 신부 김난슬 = 카카오뱅크 → Toss link should appear.
     expect(
       screen.getByRole('link', { name: '신부 김난슬 Toss 로 송금' })
         .getAttribute('href'),
     ).toMatch(/^supertoss:\/\/send\?/)
-    expect(
-      screen
-        .getByRole('link', { name: '신부 김난슬 카카오페이로 송금' })
-        .getAttribute('href'),
-    ).toMatch(/^kakaotalk:\/\/kakaopay\/money\/to\/bank\?/)
-    // 신부 아버지 김청섭 = 농협 → both buttons should appear.
+    // 신부 아버지 김청섭 = 농협 → Toss link should appear.
     expect(
       screen.getByRole('link', { name: '신부 아버지 김청섭 Toss 로 송금' }),
     ).toBeInTheDocument()
+  })
+
+  it('renders tel/sms contact buttons next to each account holder', () => {
+    render(<PreEvent />)
     expect(
-      screen.getByRole('link', {
-        name: '신부 아버지 김청섭 카카오페이로 송금',
-      }),
+      screen.getByRole('link', { name: '김난슬에게 전화 걸기' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: '김난슬에게 문자 보내기' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: '김청섭에게 전화 걸기' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: '김청섭에게 문자 보내기' }),
     ).toBeInTheDocument()
   })
 

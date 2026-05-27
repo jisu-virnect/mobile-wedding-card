@@ -109,6 +109,8 @@ export interface PreEventAccount {
   /** Role label shown on the card header (e.g. "신부", "신부 아버지"). */
   role: string
   account: BankAccount
+  /** Optional contact phone — renders ☎/✉ buttons next to holder name. */
+  phone?: string
 }
 
 export interface VideoItem {
@@ -253,6 +255,8 @@ export const wedding: WeddingInfo = {
           number: '3333-30-4385686',
           holder: '김난슬',
         },
+        // 신부 본인 — bride.phone 과 동일 placeholder (실제 번호로 교체 시 둘 다 갱신).
+        phone: '010-0000-0000',
       },
       {
         role: '신부 아버지',
@@ -261,6 +265,8 @@ export const wedding: WeddingInfo = {
           number: '356-1314-3461-83',
           holder: '김청섭',
         },
+        // 신부 아버지 — bride.fatherPhone 과 동일 placeholder.
+        phone: '010-0000-0000',
       },
     ],
   },

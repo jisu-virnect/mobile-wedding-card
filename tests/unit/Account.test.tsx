@@ -58,19 +58,13 @@ describe('<Account />', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders Toss / KakaoPay send links for mapped banks', () => {
+  it('renders a Toss send link for mapped banks', () => {
     render(<Account />)
-    // 신부 김난슬 = 카카오뱅크 → both deep-link buttons should appear.
+    // 신부 김난슬 = 카카오뱅크 → Toss link should appear.
     const tossLink = screen.getByRole('link', {
       name: `신부 ${wedding.bride.name} Toss 로 송금`,
     })
     expect(tossLink.getAttribute('href')).toMatch(/^supertoss:\/\/send\?/)
-    const kakaoLink = screen.getByRole('link', {
-      name: `신부 ${wedding.bride.name} 카카오페이로 송금`,
-    })
-    expect(kakaoLink.getAttribute('href')).toMatch(
-      /^kakaotalk:\/\/kakaopay\/money\/to\/bank\?/,
-    )
   })
 
   it('surfaces a retry hint when the clipboard call rejects', async () => {
