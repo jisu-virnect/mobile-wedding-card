@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import type { BankAccount, Person } from '../data/wedding'
+import { kakaoPaySendUrl, tossSendUrl } from '../lib/paySchemes'
 import { useClipboard } from '../lib/useClipboard'
 import { ContactButtons } from './ContactButtons'
 import { SectionHeader } from './SectionHeader'
@@ -35,6 +36,11 @@ function CopyIcon() {
 }
 
 function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) {
+  // Deep-link URLs are null when the bank isn't in paySchemes' BANK_CODE map
+  // → hide the corresponding button. Copy stays visible as a universal fallback.
+  const tossUrl = tossSendUrl(account)
+  const kakaoUrl = kakaoPaySendUrl(account)
+
   return (
     <article className="overflow-hidden rounded-sm border border-line bg-paper text-left">
       <header className="flex items-center justify-between gap-1.5 border-b border-line px-3 py-2">
@@ -55,17 +61,37 @@ function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) 
         <p className="mt-1 font-serif text-[13px] tracking-[0.01em] break-all text-ink">
           {account.number}
         </p>
-        <button
-          type="button"
-          aria-label={`${label} 계좌번호 복사`}
-          onClick={() => {
-            void onCopy(account.number, label)
-          }}
-          className="mt-2 ml-auto flex h-7 items-center gap-1 rounded-full bg-sage-soft px-2.5 text-[11px] font-medium tracking-wide text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
-        >
-          <CopyIcon />
-          복사
-        </button>
+        <div className="mt-2 flex items-center justify-end gap-1">
+          {tossUrl && (
+            <a
+              href={tossUrl}
+              aria-label={`${label} Toss 로 송금`}
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0064FF] text-[10px] font-bold tracking-tight text-paper transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0064FF]"
+            >
+              toss
+            </a>
+          )}
+          {kakaoUrl && (
+            <a
+              href={kakaoUrl}
+              aria-label={`${label} 카카오페이로 송금`}
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FFE812] text-[10px] font-bold tracking-tight text-[#3C1E1E] transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFE812]"
+            >
+              pay
+            </a>
+          )}
+          <button
+            type="button"
+            aria-label={`${label} 계좌번호 복사`}
+            onClick={() => {
+              void onCopy(account.number, label)
+            }}
+            className="flex h-7 items-center gap-1 rounded-full bg-sage-soft px-2.5 text-[11px] font-medium tracking-wide text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+          >
+            <CopyIcon />
+            복사
+          </button>
+        </div>
       </div>
     </article>
   )

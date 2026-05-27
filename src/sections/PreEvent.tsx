@@ -7,6 +7,7 @@ import {
   formatWeddingTimeHuman,
 } from '../lib/formatDate'
 import { renderInlineBold } from '../lib/inlineBold'
+import { kakaoPaySendUrl, tossSendUrl } from '../lib/paySchemes'
 import { useClipboard } from '../lib/useClipboard'
 import { KakaoMap } from './KakaoMap'
 import { SectionHeader } from './SectionHeader'
@@ -60,6 +61,10 @@ function PreEventAccountCard({
   account: BankAccount
   onCopy: () => void
 }) {
+  const label = `${role} ${account.holder}`
+  const tossUrl = tossSendUrl(account)
+  const kakaoUrl = kakaoPaySendUrl(account)
+
   return (
     <article className="mx-auto w-full max-w-sm overflow-hidden rounded-sm border border-line bg-paper text-left">
       <header className="flex items-center justify-between gap-2 border-b border-line px-5 py-2.5">
@@ -70,23 +75,43 @@ function PreEventAccountCard({
           {account.holder}
         </span>
       </header>
-      <div className="flex items-center justify-between gap-4 px-5 py-4">
+      <div className="flex items-center justify-between gap-3 px-5 py-4">
         <div className="min-w-0">
           <p className="text-[12px] tracking-wide text-ink-mute">
             {account.bank}
           </p>
-          <p className="mt-1 truncate font-serif text-base tracking-[0.02em] text-ink">
+          <p className="mt-1 break-all font-serif text-base tracking-[0.02em] text-ink">
             {account.number}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onCopy}
-          aria-label={`${role} ${account.holder} 계좌번호 복사`}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
-        >
-          <CopyIcon />
-        </button>
+        <div className="flex shrink-0 flex-col items-center gap-1.5">
+          {tossUrl && (
+            <a
+              href={tossUrl}
+              aria-label={`${label} Toss 로 송금`}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0064FF] text-[11px] font-bold tracking-tight text-paper transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0064FF]"
+            >
+              toss
+            </a>
+          )}
+          {kakaoUrl && (
+            <a
+              href={kakaoUrl}
+              aria-label={`${label} 카카오페이로 송금`}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFE812] text-[11px] font-bold tracking-tight text-[#3C1E1E] transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFE812]"
+            >
+              pay
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={onCopy}
+            aria-label={`${label} 계좌번호 복사`}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-sage-soft text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+          >
+            <CopyIcon />
+          </button>
+        </div>
       </div>
     </article>
   )
