@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { fetchAllRsvps, type RsvpRow } from '../lib/rsvp'
+import { adminDeleteRsvp, fetchAllRsvps, type RsvpRow } from '../lib/rsvp'
 import { hasSupabase } from '../lib/supabase'
 
 type LoadState =
@@ -130,6 +130,24 @@ export function AdminRsvp() {
       })
   }, [backendReady])
 
+  const handleDelete = async (row: RsvpRow) => {
+    const ok = window.confirm(
+      `${row.name}님의 응답을 삭제하시겠습니까?\n(${row.side === 'groom' ? '신랑측' : '신부측'}${row.relationship ? ` · ${row.relationship}` : ''})`,
+    )
+    if (!ok) return
+    try {
+      await adminDeleteRsvp(row.id)
+      setLoad((prev) =>
+        prev.status === 'ready'
+          ? { status: 'ready', rows: prev.rows.filter((r) => r.id !== row.id) }
+          : prev,
+      )
+    } catch (err) {
+      console.error('admin delete failed', err)
+      window.alert('삭제에 실패했어요. 잠시 후 다시 시도해주세요.')
+    }
+  }
+
   const totals = useMemo<Totals | null>(
     () => (load.status === 'ready' ? computeTotals(load.rows) : null),
     [load],
@@ -239,9 +257,19 @@ export function AdminRsvp() {
                           {row.message}
                         </p>
                       )}
-                      <p className="mt-1 text-[10px] text-ink-mute/70">
-                        {new Date(row.created_at).toLocaleString('ko-KR')}
-                      </p>
+                      <div className="mt-1 flex items-center justify-between gap-2">
+                        <p className="text-[10px] text-ink-mute/70">
+                          {new Date(row.created_at).toLocaleString('ko-KR')}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(row)}
+                          aria-label={`${row.name} 응답 삭제`}
+                          className="rounded-full border border-line bg-paper px-2 py-0.5 text-[11px] font-medium text-sun transition hover:bg-sun/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun"
+                        >
+                          삭제
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>

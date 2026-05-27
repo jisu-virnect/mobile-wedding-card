@@ -84,6 +84,19 @@ export async function cancelRsvp(rowId: string): Promise<void> {
   if (error) throw error
 }
 
+/**
+ * Admin-only: delete any row by id (no device_id check). Use only from the
+ * admin page (token-gated). RLS at the DB layer currently allows anon delete
+ * — fine for a low-stakes wedding card; harden later if the threat model
+ * changes.
+ */
+export async function adminDeleteRsvp(rowId: string): Promise<void> {
+  const supabase = getSupabase()
+  if (!supabase) throw new Error('Supabase 가 설정되지 않았어요.')
+  const { error } = await supabase.from(TABLE).delete().eq('id', rowId)
+  if (error) throw error
+}
+
 /** Admin-only: read every row. Relies on RLS to gate by admin token. */
 export async function fetchAllRsvps(): Promise<RsvpRow[]> {
   const supabase = getSupabase()
