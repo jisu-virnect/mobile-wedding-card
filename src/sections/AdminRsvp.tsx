@@ -7,6 +7,8 @@ type LoadState =
   | { status: 'ready'; rows: RsvpRow[] }
   | { status: 'error'; message: string }
 
+type Tab = 'all' | 'groom' | 'bride' | 'absent'
+
 interface Totals {
   attending: number
   notAttending: number
@@ -120,6 +122,8 @@ export function AdminRsvp() {
       ? { status: 'loading' }
       : { status: 'error', message: 'Supabase 가 설정되지 않았어요.' },
   )
+  const [tab, setTab] = useState<Tab>('all')
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     if (!backendReady) return
@@ -148,23 +152,52 @@ export function AdminRsvp() {
     }
   }
 
+  // Totals always reflect the FULL dataset (so the tabs/cards can show
+  // accurate counts regardless of which filter is active).
   const totals = useMemo<Totals | null>(
     () => (load.status === 'ready' ? computeTotals(load.rows) : null),
     [load],
   )
-  const grouped = useMemo(
-    () => (load.status === 'ready' ? groupByDevice(load.rows) : []),
-    [load],
-  )
+
+  // Apply tab + search filters before grouping.
+  const filtered = useMemo(() => {
+    if (load.status !== 'ready') return []
+    const q = search.trim().toLowerCase()
+    return load.rows.filter((row) => {
+      // Tab filter
+      if (tab === 'groom' && row.side !== 'groom') return false
+      if (tab === 'bride' && row.side !== 'bride') return false
+      if (tab === 'absent' && row.attending) return false
+      // Search filter (matches name + relationship + message)
+      if (q) {
+        const haystack =
+          row.name.toLowerCase() +
+          ' ' +
+          (row.relationship ?? '').toLowerCase() +
+          ' ' +
+          (row.message ?? '').toLowerCase()
+        if (!haystack.includes(q)) return false
+      }
+      return true
+    })
+  }, [load, tab, search])
+
+  const grouped = useMemo(() => groupByDevice(filtered), [filtered])
   const collisions = useMemo(
-    () => (load.status === 'ready' ? nameCollisions(load.rows) : new Set()),
+    () =>
+      load.status === 'ready' ? nameCollisions(load.rows) : new Set<string>(),
     [load],
   )
 
   return (
     <main className="mx-auto min-h-svh max-w-3xl bg-ivory px-6 py-10">
       <header className="mb-6 flex items-baseline justify-between gap-4">
-        <h1 className="font-serif text-2xl text-ink">RSVP 어드민</h1>
+        <div>
+          <h1 className="font-serif text-2xl text-ink">RSVP 어드민</h1>
+          <p className="mt-1 text-[12px] text-ink-mute">
+            지수·난슬 · 2026.11.28
+          </p>
+        </div>
         <button
           type="button"
           onClick={() => {
@@ -195,7 +228,11 @@ export function AdminRsvp() {
           >
             <SummaryCard label="참석" value={totals.attending} accent />
             <SummaryCard label="불참" value={totals.notAttending} />
-            <SummaryCard label="식수 합계" value={totals.guestHeadcount} accent />
+            <SummaryCard
+              label="식수 합계"
+              value={totals.guestHeadcount}
+              accent
+            />
             <SummaryCard
               label="신랑측 / 신부측"
               value={`${totals.groomCount} / ${totals.brideCount}`}
@@ -209,9 +246,59 @@ export function AdminRsvp() {
             </p>
           )}
 
+          {/* Tab row + search */}
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-line">
+            <div
+              aria-label="응답 필터"
+              role="tablist"
+              className="flex gap-1"
+            >
+              <TabButton
+                active={tab === 'all'}
+                onClick={() => setTab('all')}
+                label="전체"
+                count={load.rows.length}
+              />
+              <TabButton
+                active={tab === 'groom'}
+                onClick={() => setTab('groom')}
+                label="신랑측"
+                count={totals.groomCount}
+              />
+              <TabButton
+                active={tab === 'bride'}
+                onClick={() => setTab('bride')}
+                label="신부측"
+                count={totals.brideCount}
+              />
+              <TabButton
+                active={tab === 'absent'}
+                onClick={() => setTab('absent')}
+                label="불참"
+                count={totals.notAttending}
+              />
+            </div>
+            <div className="relative pb-2">
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="이름·관계·메시지 검색"
+                aria-label="응답 검색"
+                className="w-56 rounded-full border border-line bg-paper px-3 py-1 text-[12px] text-ink outline-none transition placeholder:text-ink-mute focus:border-sage focus:ring-2 focus:ring-sage-soft"
+              />
+            </div>
+          </div>
+
           <section aria-label="응답 목록" className="space-y-4">
             {grouped.length === 0 && (
-              <p className="text-ink-mute">아직 받은 응답이 없어요.</p>
+              <p className="rounded-sm border border-line bg-paper px-4 py-6 text-center text-ink-mute">
+                {load.rows.length === 0
+                  ? '아직 받은 응답이 없어요.'
+                  : search
+                    ? `"${search}" 에 해당하는 응답이 없어요.`
+                    : '이 탭에 해당하는 응답이 없어요.'}
+              </p>
             )}
             {grouped.map((group) => (
               <article
@@ -279,6 +366,45 @@ export function AdminRsvp() {
         </>
       )}
     </main>
+  )
+}
+
+function TabButton({
+  active,
+  onClick,
+  label,
+  count,
+}: {
+  active: boolean
+  onClick: () => void
+  label: string
+  count: number
+}) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={
+        '-mb-px border-b-2 px-3 py-2 text-[13px] font-medium transition ' +
+        (active
+          ? 'border-sage-strong text-ink'
+          : 'border-transparent text-ink-mute hover:text-ink-soft')
+      }
+    >
+      {label}
+      <span
+        className={
+          'ml-1.5 inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-[10px] tabular-nums ' +
+          (active
+            ? 'bg-sage-strong/10 text-sage-strong'
+            : 'bg-line/40 text-ink-mute')
+        }
+      >
+        {count}
+      </span>
+    </button>
   )
 }
 
