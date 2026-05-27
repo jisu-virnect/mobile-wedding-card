@@ -1,5 +1,8 @@
 import { useClipboard } from '../lib/useClipboard'
 
+// Toast (success / error) is dispatched globally by useClipboard, so this
+// component no longer needs its own inline status paragraph.
+
 /* Real App-Store app-icon PNGs, dropped into public/map/ by the user.
    Rendered at h-9 w-9 (36px) — the icons themselves act as the button,
    so no outer pill shell. rounded-xl matches Apple's squircle so the
@@ -103,62 +106,44 @@ export function MapButtonsRow({
   address,
   copyAriaLabel = '주소 복사',
 }: MapButtonsRowProps) {
-  const { copy, copied, error } = useClipboard()
+  const { copy } = useClipboard()
 
   const handleCopy = () => {
-    void copy(address)
+    void copy(address, '주소를')
   }
 
-  const feedback = error
-    ? '주소 복사에 실패했어요. 길게 눌러 직접 복사해주세요.'
-    : copied
-      ? '주소를 복사했어요.'
-      : ''
-
   return (
-    <>
-      <div className="flex flex-nowrap items-center justify-center gap-2">
-        {kakaoMapUrl && (
-          <MapIconLink
-            href={kakaoMapUrl}
-            ariaLabel="카카오맵으로 열기"
-            icon={<KakaoMapMark />}
-          />
-        )}
-        {naverMapUrl && (
-          <MapIconLink
-            href={naverMapUrl}
-            ariaLabel="네이버지도로 열기"
-            icon={<NaverMark />}
-          />
-        )}
-        {tmapUrl && (
-          <MapIconLink
-            href={tmapUrl}
-            ariaLabel="티맵으로 길찾기"
-            icon={<TmapMark />}
-          />
-        )}
-        <button
-          type="button"
-          onClick={handleCopy}
-          aria-label={copyAriaLabel}
-          className="inline-flex h-9 items-center gap-1 rounded-full border border-line bg-paper px-3 text-[12px] font-medium tracking-tight text-ink-soft shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
-        >
-          <CopyIcon />
-          주소 복사
-        </button>
-      </div>
-      <p
-        role="status"
-        aria-live="polite"
-        className={
-          'mt-3 min-h-[1.25rem] text-xs ' +
-          (error ? 'text-sun' : 'text-ink-soft')
-        }
+    <div className="flex flex-nowrap items-center justify-center gap-2">
+      {kakaoMapUrl && (
+        <MapIconLink
+          href={kakaoMapUrl}
+          ariaLabel="카카오맵으로 열기"
+          icon={<KakaoMapMark />}
+        />
+      )}
+      {naverMapUrl && (
+        <MapIconLink
+          href={naverMapUrl}
+          ariaLabel="네이버지도로 열기"
+          icon={<NaverMark />}
+        />
+      )}
+      {tmapUrl && (
+        <MapIconLink
+          href={tmapUrl}
+          ariaLabel="티맵으로 길찾기"
+          icon={<TmapMark />}
+        />
+      )}
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label={copyAriaLabel}
+        className="inline-flex h-9 items-center gap-1 rounded-full border border-line bg-paper px-3 text-[12px] font-medium tracking-tight text-ink-soft shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
       >
-        {feedback}
-      </p>
-    </>
+        <CopyIcon />
+        주소 복사
+      </button>
+    </div>
   )
 }

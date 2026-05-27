@@ -27,16 +27,10 @@ describe('paySchemes', () => {
     expect(kakaoPaySendUrl(override)).toBe('https://qr.kakaopay.com/abc123')
   })
 
-  it('kakaoPaySendUrl falls back to the unofficial kakaotalk:// deeplink (digits-only)', () => {
-    const url = kakaoPaySendUrl(kakao)
-    expect(url).not.toBeNull()
-    expect(url).toMatch(/^kakaotalk:\/\/kakaopay\/money\/to\/bank\?/)
-    expect(url).toContain('bank_code=090')
-    // Account number is normalized to digits-only (matches Toss shape).
-    expect(url).toContain('account_number=3333304385686')
-  })
-
-  it('kakaoPaySendUrl returns null when bank is unmapped and no override', () => {
+  it('kakaoPaySendUrl returns null without an explicit override (no unofficial deeplink)', () => {
+    // The unofficial kakaotalk:// scheme never reliably populated the send
+    // screen, so accounts without a kakaoPayUrl simply hide the chip.
+    expect(kakaoPaySendUrl(kakao)).toBeNull()
     expect(kakaoPaySendUrl(unknown)).toBeNull()
   })
 })

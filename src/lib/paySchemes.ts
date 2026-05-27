@@ -38,34 +38,21 @@ export function tossSendUrl(account: BankAccount): string | null {
 }
 
 /**
- * KakaoPay send-money link.
+ * KakaoPay send-money link — override-only.
  *
- * Resolution order:
- *   1. account.kakaoPayUrl — official QR-issued URL from the recipient's
- *      KakaoPay app (most reliable; recipient must generate it once).
- *   2. fallback unofficial deeplink `kakaotalk://kakaopay/money/to/bank?…`
- *      — KakaoTalk recognizes the URL and opens, but the send screen
- *      may or may not auto-fill depending on app version. Better than
- *      no button at all when the recipient hasn't generated a QR.
+ * Earlier attempts at an unofficial `kakaotalk://kakaopay/money/to/bank?…`
+ * deeplink opened KakaoTalk but the send screen never auto-filled across
+ * the KakaoTalk versions we tested. Since a broken button is worse than
+ * no button, the helper now returns `null` unless the recipient supplies
+ * an explicit `kakaoPayUrl`.
  *
- * Returns null only when both the override URL and the bank-code map
- * are unavailable, so the caller hides the chip.
+ * To get an override:
+ *   카카오톡 → 더보기 → pay → 송금 → 받기 → QR 코드 → URL 복사.
+ *   Example: 'https://qr.kakaopay.com/Ej7n3Hk2zS'.
+ *
+ * Tapping that URL on a phone opens the official KakaoPay send sheet
+ * with the recipient already filled in.
  */
 export function kakaoPaySendUrl(account: BankAccount): string | null {
-  if (account.kakaoPayUrl) return account.kakaoPayUrl
-  const code = BANK_CODE[account.bank]
-  if (!code) return null
-  // Strip hyphens from the account number — earlier attempt with the
-  // original (hyphenated) form opened KakaoTalk but didn't pre-fill the
-  // send screen. Toss accepts digits-only and works; try that shape here
-  // too as a closer match to KakaoTalk's internal handler.
-  const accountNo = account.number.replace(/\D/g, '')
-  const params = new URLSearchParams({
-    bank_name: account.bank,
-    bank_code: code,
-    account_number: accountNo,
-    account_holder_name: account.holder,
-    amount: '',
-  })
-  return `kakaotalk://kakaopay/money/to/bank?${params.toString()}`
+  return account.kakaoPayUrl ?? null
 }

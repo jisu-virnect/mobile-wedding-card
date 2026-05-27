@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import type { BankAccount } from '../data/wedding'
@@ -139,8 +138,7 @@ function PreEventAccountCard({
 
 export function PreEvent() {
   const reduce = useReducedMotion()
-  const { copy: copyAcct, error: acctError } = useClipboard(2500)
-  const [acctToast, setAcctToast] = useState<string>('')
+  const { copy: copyAcct } = useClipboard(2500)
   const event = wedding.preEvent
 
   const fade = reduce
@@ -159,16 +157,9 @@ export function PreEvent() {
   const { name, address, detail, kakaoMapUrl, naverMapUrl, tmapUrl } =
     event.venue
 
-  const handleAccountCopy = async (
-    accountNumber: string,
-    label: string,
-  ) => {
-    const ok = await copyAcct(accountNumber)
-    setAcctToast(
-      ok
-        ? `${label} 계좌번호를 복사했어요.`
-        : '복사에 실패했어요. 길게 눌러 직접 복사해주세요.',
-    )
+  const handleAccountCopy = (accountNumber: string, label: string) => {
+    // Success / failure surfaces as a global toast via useClipboard.
+    void copyAcct(accountNumber, `${label} 계좌번호`)
   }
 
   return (
@@ -289,16 +280,6 @@ export function PreEvent() {
               />
             ))}
           </motion.div>
-          <p
-            role="status"
-            aria-live="polite"
-            className={
-              'mx-auto mt-3 min-h-[1.25rem] max-w-sm text-[13px] ' +
-              (acctError ? 'text-sun' : 'text-sage-strong')
-            }
-          >
-            {acctToast}
-          </p>
         </>
       )}
     </section>

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import type { BankAccount, Person } from '../data/wedding'
@@ -174,8 +173,7 @@ function ColumnHeading({ children }: { children: React.ReactNode }) {
 
 export function Account() {
   const reduce = useReducedMotion()
-  const { copy, error } = useClipboard(2500)
-  const [toast, setToast] = useState<string>('')
+  const { copy } = useClipboard(2500)
 
   const fade = reduce
     ? { initial: false as const, animate: {} }
@@ -187,13 +185,8 @@ export function Account() {
       }
 
   const handleCopy = async (accountNumber: string, label: string) => {
-    const ok = await copy(accountNumber)
-    setToast(
-      ok
-        ? `${label} 계좌번호를 복사했어요.`
-        : '복사에 실패했어요. 길게 눌러 직접 복사해주세요.',
-    )
-    return ok
+    // success / failure both surface as a global toast via useClipboard.
+    return copy(accountNumber, `${label} 계좌번호`)
   }
 
   const groomRows = rowsFor(wedding.groom, 'groom')
@@ -247,17 +240,6 @@ export function Account() {
           </div>
         )}
       </motion.div>
-
-      <p
-        role="status"
-        aria-live="polite"
-        className={
-          'mx-auto mt-5 min-h-[1.25rem] max-w-sm text-xs ' +
-          (error ? 'text-sun' : 'text-sage-strong')
-        }
-      >
-        {toast}
-      </p>
     </section>
   )
 }

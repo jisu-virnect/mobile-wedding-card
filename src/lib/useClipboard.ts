@@ -1,43 +1,59 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { showToast } from './toast'
 
 export interface UseClipboardResult {
-  copy: (text: string) => Promise<boolean>
+  /**
+   * Copy `text` to the clipboard, returning true on success. When `label`
+   * is supplied a `{label} 복사되었어요.` toast appears; otherwise the
+   * fallback `복사되었어요.` is used. Errors surface via toast as well.
+   */
+  copy: (text: string, label?: string) => Promise<boolean>
   copied: boolean
   error: Error | null
 }
 
 /**
- * Fallback clipboard writer using the deprecated-but-universal
- * `document.execCommand('copy')`. Needed because `navigator.clipboard`
- * is gated behind *secure context* — LAN IP HTTP dev servers
- * (e.g. `http://172.16.10.106:5177/`) leave it undefined, and so do
- * older mobile browsers. Returns false if the document body isn't
- * available or the copy command itself reports failure.
+ * Cross-context clipboard fallback. iOS Safari + non-secure contexts
+ * (LAN IP HTTP dev servers) can't use the async Clipboard API, so we
+ * synthesize a temporary off-screen <textarea>, select it via
+ * Range + setSelectionRange, and run `document.execCommand('copy')`
+ * within the same user-gesture tick. Returns false if the gesture
+ * window already closed or execCommand reports failure.
  */
 function legacyCopy(text: string): boolean {
   if (typeof document === 'undefined' || !document.body) return false
+
   const textarea = document.createElement('textarea')
   textarea.value = text
-  // Off-screen so the user never sees it. `readOnly` prevents the iOS
-  // keyboard from popping up; `contentEditable=true` lets iOS select.
+  // iOS Safari requires contenteditable + a real selection range; opacity
+  // 0 / visibility hidden / display:none all silently skip the copy.
+  // Off-screen via left:-9999px keeps it invisible to the user without
+  // breaking selection.
   textarea.setAttribute('readonly', '')
   textarea.contentEditable = 'true'
-  textarea.style.position = 'fixed'
+  textarea.style.position = 'absolute'
+  textarea.style.left = '-9999px'
   textarea.style.top = '0'
-  textarea.style.left = '0'
-  textarea.style.width = '1px'
-  textarea.style.height = '1px'
-  textarea.style.opacity = '0'
-  textarea.style.pointerEvents = 'none'
+  // 16px prevents iOS auto-zoom if the element ever scrolls into view.
+  textarea.style.fontSize = '16px'
+
   document.body.appendChild(textarea)
 
-  // iOS Safari needs an explicit range selection — focus + select alone
-  // doesn't trigger the copy.
+  // Cache the prior selection so we can restore it after the copy.
+  const previousSelection = document.getSelection()
+  const previousRange =
+    previousSelection && previousSelection.rangeCount > 0
+      ? previousSelection.getRangeAt(0)
+      : null
+
   const range = document.createRange()
   range.selectNodeContents(textarea)
   const selection = window.getSelection()
-  selection?.removeAllRanges()
-  selection?.addRange(range)
+  if (selection) {
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+  // iOS Safari also wants the textarea's own input selection set.
   textarea.setSelectionRange(0, text.length)
 
   let ok = false
@@ -46,7 +62,11 @@ function legacyCopy(text: string): boolean {
   } catch {
     ok = false
   }
-  selection?.removeAllRanges()
+
+  if (selection) {
+    selection.removeAllRanges()
+    if (previousRange) selection.addRange(previousRange)
+  }
   document.body.removeChild(textarea)
   return ok
 }
@@ -71,11 +91,15 @@ export function useClipboard(resetMs = 2000): UseClipboardResult {
   }, [resetMs])
 
   const copy = useCallback(
-    async (text: string) => {
-      // Decide modern vs legacy BEFORE consuming the user-gesture window.
-      // Awaiting navigator.clipboard.writeText in an insecure context
-      // rejects on iOS Safari and by then execCommand has already lost
-      // the gesture — so jump straight to execCommand on HTTP/LAN.
+    async (text: string, label?: string) => {
+      const successMessage = label
+        ? `${label} 복사되었어요.`
+        : '복사되었어요.'
+
+      // Pre-check secure context. Awaiting navigator.clipboard.writeText
+      // in a non-secure context rejects on iOS Safari and by then the
+      // execCommand fallback has lost the gesture window — so route
+      // straight to legacyCopy on HTTP/LAN.
       const isSecure =
         typeof window !== 'undefined' && window.isSecureContext === true
       const hasModern =
@@ -87,18 +111,26 @@ export function useClipboard(resetMs = 2000): UseClipboardResult {
         try {
           await navigator.clipboard.writeText(text)
           markCopied()
+          showToast(successMessage, { tone: 'success' })
           return true
         } catch {
           /* fall through to legacy */
         }
       }
+
       if (legacyCopy(text)) {
         markCopied()
+        showToast(successMessage, { tone: 'success' })
         return true
       }
+
       const err = new Error('Clipboard unavailable')
       setError(err)
       setCopied(false)
+      showToast('복사에 실패했어요. 길게 눌러 직접 복사해주세요.', {
+        tone: 'error',
+        durationMs: 3200,
+      })
       return false
     },
     [markCopied],

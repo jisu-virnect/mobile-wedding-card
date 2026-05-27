@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { Account } from '../../src/sections/Account'
+import { ToastContainer } from '../../src/sections/ToastContainer'
 import { wedding } from '../../src/data/wedding'
 
 describe('<Account />', () => {
@@ -41,7 +42,12 @@ describe('<Account />', () => {
   })
 
   it('copies the account number when the copy button is clicked', async () => {
-    render(<Account />)
+    render(
+      <>
+        <Account />
+        <ToastContainer />
+      </>,
+    )
     const copyBtn = screen.getByRole('button', {
       name: `신랑 ${wedding.groom.name} 계좌번호 복사`,
     })
@@ -51,31 +57,40 @@ describe('<Account />', () => {
     await waitFor(() =>
       expect(writeText).toHaveBeenCalledWith(wedding.groom.account!.number),
     )
+    // Success toast (text now lives in the global ToastContainer).
     expect(
       await screen.findByText(
-        `신랑 ${wedding.groom.name} 계좌번호를 복사했어요.`,
+        `신랑 ${wedding.groom.name} 계좌번호 복사되었어요.`,
       ),
     ).toBeInTheDocument()
   })
 
-  it('renders Toss + Kakao send links for mapped banks', () => {
+  it('renders a Toss send link for mapped banks', () => {
     render(<Account />)
-    // 신부 김난슬 = 카카오뱅크 → both deep-link buttons should appear.
+    // 신부 김난슬 = 카카오뱅크 → Toss link should appear.
     const tossLink = screen.getByRole('link', {
       name: `신부 ${wedding.bride.name} 토스로 송금`,
     })
     expect(tossLink.getAttribute('href')).toMatch(/^supertoss:\/\/send\?/)
-    const kakaoLink = screen.getByRole('link', {
-      name: `신부 ${wedding.bride.name} 카카오로 송금`,
-    })
-    expect(kakaoLink.getAttribute('href')).toMatch(
-      /^(kakaotalk:\/\/kakaopay|https:\/\/qr\.kakaopay\.com)/,
-    )
+  })
+
+  it('hides the Kakao send link when kakaoPayUrl is not set', () => {
+    render(<Account />)
+    expect(
+      screen.queryByRole('link', {
+        name: `신부 ${wedding.bride.name} 카카오로 송금`,
+      }),
+    ).toBeNull()
   })
 
   it('surfaces a retry hint when the clipboard call rejects', async () => {
     writeText.mockRejectedValueOnce(new Error('denied'))
-    render(<Account />)
+    render(
+      <>
+        <Account />
+        <ToastContainer />
+      </>,
+    )
     const copyBtn = screen.getByRole('button', {
       name: `신랑 ${wedding.groom.name} 계좌번호 복사`,
     })

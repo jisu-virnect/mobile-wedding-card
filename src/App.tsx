@@ -10,6 +10,7 @@ import {
   Rsvp,
   ScrollToTop,
   Share,
+  ToastContainer,
   When,
   Where,
 } from './sections'
@@ -70,6 +71,7 @@ function App() {
       <PreEvent />
       <SectionDivider />
       <Share />
+      <ToastContainer />
     </main>
   )
 }

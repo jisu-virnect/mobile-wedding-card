@@ -22,10 +22,9 @@ describe('<Where />', () => {
     expect(kakao).toHaveAttribute('rel', expect.stringContaining('noopener'))
   })
 
-  it('exposes a labelled copy button and a live status region', () => {
+  it('exposes a labelled copy button (status now lives in the global toast)', () => {
     render(<Where />)
     expect(screen.getByRole('button', { name: '주소 복사' })).toBeInTheDocument()
-    expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
   it('labels the map placeholder with the venue name', () => {
