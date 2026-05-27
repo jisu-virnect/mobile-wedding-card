@@ -90,6 +90,27 @@ h3 {
   }
 }
 
+/* Gentle pulse used by small accent SVGs (e.g. the heart on the
+   calendar's wedding day). Pure scale animation — no opacity flicker. */
+@keyframes heart-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
+.heart-pulse {
+  animation: heart-pulse 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .heart-pulse {
+    animation: none;
+  }
+}
+
 /* Subtle pulse hint on the BGM toggle when it's not yet been interacted
    with. Lighter than Tailwind's default `animate-pulse` (which is too
    loud for a discreet hint). */

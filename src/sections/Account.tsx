@@ -7,8 +7,6 @@ import { ContactButtons } from './ContactButtons'
 import { SectionHeader } from './SectionHeader'
 
 interface AccountCardProps {
-  /** Two-line micro-label rendered in the header: side + role. */
-  side: 'groom' | 'bride'
   role: '본인' | '아버지' | '어머니'
   /** Toast-friendly description, e.g. "신랑 김지수". */
   label: string
@@ -22,7 +20,7 @@ function CopyIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-4 w-4"
+      className="h-3.5 w-3.5"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -36,47 +34,35 @@ function CopyIcon() {
   )
 }
 
-function AccountCard({
-  side,
-  role,
-  label,
-  account,
-  phone,
-  onCopy,
-}: AccountCardProps) {
-  const sideLabel = side === 'groom' ? '신랑측' : '신부측'
+function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) {
   return (
     <article className="overflow-hidden rounded-sm border border-line bg-paper text-left">
-      <header className="flex items-center justify-between gap-2 border-b border-line px-5 py-2.5">
-        <span className="font-display text-[12px] tracking-[0.3em] text-ink-mute uppercase">
-          {sideLabel}
-          <span aria-hidden="true" className="mx-1.5 text-ink-mute/50">
-            ·
-          </span>
+      <header className="flex items-center justify-between gap-1.5 border-b border-line px-3 py-2">
+        <span className="font-display text-[11px] tracking-[0.25em] text-ink-mute uppercase">
           {role}
         </span>
-        <span className="inline-flex items-center font-serif text-[13px] text-ink-soft">
+        <span className="inline-flex items-center font-serif text-[12px] text-ink-soft">
           {account.holder}
           {phone && <ContactButtons name={account.holder} phone={phone} />}
         </span>
       </header>
-      <div className="flex items-center justify-between gap-4 px-5 py-4">
-        <div className="min-w-0">
-          <p className="text-[12px] tracking-wide text-ink-mute">{account.bank}</p>
-          <p className="mt-1 truncate font-serif text-base tracking-[0.02em] text-ink">
+      <div className="px-3 py-3">
+        <p className="text-[11px] tracking-wide text-ink-mute">{account.bank}</p>
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <p className="min-w-0 truncate font-serif text-[13px] tracking-[0.01em] text-ink">
             {account.number}
           </p>
+          <button
+            type="button"
+            aria-label={`${label} 계좌번호 복사`}
+            onClick={() => {
+              void onCopy(account.number, label)
+            }}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+          >
+            <CopyIcon />
+          </button>
         </div>
-        <button
-          type="button"
-          aria-label={`${label} 계좌번호 복사`}
-          onClick={() => {
-            void onCopy(account.number, label)
-          }}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
-        >
-          <CopyIcon />
-        </button>
       </div>
     </article>
   )
@@ -92,7 +78,7 @@ interface SideRow {
 
 // Build a flat ordered list of cards from a Person. Skips entries where the
 // account is missing — so families that only share one account per side
-// degrade gracefully to a single card.
+// degrade gracefully to fewer cards.
 function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
   const sideLabel = side === 'groom' ? '신랑' : '신부'
   const out: SideRow[] = []
@@ -126,17 +112,17 @@ function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
   return out
 }
 
-function SideHeading({ children }: { children: React.ReactNode }) {
+function ColumnHeading({ children }: { children: React.ReactNode }) {
   return (
     <div
       aria-hidden="true"
-      className="mt-2 mb-1 flex items-center justify-center gap-3 first:mt-0"
+      className="mb-2 flex items-center justify-center gap-2"
     >
-      <span className="h-px w-8 bg-line" />
-      <span className="font-display text-[12px] tracking-[0.5em] text-ink-mute uppercase">
+      <span className="h-px w-4 bg-line" />
+      <span className="font-display text-[11px] tracking-[0.4em] text-ink-mute uppercase">
         {children}
       </span>
-      <span className="h-px w-8 bg-line" />
+      <span className="h-px w-4 bg-line" />
     </div>
   )
 }
@@ -181,14 +167,16 @@ export function Account() {
         headingId="account-heading"
       />
 
-      <motion.div {...fade} className="mx-auto grid max-w-sm gap-3">
+      <motion.div
+        {...fade}
+        className="mx-auto grid max-w-md grid-cols-2 gap-2.5"
+      >
         {groomRows.length > 0 && (
-          <>
-            <SideHeading>신랑측</SideHeading>
+          <div className="space-y-2.5">
+            <ColumnHeading>신랑측</ColumnHeading>
             {groomRows.map((row) => (
               <AccountCard
                 key={`groom-${row.role}`}
-                side={row.side}
                 role={row.role}
                 label={row.label}
                 account={row.account}
@@ -196,15 +184,14 @@ export function Account() {
                 onCopy={handleCopy}
               />
             ))}
-          </>
+          </div>
         )}
         {brideRows.length > 0 && (
-          <>
-            <SideHeading>신부측</SideHeading>
+          <div className="space-y-2.5">
+            <ColumnHeading>신부측</ColumnHeading>
             {brideRows.map((row) => (
               <AccountCard
                 key={`bride-${row.role}`}
-                side={row.side}
                 role={row.role}
                 label={row.label}
                 account={row.account}
@@ -212,7 +199,7 @@ export function Account() {
                 onCopy={handleCopy}
               />
             ))}
-          </>
+          </div>
         )}
       </motion.div>
 

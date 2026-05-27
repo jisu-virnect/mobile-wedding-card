@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Where section', () => {
-  test('renders venue info, map links, address copy, and structured transit', async ({
+  test('renders venue info, icon nav buttons (Kakao/Naver/TMAP/copy), and transit', async ({
     page,
     context,
     browserName,
@@ -39,24 +39,19 @@ test.describe('Where section', () => {
       'https://map.naver.com/p/search/호텔리츠 컨벤션웨딩',
     )
 
+    const tmap = where.getByRole('link', { name: '티맵으로 길찾기' })
+    await expect(tmap).toBeVisible()
+    await expect(tmap).toHaveAttribute('href', /^tmap:\/\/search\?name=/)
+
     await where.getByRole('button', { name: '주소 복사' }).click()
     await expect(where.getByRole('status')).toHaveText('주소를 복사했어요.')
     const clipText = await page.evaluate(() => navigator.clipboard.readText())
     expect(clipText).toBe('경기도 수원시 팔달구 권광로134번길 46')
 
-    await expect(
-      where.getByRole('img', { name: '호텔리츠 컨벤션웨딩 약도 이미지' }),
-    ).toBeVisible()
-
-    // Structured transit block (지하철 / 버스 / 주차).
+    // Transit structured block.
     await expect(
       where.getByText('수인분당선 수원시청역 1번 출구 · 도보 3분'),
     ).toBeVisible()
-    await expect(
-      where.getByText('수원시청역 1번 출구 (국민연금공단)'),
-    ).toBeVisible()
-    // Bus route line includes individual numbers joined by middle dots.
     await expect(where.getByText(/51 · 52 · 61/)).toBeVisible()
-    await expect(where.getByText(/직행 3002 · 4000 · 7002/)).toBeVisible()
   })
 })

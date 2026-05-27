@@ -65,20 +65,30 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
                 : 'text-ink-soft'
           const base =
             'mx-auto flex h-9 w-9 items-center justify-center rounded-full transition-colors'
+          if (isWedding) {
+            return (
+              <span
+                key={i}
+                aria-label={`${year}년 ${month}월 ${d}일 결혼식 날`}
+                className={`${base} relative bg-sage-strong font-medium text-paper ring-4 ring-sage-soft`}
+              >
+                <span>{d}</span>
+                {/* Pulsing white heart in the top-right corner of the
+                    highlighted wedding day cell. Decorative only —
+                    aria-hidden so screen readers don't re-announce. */}
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="heart-pulse absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-paper drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                >
+                  <path d="M12 21s-7-4.5-7-10a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 6 2.8c0 5.5-7 10-7 10z" />
+                </svg>
+              </span>
+            )
+          }
           return (
-            <span
-              key={i}
-              aria-label={
-                isWedding
-                  ? `${year}년 ${month}월 ${d}일 결혼식 날`
-                  : undefined
-              }
-              className={
-                isWedding
-                  ? `${base} bg-sage-strong font-medium text-paper ring-4 ring-sage-soft`
-                  : `${base} ${weekColor}`
-              }
-            >
+            <span key={i} className={`${base} ${weekColor}`}>
               {d}
             </span>
           )

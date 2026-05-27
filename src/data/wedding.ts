@@ -41,6 +41,8 @@ export interface WeddingInfo {
     }
     kakaoMapUrl?: string
     naverMapUrl?: string
+    /** Deep link to TMAP mobile nav app (`tmap://search?name=...`). */
+    tmapUrl?: string
   }
   invitation: string
   gallery: string[]
@@ -201,6 +203,7 @@ export const wedding: WeddingInfo = {
     },
     kakaoMapUrl: 'https://map.kakao.com/?q=호텔리츠 컨벤션웨딩',
     naverMapUrl: 'https://map.naver.com/p/search/호텔리츠 컨벤션웨딩',
+    tmapUrl: 'tmap://search?name=호텔리츠 컨벤션웨딩',
   },
   invitation:
     '저희 두 사람의 소중한 만남이\n사랑과 이해로 이어져\n한 가정을 이루게 되었습니다.\n\n평생을 함께하기로 약속하는 자리에\n귀한 걸음으로 축복해 주시면\n큰 기쁨이겠습니다.\n\n김지수 · 김난슬 드림',

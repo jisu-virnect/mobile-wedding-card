@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import type { BusStop } from '../data/wedding'
 import { useClipboard } from '../lib/useClipboard'
+import { KakaoMap } from './KakaoMap'
 import { SectionHeader } from './SectionHeader'
 
 function MapPlaceholder({ venueName }: { venueName: string }) {
@@ -31,6 +32,58 @@ function MapPlaceholder({ venueName }: { venueName: string }) {
         />
       </svg>
     </div>
+  )
+}
+
+function CopyIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  )
+}
+
+interface IconButtonProps {
+  label: string
+  bg: string
+  fg: string
+  letter: string
+  ariaLabel: string
+}
+
+function ExternalIconLink({
+  href,
+  ariaLabel,
+  label,
+  bg,
+  fg,
+  letter,
+}: IconButtonProps & { href: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={ariaLabel}
+      className="flex flex-col items-center gap-1.5 focus-visible:outline-none"
+    >
+      <span
+        className={`flex h-12 w-12 items-center justify-center rounded-full font-serif text-[18px] font-bold shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition group-hover:scale-105 ${bg} ${fg} group-focus-visible:ring-2 group-focus-visible:ring-sage-strong group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-ivory`}
+      >
+        {letter}
+      </span>
+      <span className="text-[11px] tracking-wide text-ink-mute">{label}</span>
+    </a>
   )
 }
 
@@ -71,8 +124,15 @@ export function Where() {
         transition: { duration: 0.7, ease: 'easeOut' as const },
       }
 
-  const { name, address, detail, transit, kakaoMapUrl, naverMapUrl } =
-    wedding.venue
+  const {
+    name,
+    address,
+    detail,
+    transit,
+    kakaoMapUrl,
+    naverMapUrl,
+    tmapUrl,
+  } = wedding.venue
 
   const handleCopy = () => {
     void copy(address)
@@ -97,7 +157,11 @@ export function Where() {
       />
 
       <motion.div {...fade} className="mb-6">
-        <MapPlaceholder venueName={name} />
+        <KakaoMap
+          address={address}
+          venueName={name}
+          fallback={<MapPlaceholder venueName={name} />}
+        />
       </motion.div>
 
       <motion.div {...fade} className="space-y-1.5 break-keep">
@@ -112,37 +176,50 @@ export function Where() {
 
       <motion.div
         {...fade}
-        className="mt-7 flex flex-wrap items-center justify-center gap-2"
+        className="mt-7 flex items-start justify-center gap-5"
       >
         {kakaoMapUrl && (
-          <a
+          <ExternalIconLink
             href={kakaoMapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="카카오맵으로 열기"
-            className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-4 py-2 text-sm font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
-          >
-            카카오맵
-          </a>
+            ariaLabel="카카오맵으로 열기"
+            label="카카오맵"
+            bg="bg-[#FEE500]"
+            fg="text-[#3A1D1D]"
+            letter="K"
+          />
         )}
         {naverMapUrl && (
-          <a
+          <ExternalIconLink
             href={naverMapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="네이버지도로 열기"
-            className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-4 py-2 text-sm font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
-          >
-            네이버지도
-          </a>
+            ariaLabel="네이버지도로 열기"
+            label="네이버지도"
+            bg="bg-[#03C75A]"
+            fg="text-white"
+            letter="N"
+          />
+        )}
+        {tmapUrl && (
+          <ExternalIconLink
+            href={tmapUrl}
+            ariaLabel="티맵으로 길찾기"
+            label="티맵"
+            bg="bg-[#00C7B0]"
+            fg="text-white"
+            letter="T"
+          />
         )}
         <button
           type="button"
           onClick={handleCopy}
           aria-label="주소 복사"
-          className="inline-flex items-center gap-1 rounded-full bg-sage-strong px-4 py-2 text-sm font-medium tracking-wide text-paper transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+          className="flex flex-col items-center gap-1.5 focus-visible:outline-none"
         >
-          주소 복사
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-sage-soft text-sage-strong shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:bg-sage-strong hover:text-paper">
+            <CopyIcon />
+          </span>
+          <span className="text-[11px] tracking-wide text-ink-mute">
+            주소 복사
+          </span>
         </button>
       </motion.div>
 
