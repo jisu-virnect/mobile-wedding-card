@@ -7,7 +7,7 @@ import {
   formatWeddingTimeHuman,
 } from '../lib/formatDate'
 import { renderInlineBold } from '../lib/inlineBold'
-import { tossSendUrl } from '../lib/paySchemes'
+import { kakaoPaySendUrl, tossSendUrl } from '../lib/paySchemes'
 import { useClipboard } from '../lib/useClipboard'
 import { ContactButtons } from './ContactButtons'
 import { KakaoMap } from './KakaoMap'
@@ -67,17 +67,24 @@ function PreEventAccountCard({
 }) {
   const label = `${role} ${account.holder}`
   const tossUrl = tossSendUrl(account)
+  const kakaoUrl = kakaoPaySendUrl(account)
 
   return (
     <article className="mx-auto w-full max-w-sm overflow-hidden rounded-sm border border-line bg-paper text-left">
-      <header className="flex items-center justify-between gap-2 border-b border-line px-5 py-2.5">
-        <span className="font-display text-[12px] tracking-[0.3em] text-ink-mute uppercase">
-          {role}
-        </span>
-        <span className="inline-flex items-center font-serif text-[13px] text-ink-soft">
-          {account.holder}
-          {phone && <ContactButtons name={account.holder} phone={phone} />}
-        </span>
+      <header className="border-b border-line px-5 py-2.5">
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="font-display text-[12px] tracking-[0.3em] text-ink-mute uppercase">
+            {role}
+          </span>
+          <span className="font-serif text-[13px] text-ink-soft break-keep">
+            {account.holder}
+          </span>
+        </div>
+        {phone && (
+          <div className="mt-1 flex justify-end">
+            <ContactButtons name={account.holder} phone={phone} />
+          </div>
+        )}
       </header>
       <div className="px-5 py-4">
         <p className="text-[12px] tracking-wide text-ink-mute">
@@ -86,14 +93,23 @@ function PreEventAccountCard({
         <p className="mt-1 break-all font-serif text-base tracking-[0.02em] text-ink">
           {account.number}
         </p>
-        <div className="mt-3 flex items-center justify-end gap-1.5">
+        <div className="mt-3 flex flex-wrap items-center justify-end gap-1.5">
           {tossUrl && (
             <a
               href={tossUrl}
-              aria-label={`${label} Toss 로 송금`}
+              aria-label={`${label} 토스로 송금`}
               className="flex h-8 items-center rounded-full border border-line bg-paper px-3 text-[12px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
             >
               토스 송금
+            </a>
+          )}
+          {kakaoUrl && (
+            <a
+              href={kakaoUrl}
+              aria-label={`${label} 카카오로 송금`}
+              className="flex h-8 items-center rounded-full border border-line bg-paper px-3 text-[12px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
+            >
+              카카오 송금
             </a>
           )}
           <button
@@ -223,7 +239,7 @@ export function PreEvent() {
         <p className="font-serif text-[22px] text-ink">{name}</p>
         <p className="text-[17px] text-ink-soft">{address}</p>
         {detail && (
-          <p className="mx-auto max-w-[30ch] text-[15px] leading-relaxed text-ink-mute">
+          <p className="mx-auto max-w-[30ch] text-[15px] leading-relaxed text-ink-mute break-keep">
             {detail}
           </p>
         )}

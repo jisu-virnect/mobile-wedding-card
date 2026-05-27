@@ -36,3 +36,30 @@ export function tossSendUrl(account: BankAccount): string | null {
   const accountNo = account.number.replace(/\D/g, '')
   return `supertoss://send?bank=${code}&accountNo=${accountNo}&origin=wedding`
 }
+
+/**
+ * KakaoPay send-money link.
+ *
+ * Resolution order:
+ *   1. account.kakaoPayUrl — official QR-issued URL from the recipient's
+ *      KakaoPay app (most reliable; recipient must generate it once).
+ *   2. fallback unofficial deeplink `kakaotalk://kakaopay/money/to/bank?…`
+ *      — KakaoTalk recognizes the URL and opens, but the send screen
+ *      may or may not auto-fill depending on app version. Better than
+ *      no button at all when the recipient hasn't generated a QR.
+ *
+ * Returns null only when both the override URL and the bank-code map
+ * are unavailable, so the caller hides the chip.
+ */
+export function kakaoPaySendUrl(account: BankAccount): string | null {
+  if (account.kakaoPayUrl) return account.kakaoPayUrl
+  const code = BANK_CODE[account.bank]
+  if (!code) return null
+  const params = new URLSearchParams({
+    bank_name: account.bank,
+    bank_code: code,
+    account_number: account.number,
+    account_holder_name: account.holder,
+  })
+  return `kakaotalk://kakaopay/money/to/bank?${params.toString()}`
+}

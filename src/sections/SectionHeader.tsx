@@ -52,7 +52,7 @@ export function SectionHeader({
       <motion.h2
         id={headingId}
         {...fade}
-        className="mt-6 font-serif text-[1.65rem] leading-tight font-normal text-ink"
+        className="mt-6 font-serif text-[1.65rem] leading-tight font-normal text-ink break-keep"
       >
         {title}
       </motion.h2>
@@ -60,7 +60,7 @@ export function SectionHeader({
       {subtitle && (
         <motion.p
           {...fade}
-          className="mx-auto mt-3 max-w-[28ch] text-[15px] leading-relaxed text-ink-soft"
+          className="mx-auto mt-3 max-w-[28ch] text-[15px] leading-relaxed text-ink-soft break-keep"
         >
           {subtitle}
         </motion.p>

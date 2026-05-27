@@ -2,6 +2,15 @@ export interface BankAccount {
   bank: string
   number: string
   holder: string
+  /**
+   * Optional KakaoPay deep-link override. Generate by:
+   *   카카오톡 → 더보기 → pay → 송금 → 받기 → QR 코드 → URL 복사.
+   *   Example: 'https://qr.kakaopay.com/Ej7n3Hk2zS'.
+   * When present the 카카오송금 button uses this URL directly. When
+   * absent, the button falls back to an unofficial `kakaotalk://` scheme
+   * which works on most devices but may not auto-fill the send screen.
+   */
+  kakaoPayUrl?: string
 }
 
 /** Optional account info for a parent. Falsy → parent's row is omitted. */

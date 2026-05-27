@@ -105,7 +105,7 @@ export function Where() {
         <p className="font-serif text-xl text-ink">{name}</p>
         <p className="text-[15px] text-ink-soft">{address}</p>
         {detail && (
-          <p className="mx-auto max-w-[30ch] text-[13px] leading-relaxed text-ink-mute">
+          <p className="mx-auto max-w-[30ch] text-[13px] leading-relaxed text-ink-mute break-keep">
             {detail}
           </p>
         )}

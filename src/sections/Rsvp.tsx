@@ -253,7 +253,7 @@ export function Rsvp() {
         className="mx-auto grid max-w-sm gap-5 text-left"
       >
         {editingId && (
-          <div className="rounded-sm border border-sage bg-sage-soft px-3 py-2 text-[12px] text-sage-strong">
+          <div className="rounded-sm border border-sage bg-sage-soft px-3 py-2 text-[12px] text-sage-strong break-keep">
             응답을 수정하고 있어요.{' '}
             <button
               type="button"
@@ -414,7 +414,7 @@ export function Rsvp() {
               : '전달하기'}
         </button>
 
-        <p className="-mt-2 text-center text-[11px] tracking-wide text-ink-mute">
+        <p className="-mt-2 text-center text-[11px] tracking-wide text-ink-mute break-keep">
           전달된 정보는 신랑·신부에게만 안내됩니다.
         </p>
 

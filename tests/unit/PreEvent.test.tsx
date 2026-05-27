@@ -60,16 +60,25 @@ describe('<PreEvent />', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders Toss send links on each account card', () => {
+  it('renders Toss + Kakao send links on each account card', () => {
     render(<PreEvent />)
-    // 신부 김난슬 = 카카오뱅크 → Toss link should appear.
+    // 신부 김난슬 = 카카오뱅크 → both links appear.
     expect(
-      screen.getByRole('link', { name: '신부 김난슬 Toss 로 송금' })
+      screen
+        .getByRole('link', { name: '신부 김난슬 토스로 송금' })
         .getAttribute('href'),
     ).toMatch(/^supertoss:\/\/send\?/)
-    // 신부 아버지 김청섭 = 농협 → Toss link should appear.
     expect(
-      screen.getByRole('link', { name: '신부 아버지 김청섭 Toss 로 송금' }),
+      screen
+        .getByRole('link', { name: '신부 김난슬 카카오로 송금' })
+        .getAttribute('href'),
+    ).toMatch(/^(kakaotalk:\/\/kakaopay|https:\/\/qr\.kakaopay\.com)/)
+    // 신부 아버지 김청섭 = 농협 → both links appear.
+    expect(
+      screen.getByRole('link', { name: '신부 아버지 김청섭 토스로 송금' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: '신부 아버지 김청섭 카카오로 송금' }),
     ).toBeInTheDocument()
   })
 

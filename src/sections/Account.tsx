@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import type { BankAccount, Person } from '../data/wedding'
-import { tossSendUrl } from '../lib/paySchemes'
+import { kakaoPaySendUrl, tossSendUrl } from '../lib/paySchemes'
 import { useClipboard } from '../lib/useClipboard'
 import { ContactButtons } from './ContactButtons'
 import { SectionHeader } from './SectionHeader'
@@ -36,22 +36,27 @@ function CopyIcon() {
 }
 
 function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) {
-  // Toss deep-link returns null when the bank isn't in paySchemes' BANK_CODE
-  // map → hide the Toss pill. Copy stays visible as universal fallback.
-  // (KakaoPay was previously here but its scheme only opens KakaoTalk
-  // without filling the send screen — removed in favor of the cleaner row.)
+  // Deep-link returns null when the bank isn't in paySchemes' BANK_CODE
+  // map → hide that pill. Copy stays visible as universal fallback.
   const tossUrl = tossSendUrl(account)
+  const kakaoUrl = kakaoPaySendUrl(account)
 
   return (
     <article className="overflow-hidden rounded-sm border border-line bg-paper text-left">
-      <header className="flex items-center justify-between gap-1.5 border-b border-line px-3 py-2">
-        <span className="font-display text-[11px] tracking-[0.25em] text-ink-mute uppercase">
-          {role}
-        </span>
-        <span className="inline-flex items-center font-serif text-[12px] text-ink-soft">
-          {account.holder}
-          {phone && <ContactButtons name={account.holder} phone={phone} />}
-        </span>
+      <header className="border-b border-line px-3 py-2">
+        <div className="flex items-baseline justify-between gap-1.5">
+          <span className="font-display text-[11px] tracking-[0.25em] text-ink-mute uppercase">
+            {role}
+          </span>
+          <span className="font-serif text-[12px] text-ink-soft break-keep">
+            {account.holder}
+          </span>
+        </div>
+        {phone && (
+          <div className="mt-1 flex justify-end">
+            <ContactButtons name={account.holder} phone={phone} />
+          </div>
+        )}
       </header>
       <div className="px-3 py-3">
         <p className="text-[11px] tracking-wide text-ink-mute">{account.bank}</p>
@@ -62,16 +67,23 @@ function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) 
         <p className="mt-1 font-serif text-[13px] tracking-[0.01em] break-all text-ink">
           {account.number}
         </p>
-        <div className="mt-2 flex items-center justify-end gap-1">
+        <div className="mt-2 flex flex-wrap items-center justify-end gap-1">
           {tossUrl && (
-            // Outlined pill in the card's sage palette — Toss brand blue
-            // (#0064FF) clashed with the rest of the invitation tone.
             <a
               href={tossUrl}
-              aria-label={`${label} Toss 로 송금`}
+              aria-label={`${label} 토스로 송금`}
               className="flex h-7 items-center rounded-full border border-line bg-paper px-2.5 text-[11px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
             >
               토스 송금
+            </a>
+          )}
+          {kakaoUrl && (
+            <a
+              href={kakaoUrl}
+              aria-label={`${label} 카카오로 송금`}
+              className="flex h-7 items-center rounded-full border border-line bg-paper px-2.5 text-[11px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
+            >
+              카카오 송금
             </a>
           )}
           <button
