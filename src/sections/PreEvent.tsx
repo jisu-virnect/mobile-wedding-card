@@ -184,10 +184,13 @@ export function PreEvent() {
       />
 
       {/* Larger body type for senior readers. break-keep prevents
-         awkward "가족" / "과 친지" mid-word splits. */}
+         awkward "가족" / "과 친지" mid-word splits. The previous
+         max-w-[28ch] (~14 Korean chars) was too tight on narrow phones
+         and triggered ugly mid-phrase wraps — widened to max-w-md so
+         the section's own px-6 padding sets the rhythm instead. */}
       <motion.p
         {...fade}
-        className="mx-auto max-w-[28ch] text-[17px] leading-[2.05] break-keep text-ink-soft"
+        className="mx-auto max-w-md text-[17px] leading-[2.05] break-keep text-ink-soft"
       >
         {renderInlineBold(event.description)}
       </motion.p>

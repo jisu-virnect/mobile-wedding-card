@@ -55,11 +55,17 @@ export function kakaoPaySendUrl(account: BankAccount): string | null {
   if (account.kakaoPayUrl) return account.kakaoPayUrl
   const code = BANK_CODE[account.bank]
   if (!code) return null
+  // Strip hyphens from the account number — earlier attempt with the
+  // original (hyphenated) form opened KakaoTalk but didn't pre-fill the
+  // send screen. Toss accepts digits-only and works; try that shape here
+  // too as a closer match to KakaoTalk's internal handler.
+  const accountNo = account.number.replace(/\D/g, '')
   const params = new URLSearchParams({
     bank_name: account.bank,
     bank_code: code,
-    account_number: account.number,
+    account_number: accountNo,
     account_holder_name: account.holder,
+    amount: '',
   })
   return `kakaotalk://kakaopay/money/to/bank?${params.toString()}`
 }

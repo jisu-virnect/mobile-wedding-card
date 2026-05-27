@@ -15,6 +15,16 @@ vi.stubEnv('VITE_SUPABASE_URL', '')
 vi.stubEnv('VITE_SUPABASE_ANON_KEY', '')
 vi.stubEnv('VITE_ADMIN_TOKEN', '')
 
+// jsdom reports window.isSecureContext as undefined. useClipboard now
+// routes to a legacy execCommand fallback in non-secure contexts, but
+// jsdom doesn't implement execCommand either — so flag the test window
+// as secure to exercise the navigator.clipboard mock path the existing
+// tests set up.
+Object.defineProperty(window, 'isSecureContext', {
+  value: true,
+  configurable: true,
+})
+
 // jsdom does not implement IntersectionObserver, which framer-motion's
 // `whileInView` / `useInView` relies on. A permissive mock that synchronously
 // reports the observed element as fully intersecting keeps visibility-gated
