@@ -35,19 +35,24 @@ function MapPlaceholder({ venueName }: { venueName: string }) {
   )
 }
 
-/* Inline app-style SVG marks. Hand-tuned to feel like the real Kakao
-   Maps / Naver Map / TMAP marques without using the actual trademarked
-   logos: a pin for Kakao Map, the N letter for Naver, an arrow-T for
-   TMAP. Drawn at 24×24 viewbox for crisp scaling. */
+/* Mini app-icon style marks — each is a rounded-square in the brand
+   color with the brand glyph inside, so the pill reads as "tap this
+   to open the real app". Hand-drawn SVG (not the trademarked PNGs)
+   keeps the bundle dependency-free while staying instantly recognizable.
+   If you'd rather use the real App-Store PNGs, drop them into
+   public/map/ and swap each <Mark/> for an <img src="/map/...">.
+
+   Drawn at 24×24 viewbox. Rendered at h-5 w-5 in the pill. */
 function KakaoMapMark() {
   return (
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      fill="currentColor"
-      className="h-4 w-4"
+      className="h-5 w-5 shrink-0"
     >
-      <path d="M12 2.5c-3.86 0-7 2.95-7 6.6 0 4.95 7 12.4 7 12.4s7-7.45 7-12.4c0-3.65-3.14-6.6-7-6.6zm0 9.2a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2z" />
+      <rect width="24" height="24" rx="6" fill="#FAE100" />
+      {/* Diamond-style 위치 핀 — matches Kakao Map's signature white mark. */}
+      <path d="M12 5 L17 12 L12 13.5 L12 19 L7 12 Z" fill="white" />
     </svg>
   )
 }
@@ -57,24 +62,25 @@ function NaverMark() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      fill="currentColor"
-      className="h-4 w-4"
+      className="h-5 w-5 shrink-0"
     >
-      <path d="M6 4v16h4.4v-9.1L14.6 20H18V4h-4.4v9.1L9.4 4H6z" />
+      <rect width="24" height="24" rx="6" fill="#03C75A" />
+      {/* Naver "N" — diagonal stroke from bottom-left to top-right. */}
+      <path d="M8 7 L8 17 L10.5 17 L10.5 11.5 L13.5 17 L16 17 L16 7 L13.5 7 L13.5 12.5 L10.5 7 Z" fill="white" />
     </svg>
   )
 }
 
 function TmapMark() {
-  // Clean bold "T" — TMAP brand mark is essentially a single capital T.
   return (
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      fill="currentColor"
-      className="h-4 w-4"
+      className="h-5 w-5 shrink-0"
     >
-      <path d="M4 4h16v3.5h-6.25V20h-3.5V7.5H4V4z" />
+      <rect width="24" height="24" rx="6" fill="#F71668" />
+      {/* Bold "T" — TMAP's single-letter mark. */}
+      <path d="M6 7 L18 7 L18 9.5 L13.5 9.5 L13.5 17 L10.5 17 L10.5 9.5 L6 9.5 Z" fill="white" />
     </svg>
   )
 }
@@ -101,21 +107,20 @@ interface MapPillProps {
   href: string
   ariaLabel: string
   label: string
-  className: string
   icon: React.ReactNode
 }
 
-function MapPill({ href, ariaLabel, label, className, icon }: MapPillProps) {
+function MapPill({ href, ariaLabel, label, icon }: MapPillProps) {
+  // All three pills share one paper+outline shell so the colored app
+  // icons inside become the visual identifier (instead of brand-color
+  // pills crashing into the invitation's sage/paper palette).
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={ariaLabel}
-      className={
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[12px] font-medium tracking-tight shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:brightness-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong ' +
-        className
-      }
+      className="inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-2.5 py-1.5 text-[12px] font-medium tracking-tight text-ink shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
     >
       {icon}
       {label}
@@ -219,7 +224,6 @@ export function Where() {
             href={kakaoMapUrl}
             ariaLabel="카카오맵으로 열기"
             label="카카오맵"
-            className="bg-[#FEE500] text-[#3A1D1D]"
             icon={<KakaoMapMark />}
           />
         )}
@@ -228,7 +232,6 @@ export function Where() {
             href={naverMapUrl}
             ariaLabel="네이버지도로 열기"
             label="네이버지도"
-            className="bg-[#03C75A] text-white"
             icon={<NaverMark />}
           />
         )}
@@ -237,7 +240,6 @@ export function Where() {
             href={tmapUrl}
             ariaLabel="티맵으로 길찾기"
             label="티맵"
-            className="bg-[#00C7B0] text-white"
             icon={<TmapMark />}
           />
         )}
