@@ -179,7 +179,7 @@ export const wedding: WeddingInfo = {
   },
   dateTime: '2026-11-28T13:00:00+09:00',
   venue: {
-    name: '호텔리츠 컨벤션웨딩',
+    name: '호텔라뷔포레 (구 호텔리츠)',
     address: '경기도 수원시 팔달구 권광로134번길 46',
     transit: {
       subway: '수인분당선 수원시청역 1번 출구 · 도보 3분',
@@ -201,9 +201,9 @@ export const wedding: WeddingInfo = {
       ],
       parking: '주차 가능',
     },
-    kakaoMapUrl: 'https://map.kakao.com/?q=호텔리츠 컨벤션웨딩',
-    naverMapUrl: 'https://map.naver.com/p/search/호텔리츠 컨벤션웨딩',
-    tmapUrl: 'tmap://search?name=호텔리츠 컨벤션웨딩',
+    kakaoMapUrl: 'https://map.kakao.com/?q=호텔라뷔포레',
+    naverMapUrl: 'https://map.naver.com/p/search/호텔라뷔포레',
+    tmapUrl: 'tmap://search?name=호텔라뷔포레',
   },
   invitation:
     '저희 두 사람의 소중한 만남이\n사랑과 이해로 이어져\n한 가정을 이루게 되었습니다.\n\n평생을 함께하기로 약속하는 자리에\n귀한 걸음으로 축복해 주시면\n큰 기쁨이겠습니다.\n\n김지수 · 김난슬 드림',

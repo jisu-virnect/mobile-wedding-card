@@ -35,15 +35,66 @@ function MapPlaceholder({ venueName }: { venueName: string }) {
   )
 }
 
+/* Inline app-style SVG marks. Hand-tuned to feel like the real Kakao
+   Maps / Naver Map / TMAP marques without using the actual trademarked
+   logos: a pin for Kakao Map, the N letter for Naver, an arrow-T for
+   TMAP. Drawn at 24×24 viewbox for crisp scaling. */
+function KakaoMapMark() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className="h-4 w-4"
+    >
+      <path d="M12 2.5c-3.86 0-7 2.95-7 6.6 0 4.95 7 12.4 7 12.4s7-7.45 7-12.4c0-3.65-3.14-6.6-7-6.6zm0 9.2a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2z" />
+    </svg>
+  )
+}
+
+function NaverMark() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className="h-4 w-4"
+    >
+      <path d="M6 4v16h4.4v-9.1L14.6 20H18V4h-4.4v9.1L9.4 4H6z" />
+    </svg>
+  )
+}
+
+function TmapMark() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+    >
+      <path d="M4 6h16" />
+      <path d="M12 6v14" />
+      <path d="M16 14l4-4 4 4" strokeOpacity="0" />
+      <path d="M15 11l3-3 3 3" />
+      <path d="M18 8v12" />
+    </svg>
+  )
+}
+
 function CopyIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-5 w-5"
+      className="h-4 w-4"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.6"
+      strokeWidth="1.7"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -53,36 +104,28 @@ function CopyIcon() {
   )
 }
 
-interface IconButtonProps {
-  label: string
-  bg: string
-  fg: string
-  letter: string
+interface MapPillProps {
+  href: string
   ariaLabel: string
+  label: string
+  className: string
+  icon: React.ReactNode
 }
 
-function ExternalIconLink({
-  href,
-  ariaLabel,
-  label,
-  bg,
-  fg,
-  letter,
-}: IconButtonProps & { href: string }) {
+function MapPill({ href, ariaLabel, label, className, icon }: MapPillProps) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={ariaLabel}
-      className="flex flex-col items-center gap-1.5 focus-visible:outline-none"
+      className={
+        'inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-medium tracking-wide shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:brightness-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong ' +
+        className
+      }
     >
-      <span
-        className={`flex h-12 w-12 items-center justify-center rounded-full font-serif text-[18px] font-bold shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition group-hover:scale-105 ${bg} ${fg} group-focus-visible:ring-2 group-focus-visible:ring-sage-strong group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-ivory`}
-      >
-        {letter}
-      </span>
-      <span className="text-[11px] tracking-wide text-ink-mute">{label}</span>
+      {icon}
+      {label}
     </a>
   )
 }
@@ -176,50 +219,43 @@ export function Where() {
 
       <motion.div
         {...fade}
-        className="mt-7 flex items-start justify-center gap-5"
+        className="mt-7 flex flex-wrap items-center justify-center gap-2"
       >
         {kakaoMapUrl && (
-          <ExternalIconLink
+          <MapPill
             href={kakaoMapUrl}
             ariaLabel="카카오맵으로 열기"
             label="카카오맵"
-            bg="bg-[#FEE500]"
-            fg="text-[#3A1D1D]"
-            letter="K"
+            className="bg-[#FEE500] text-[#3A1D1D]"
+            icon={<KakaoMapMark />}
           />
         )}
         {naverMapUrl && (
-          <ExternalIconLink
+          <MapPill
             href={naverMapUrl}
             ariaLabel="네이버지도로 열기"
             label="네이버지도"
-            bg="bg-[#03C75A]"
-            fg="text-white"
-            letter="N"
+            className="bg-[#03C75A] text-white"
+            icon={<NaverMark />}
           />
         )}
         {tmapUrl && (
-          <ExternalIconLink
+          <MapPill
             href={tmapUrl}
             ariaLabel="티맵으로 길찾기"
             label="티맵"
-            bg="bg-[#00C7B0]"
-            fg="text-white"
-            letter="T"
+            className="bg-[#00C7B0] text-white"
+            icon={<TmapMark />}
           />
         )}
         <button
           type="button"
           onClick={handleCopy}
           aria-label="주소 복사"
-          className="flex flex-col items-center gap-1.5 focus-visible:outline-none"
+          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-4 py-2.5 text-[13px] font-medium tracking-wide text-ink-soft shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
         >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-sage-soft text-sage-strong shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:bg-sage-strong hover:text-paper">
-            <CopyIcon />
-          </span>
-          <span className="text-[11px] tracking-wide text-ink-mute">
-            주소 복사
-          </span>
+          <CopyIcon />
+          주소 복사
         </button>
       </motion.div>
 
