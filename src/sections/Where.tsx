@@ -66,22 +66,15 @@ function NaverMark() {
 }
 
 function TmapMark() {
+  // Clean bold "T" — TMAP brand mark is essentially a single capital T.
   return (
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       className="h-4 w-4"
     >
-      <path d="M4 6h16" />
-      <path d="M12 6v14" />
-      <path d="M16 14l4-4 4 4" strokeOpacity="0" />
-      <path d="M15 11l3-3 3 3" />
-      <path d="M18 8v12" />
+      <path d="M4 4h16v3.5h-6.25V20h-3.5V7.5H4V4z" />
     </svg>
   )
 }
@@ -120,7 +113,7 @@ function MapPill({ href, ariaLabel, label, className, icon }: MapPillProps) {
       rel="noopener noreferrer"
       aria-label={ariaLabel}
       className={
-        'inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-medium tracking-wide shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:brightness-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong ' +
+        'inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[12px] font-medium tracking-tight shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:brightness-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong ' +
         className
       }
     >
@@ -219,7 +212,7 @@ export function Where() {
 
       <motion.div
         {...fade}
-        className="mt-7 flex flex-wrap items-center justify-center gap-2"
+        className="mt-7 flex flex-nowrap items-center justify-center gap-1.5"
       >
         {kakaoMapUrl && (
           <MapPill
@@ -252,7 +245,7 @@ export function Where() {
           type="button"
           onClick={handleCopy}
           aria-label="주소 복사"
-          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-4 py-2.5 text-[13px] font-medium tracking-wide text-ink-soft shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+          className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-2.5 py-1.5 text-[12px] font-medium tracking-tight text-ink-soft shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
         >
           <CopyIcon />
           주소 복사

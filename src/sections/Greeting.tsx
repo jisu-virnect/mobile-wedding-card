@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
+import { renderInlineBold } from '../lib/inlineBold'
 import { SectionHeader } from './SectionHeader'
 
 function Ornament() {
@@ -24,52 +25,24 @@ function Ornament() {
 }
 
 /**
- * Line-art icon for the 신랑측 column — a bow tie. The classic groom
- * silhouette signifier without leaning on tuxedos or top-hats.
+ * Side icons rendered as Unicode emoji — universally recognized
+ * tux/veil glyphs render natively per platform (Apple/Google/Samsung)
+ * with their own polish. Avoids the line-art readability issue.
  */
-function GroomIcon() {
+function SideIcon({ icon }: { icon: 'groom' | 'bride' }) {
   return (
-    <svg
+    <span
       aria-hidden="true"
-      viewBox="0 0 32 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.2"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      className="h-5 w-10 text-sage"
+      className="block text-[26px] leading-none"
+      // Force OS color emoji rendering (some Korean browsers default to
+      // a monochrome system font for these codepoints otherwise).
+      style={{
+        fontFamily:
+          '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif',
+      }}
     >
-      <path d="M2 3 L13 8 L2 13 Z" />
-      <path d="M30 3 L19 8 L30 13 Z" />
-      <rect x="13" y="6" width="6" height="4" rx="0.5" />
-      <path d="M16 6 V 10" strokeOpacity="0.45" />
-    </svg>
-  )
-}
-
-/**
- * Line-art icon for the 신부측 column — a tiny bouquet. Three blossoms
- * with stems, mirroring the bow-tie's optical weight.
- */
-function BrideIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 32 32"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.2"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      className="h-7 w-7 text-sage"
-    >
-      <circle cx="11" cy="10" r="2.8" />
-      <circle cx="21" cy="10" r="2.8" />
-      <circle cx="16" cy="14" r="2.8" />
-      <path d="M16 17 L13 27" />
-      <path d="M16 17 L19 27" />
-      <path d="M11 21 L21 21" strokeOpacity="0.5" />
-    </svg>
+      {icon === 'groom' ? '🤵' : '👰'}
+    </span>
   )
 }
 
@@ -106,7 +79,7 @@ function ParentColumn({
       }
     >
       <div className="flex justify-center">
-        {icon === 'groom' ? <GroomIcon /> : <BrideIcon />}
+        <SideIcon icon={icon} />
       </div>
       <p className="mt-2 font-display text-[12px] tracking-[0.35em] text-ink-mute uppercase">
         {label}
@@ -150,9 +123,9 @@ export function Greeting() {
 
       <motion.p
         {...fade}
-        className="mx-auto max-w-[28ch] text-base leading-[2] break-keep whitespace-pre-line text-ink-soft"
+        className="mx-auto max-w-[28ch] text-base leading-[2] break-keep text-ink-soft"
       >
-        {wedding.invitation}
+        {renderInlineBold(wedding.invitation)}
       </motion.p>
 
       <Ornament />

@@ -206,7 +206,7 @@ export const wedding: WeddingInfo = {
     tmapUrl: 'tmap://search?name=호텔라뷔포레',
   },
   invitation:
-    '저희 두 사람의 소중한 만남이\n사랑과 이해로 이어져\n한 가정을 이루게 되었습니다.\n\n평생을 함께하기로 약속하는 자리에\n귀한 걸음으로 축복해 주시면\n큰 기쁨이겠습니다.\n\n김지수 · 김난슬 드림',
+    '저희 두 사람의 소중한 만남이\n사랑과 이해로 이어져\n한 가정을 이루게 되었습니다.\n\n**평생을 함께하기로 약속하는 자리**에\n귀한 걸음으로 축복해 주시면\n큰 기쁨이겠습니다.\n\n김지수 · 김난슬 드림',
   gallery: Array.from({ length: 34 }, (_, i) => `/gallery/${String(i + 1).padStart(2, '0')}.jpg`),
   // Drop video clips into `public/videos/` and uncomment to enable.
   // Each video should be MP4 H.264 baseline, 480p, 30s max, 3~5MB.
@@ -236,7 +236,7 @@ export const wedding: WeddingInfo = {
   // TODO: 실제 날짜·요일 확정 후 dateTime 갱신.
   preEvent: {
     description:
-      '수원까지 오시기 어려운 신부측 손님을 위해\n고창에 먼저 자리를 마련하였습니다.\n\n결혼식에 앞서 식사대접을 하고자 하니\n부담 갖지 마시고 편한 마음으로 오셔서\n축하해 주시면 더 없는 기쁨이 되겠습니다.',
+      '수원까지 오시기 어려운 신부측 손님을 위해\n고창에 먼저 자리를 마련하였습니다.\n\n**결혼식에 앞서 식사대접**을 하고자 하니\n부담 갖지 마시고 편한 마음으로 오셔서\n축하해 주시면 더 없는 기쁨이 되겠습니다.',
     signoff: '혼주 김청섭 · 이경화 올림',
     dateTime: '2026-10-01T13:00:00+09:00',
     dateDisplay: '2026년 10월 · 날짜 추후 안내',

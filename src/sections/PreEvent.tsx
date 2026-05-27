@@ -6,7 +6,9 @@ import {
   formatWeddingLongDate,
   formatWeddingTimeHuman,
 } from '../lib/formatDate'
+import { renderInlineBold } from '../lib/inlineBold'
 import { useClipboard } from '../lib/useClipboard'
+import { KakaoMap } from './KakaoMap'
 import { SectionHeader } from './SectionHeader'
 
 function CopyIcon() {
@@ -150,9 +152,9 @@ export function PreEvent() {
          awkward "가족" / "과 친지" mid-word splits. */}
       <motion.p
         {...fade}
-        className="mx-auto max-w-[28ch] text-[17px] leading-[2.05] break-keep whitespace-pre-line text-ink-soft"
+        className="mx-auto max-w-[28ch] text-[17px] leading-[2.05] break-keep text-ink-soft"
       >
-        {event.description}
+        {renderInlineBold(event.description)}
       </motion.p>
 
       {event.signoff && (
@@ -172,6 +174,40 @@ export function PreEvent() {
         <p className="mt-2 font-display text-[17px] tracking-[0.2em] text-ink-soft">
           {time}
         </p>
+      </motion.div>
+
+      <motion.div {...fade} className="mb-6">
+        <KakaoMap
+          address={address}
+          venueName={name}
+          fallback={
+            <div
+              role="img"
+              aria-label={`${name} 약도 이미지`}
+              className="mx-auto flex aspect-[4/3] w-full max-w-sm items-center justify-center rounded-sm bg-paper ring-1 ring-line"
+            >
+              <svg
+                aria-hidden="true"
+                className="h-10 w-10 text-sage/70"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                />
+              </svg>
+            </div>
+          }
+        />
       </motion.div>
 
       <motion.div {...fade} className="space-y-2 break-keep">

@@ -147,43 +147,48 @@ export function BGMToggle({ config }: BGMToggleProps) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={playing ? '배경음악 끄기' : '배경음악 켜기'}
-      aria-pressed={playing}
-      title={config.title ?? '배경음악'}
-      className={
-        'fixed top-4 left-1/2 z-40 flex h-10 w-10 -translate-x-[228px] items-center justify-center rounded-full bg-paper/85 text-sage-strong shadow-[0_4px_18px_rgba(0,0,0,0.12)] backdrop-blur transition hover:bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong ' +
-        (playing || touched ? '' : 'animate-pulse-slow')
-      }
-    >
-      {playing ? (
-        <svg
-          aria-hidden="true"
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <rect x="6" y="5" width="4" height="14" rx="1" />
-          <rect x="14" y="5" width="4" height="14" rx="1" />
-        </svg>
-      ) : (
-        <svg
-          aria-hidden="true"
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M9 18V5l12-2v13" />
-          <circle cx="6" cy="18" r="3" />
-          <circle cx="18" cy="16" r="3" />
-        </svg>
-      )}
-    </button>
+    // Card-shaped wrapper so the button anchors to the top-left of the
+    // 480px column even on narrow phones (left-1/2 + translate trick
+    // was pushing the button off-screen on <480px viewports).
+    <div className="pointer-events-none fixed inset-x-0 top-0 z-40 mx-auto flex max-w-[480px] justify-start p-4">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={playing ? '배경음악 끄기' : '배경음악 켜기'}
+        aria-pressed={playing}
+        title={config.title ?? '배경음악'}
+        className={
+          'pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-paper/85 text-sage-strong shadow-[0_4px_18px_rgba(0,0,0,0.12)] backdrop-blur transition hover:bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong ' +
+          (playing || touched ? '' : 'animate-pulse-slow')
+        }
+      >
+        {playing ? (
+          <svg
+            aria-hidden="true"
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <rect x="6" y="5" width="4" height="14" rx="1" />
+            <rect x="14" y="5" width="4" height="14" rx="1" />
+          </svg>
+        ) : (
+          <svg
+            aria-hidden="true"
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
+          </svg>
+        )}
+      </button>
+    </div>
   )
 }

@@ -10,12 +10,15 @@ describe('<PreEvent />', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders the description body', () => {
+  it('renders the description body with bold emphasis on the key phrase', () => {
     render(<PreEvent />)
     expect(
       screen.getByText(/수원까지 오시기 어려운/),
     ).toBeInTheDocument()
-    expect(screen.getByText(/식사대접을 하고자/)).toBeInTheDocument()
+    expect(screen.getByText('결혼식에 앞서 식사대접')).toBeInTheDocument()
+    expect(
+      screen.getByText('결혼식에 앞서 식사대접').tagName.toLowerCase(),
+    ).toBe('strong')
   })
 
   it('renders the signoff line', () => {

@@ -48,21 +48,24 @@ function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) 
       </header>
       <div className="px-3 py-3">
         <p className="text-[11px] tracking-wide text-ink-mute">{account.bank}</p>
-        <div className="mt-1 flex items-center justify-between gap-2">
-          <p className="min-w-0 truncate font-serif text-[13px] tracking-[0.01em] text-ink">
-            {account.number}
-          </p>
-          <button
-            type="button"
-            aria-label={`${label} 계좌번호 복사`}
-            onClick={() => {
-              void onCopy(account.number, label)
-            }}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
-          >
-            <CopyIcon />
-          </button>
-        </div>
+        {/* Account number gets its own line so long numbers
+           (e.g. 3333-30-4385686) never get truncated on narrow phones.
+           break-all allows hyphens to act as line-break points if the
+           number runs longer than the card width. */}
+        <p className="mt-1 font-serif text-[13px] tracking-[0.01em] break-all text-ink">
+          {account.number}
+        </p>
+        <button
+          type="button"
+          aria-label={`${label} 계좌번호 복사`}
+          onClick={() => {
+            void onCopy(account.number, label)
+          }}
+          className="mt-2 ml-auto flex h-7 items-center gap-1 rounded-full bg-sage-soft px-2.5 text-[11px] font-medium tracking-wide text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+        >
+          <CopyIcon />
+          복사
+        </button>
       </div>
     </article>
   )

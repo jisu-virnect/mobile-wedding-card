@@ -73,14 +73,14 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
                 className={`${base} relative bg-sage-strong font-medium text-paper ring-4 ring-sage-soft`}
               >
                 <span>{d}</span>
-                {/* Pulsing white heart in the top-right corner of the
-                    highlighted wedding day cell. Decorative only —
-                    aria-hidden so screen readers don't re-announce. */}
+                {/* Pulsing red heart sitting on the top-left of the
+                    wedding day cell (outside the green circle for
+                    extra pop). Decorative only — aria-hidden. */}
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="heart-pulse absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-paper drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                  className="heart-pulse absolute -top-2 -left-2 h-4 w-4 text-[#E11D48] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
                 >
                   <path d="M12 21s-7-4.5-7-10a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 6 2.8c0 5.5-7 10-7 10z" />
                 </svg>
