@@ -35,25 +35,21 @@ function MapPlaceholder({ venueName }: { venueName: string }) {
   )
 }
 
-/* Mini app-icon style marks — each is a rounded-square in the brand
-   color with the brand glyph inside, so the pill reads as "tap this
-   to open the real app". Hand-drawn SVG (not the trademarked PNGs)
-   keeps the bundle dependency-free while staying instantly recognizable.
-   If you'd rather use the real App-Store PNGs, drop them into
-   public/map/ and swap each <Mark/> for an <img src="/map/...">.
-
-   Drawn at 24×24 viewbox. Rendered at h-5 w-5 in the pill. */
+/* App-icon style marks. Kakao uses the real favicon PNG that's already
+   in public/map/. Naver + TMAP use SVG with system-bold letters inside
+   the brand-color rounded square — cleaner and more legible than the
+   hand-drawn path glyphs that read as "lookalike but off".
+   To upgrade Naver/TMAP to real PNGs: drop them at
+   public/map/naver-map.png and public/map/tmap.png, then mirror the
+   KakaoMapMark <img> pattern below. */
 function KakaoMapMark() {
   return (
-    <svg
+    <img
+      src="/map/kakao.png"
+      alt=""
       aria-hidden="true"
-      viewBox="0 0 24 24"
       className="h-5 w-5 shrink-0"
-    >
-      <rect width="24" height="24" rx="6" fill="#FAE100" />
-      {/* Diamond-style 위치 핀 — matches Kakao Map's signature white mark. */}
-      <path d="M12 5 L17 12 L12 13.5 L12 19 L7 12 Z" fill="white" />
-    </svg>
+    />
   )
 }
 
@@ -65,8 +61,17 @@ function NaverMark() {
       className="h-5 w-5 shrink-0"
     >
       <rect width="24" height="24" rx="6" fill="#03C75A" />
-      {/* Naver "N" — diagonal stroke from bottom-left to top-right. */}
-      <path d="M8 7 L8 17 L10.5 17 L10.5 11.5 L13.5 17 L16 17 L16 7 L13.5 7 L13.5 12.5 L10.5 7 Z" fill="white" />
+      <text
+        x="12"
+        y="18"
+        textAnchor="middle"
+        fontFamily="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        fontSize="16"
+        fontWeight="900"
+        fill="white"
+      >
+        N
+      </text>
     </svg>
   )
 }
@@ -79,8 +84,17 @@ function TmapMark() {
       className="h-5 w-5 shrink-0"
     >
       <rect width="24" height="24" rx="6" fill="#F71668" />
-      {/* Bold "T" — TMAP's single-letter mark. */}
-      <path d="M6 7 L18 7 L18 9.5 L13.5 9.5 L13.5 17 L10.5 17 L10.5 9.5 L6 9.5 Z" fill="white" />
+      <text
+        x="12"
+        y="18"
+        textAnchor="middle"
+        fontFamily="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        fontSize="16"
+        fontWeight="900"
+        fill="white"
+      >
+        T
+      </text>
     </svg>
   )
 }
