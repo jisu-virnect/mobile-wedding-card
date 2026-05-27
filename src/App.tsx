@@ -7,6 +7,7 @@ import {
   Greeting,
   PreEvent,
   Rsvp,
+  ScrollToTop,
   Share,
   When,
   Where,
@@ -32,6 +33,7 @@ function App() {
   return (
     <main className="mx-auto flex min-h-svh max-w-[480px] flex-col bg-ivory shadow-[0_0_60px_rgba(0,0,0,0.04)]">
       {wedding.bgm && <BGMToggle config={wedding.bgm} />}
+      <ScrollToTop />
       <Cover />
       <Greeting />
       <SectionDivider />
