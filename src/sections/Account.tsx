@@ -67,23 +67,33 @@ function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) 
         <p className="mt-1 font-serif text-[13px] tracking-[0.01em] break-all text-ink">
           {account.number}
         </p>
-        <div className="mt-2 flex flex-wrap items-center justify-end gap-1">
+        <div className="mt-2 flex flex-wrap items-center justify-end gap-1.5">
           {tossUrl && (
             <a
               href={tossUrl}
               aria-label={`${label} 토스로 송금`}
-              className="flex h-7 items-center rounded-full border border-line bg-paper px-2.5 text-[11px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
+              className="shrink-0 rounded-xl transition active:opacity-70 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
             >
-              토스 송금
+              <img
+                src="/pay/toss.png"
+                alt=""
+                aria-hidden="true"
+                className="h-7 w-7 shrink-0 rounded-xl"
+              />
             </a>
           )}
           {kakaoUrl && (
             <a
               href={kakaoUrl}
               aria-label={`${label} 카카오로 송금`}
-              className="flex h-7 items-center rounded-full border border-line bg-paper px-2.5 text-[11px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
+              className="shrink-0 rounded-xl transition active:opacity-70 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
             >
-              카카오 송금
+              <img
+                src="/pay/kakaopay.png"
+                alt=""
+                aria-hidden="true"
+                className="h-7 w-7 shrink-0 rounded-xl"
+              />
             </a>
           )}
           <button

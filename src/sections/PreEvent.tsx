@@ -93,23 +93,33 @@ function PreEventAccountCard({
         <p className="mt-1 break-all font-serif text-base tracking-[0.02em] text-ink">
           {account.number}
         </p>
-        <div className="mt-3 flex flex-wrap items-center justify-end gap-1.5">
+        <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
           {tossUrl && (
             <a
               href={tossUrl}
               aria-label={`${label} 토스로 송금`}
-              className="flex h-8 items-center rounded-full border border-line bg-paper px-3 text-[12px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
+              className="shrink-0 rounded-xl transition active:opacity-70 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
             >
-              토스 송금
+              <img
+                src="/pay/toss.png"
+                alt=""
+                aria-hidden="true"
+                className="h-9 w-9 shrink-0 rounded-xl"
+              />
             </a>
           )}
           {kakaoUrl && (
             <a
               href={kakaoUrl}
               aria-label={`${label} 카카오로 송금`}
-              className="flex h-8 items-center rounded-full border border-line bg-paper px-3 text-[12px] font-medium tracking-wide text-ink-soft transition hover:bg-sage-soft hover:text-sage-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
+              className="shrink-0 rounded-xl transition active:opacity-70 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
             >
-              카카오 송금
+              <img
+                src="/pay/kakaopay.png"
+                alt=""
+                aria-hidden="true"
+                className="h-9 w-9 shrink-0 rounded-xl"
+              />
             </a>
           )}
           <button
