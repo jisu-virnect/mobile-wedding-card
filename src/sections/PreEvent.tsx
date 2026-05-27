@@ -11,6 +11,7 @@ import { tossSendUrl } from '../lib/paySchemes'
 import { useClipboard } from '../lib/useClipboard'
 import { ContactButtons } from './ContactButtons'
 import { KakaoMap } from './KakaoMap'
+import { MapButtonsRow } from './MapButtonsRow'
 import { SectionHeader } from './SectionHeader'
 
 function CopyIcon() {
@@ -112,7 +113,6 @@ function PreEventAccountCard({
 
 export function PreEvent() {
   const reduce = useReducedMotion()
-  const { copy, copied: addrCopied, error: addrError } = useClipboard(2500)
   const { copy: copyAcct, error: acctError } = useClipboard(2500)
   const [acctToast, setAcctToast] = useState<string>('')
   const event = wedding.preEvent
@@ -130,11 +130,8 @@ export function PreEvent() {
 
   const longDate = event.dateDisplay ?? formatWeddingLongDate(event.dateTime)
   const time = event.timeDisplay ?? formatWeddingTimeHuman(event.dateTime)
-  const { name, address, detail, kakaoMapUrl, naverMapUrl } = event.venue
-
-  const handleAddressCopy = () => {
-    void copy(address)
-  }
+  const { name, address, detail, kakaoMapUrl, naverMapUrl, tmapUrl } =
+    event.venue
 
   const handleAccountCopy = async (
     accountNumber: string,
@@ -147,12 +144,6 @@ export function PreEvent() {
         : '복사에 실패했어요. 길게 눌러 직접 복사해주세요.',
     )
   }
-
-  const addrFeedback = addrError
-    ? '주소 복사에 실패했어요. 길게 눌러 직접 복사해주세요.'
-    : addrCopied
-      ? '주소를 복사했어요.'
-      : ''
 
   return (
     <section
@@ -238,52 +229,15 @@ export function PreEvent() {
         )}
       </motion.div>
 
-      <motion.div
-        {...fade}
-        className="mt-7 flex flex-wrap items-center justify-center gap-2"
-      >
-        {kakaoMapUrl && (
-          <a
-            href={kakaoMapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="카카오맵으로 피로연 장소 열기"
-            className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-5 py-2.5 text-[15px] font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
-          >
-            카카오맵
-          </a>
-        )}
-        {naverMapUrl && (
-          <a
-            href={naverMapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="네이버지도로 피로연 장소 열기"
-            className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-5 py-2.5 text-[15px] font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
-          >
-            네이버지도
-          </a>
-        )}
-        <button
-          type="button"
-          onClick={handleAddressCopy}
-          aria-label="피로연 주소 복사"
-          className="inline-flex items-center gap-1 rounded-full bg-sage-strong px-5 py-2.5 text-[15px] font-medium tracking-wide text-paper transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
-        >
-          주소 복사
-        </button>
+      <motion.div {...fade} className="mt-7">
+        <MapButtonsRow
+          kakaoMapUrl={kakaoMapUrl}
+          naverMapUrl={naverMapUrl}
+          tmapUrl={tmapUrl}
+          address={address}
+          copyAriaLabel="피로연 주소 복사"
+        />
       </motion.div>
-
-      <p
-        role="status"
-        aria-live="polite"
-        className={
-          'mt-3 min-h-[1.25rem] text-[13px] ' +
-          (addrError ? 'text-sun' : 'text-ink-soft')
-        }
-      >
-        {addrFeedback}
-      </p>
 
       {event.accounts && event.accounts.length > 0 && (
         <>

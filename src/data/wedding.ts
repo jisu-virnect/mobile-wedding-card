@@ -100,6 +100,8 @@ export interface PreEvent {
     detail?: string
     kakaoMapUrl?: string
     naverMapUrl?: string
+    /** Deep link to TMAP mobile nav app (`tmap://search?name=...`). */
+    tmapUrl?: string
   }
   /** Optional 마음 전하는 곳 — one card per entry. */
   accounts?: PreEventAccount[]
@@ -246,18 +248,11 @@ export const wedding: WeddingInfo = {
     venue: {
       name: '상하 실내체육관',
       address: '전라북도 고창군 상하면 선운대로 810',
+      kakaoMapUrl: 'https://map.kakao.com/?q=상하실내체육관',
+      naverMapUrl: 'https://map.naver.com/p/search/상하실내체육관',
+      tmapUrl: 'tmap://search?name=상하실내체육관',
     },
     accounts: [
-      {
-        role: '신부',
-        account: {
-          bank: '카카오뱅크',
-          number: '3333-30-4385686',
-          holder: '김난슬',
-        },
-        // 신부 본인 — bride.phone 과 동일 placeholder (실제 번호로 교체 시 둘 다 갱신).
-        phone: '010-0000-0000',
-      },
       {
         role: '신부 아버지',
         account: {
@@ -266,6 +261,16 @@ export const wedding: WeddingInfo = {
           holder: '김청섭',
         },
         // 신부 아버지 — bride.fatherPhone 과 동일 placeholder.
+        phone: '010-0000-0000',
+      },
+      {
+        role: '신부',
+        account: {
+          bank: '카카오뱅크',
+          number: '3333-30-4385686',
+          holder: '김난슬',
+        },
+        // 신부 본인 — bride.phone 과 동일 placeholder (실제 번호로 교체 시 둘 다 갱신).
         phone: '010-0000-0000',
       },
     ],
