@@ -96,7 +96,10 @@ export function Rsvp() {
           ? '응답을 수정했어요. 감사합니다.'
           : '참석 여부를 전달했어요. 감사합니다.',
       })
-    } catch {
+    } catch (err) {
+      // Log the underlying error so a developer can read it in the console
+      // — guests see the friendly fallback toast.
+      console.error('RSVP submit failed', err)
       setState({
         status: 'error',
         message:
