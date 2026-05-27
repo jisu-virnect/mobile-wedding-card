@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
 import type { BankAccount, Person } from '../data/wedding'
 import { useClipboard } from '../lib/useClipboard'
+import { ContactButtons } from './ContactButtons'
 import { SectionHeader } from './SectionHeader'
 
 interface AccountCardProps {
@@ -12,6 +13,8 @@ interface AccountCardProps {
   /** Toast-friendly description, e.g. "신랑 김지수". */
   label: string
   account: BankAccount
+  /** Optional contact phone — renders ☎/✉ buttons next to holder name. */
+  phone?: string
   onCopy: (number: string, label: string) => Promise<boolean>
 }
 
@@ -33,11 +36,18 @@ function CopyIcon() {
   )
 }
 
-function AccountCard({ side, role, label, account, onCopy }: AccountCardProps) {
+function AccountCard({
+  side,
+  role,
+  label,
+  account,
+  phone,
+  onCopy,
+}: AccountCardProps) {
   const sideLabel = side === 'groom' ? '신랑측' : '신부측'
   return (
     <article className="overflow-hidden rounded-sm border border-line bg-paper text-left">
-      <header className="flex items-baseline justify-between gap-2 border-b border-line px-5 py-2.5">
+      <header className="flex items-center justify-between gap-2 border-b border-line px-5 py-2.5">
         <span className="font-display text-[12px] tracking-[0.3em] text-ink-mute uppercase">
           {sideLabel}
           <span aria-hidden="true" className="mx-1.5 text-ink-mute/50">
@@ -45,8 +55,9 @@ function AccountCard({ side, role, label, account, onCopy }: AccountCardProps) {
           </span>
           {role}
         </span>
-        <span className="font-serif text-[13px] text-ink-soft">
+        <span className="inline-flex items-center font-serif text-[13px] text-ink-soft">
           {account.holder}
+          {phone && <ContactButtons name={account.holder} phone={phone} />}
         </span>
       </header>
       <div className="flex items-center justify-between gap-4 px-5 py-4">
@@ -76,6 +87,7 @@ interface SideRow {
   role: '본인' | '아버지' | '어머니'
   label: string
   account: BankAccount
+  phone?: string
 }
 
 // Build a flat ordered list of cards from a Person. Skips entries where the
@@ -90,6 +102,7 @@ function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
       role: '본인',
       label: `${sideLabel} ${person.name}`,
       account: person.account,
+      phone: person.phone,
     })
   }
   if (person.fatherAccount) {
@@ -98,6 +111,7 @@ function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
       role: '아버지',
       label: `${sideLabel} 아버지 ${person.father}`,
       account: person.fatherAccount,
+      phone: person.fatherPhone,
     })
   }
   if (person.motherAccount) {
@@ -106,6 +120,7 @@ function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
       role: '어머니',
       label: `${sideLabel} 어머니 ${person.mother}`,
       account: person.motherAccount,
+      phone: person.motherPhone,
     })
   }
   return out
@@ -177,6 +192,7 @@ export function Account() {
                 role={row.role}
                 label={row.label}
                 account={row.account}
+                phone={row.phone}
                 onCopy={handleCopy}
               />
             ))}
@@ -192,6 +208,7 @@ export function Account() {
                 role={row.role}
                 label={row.label}
                 account={row.account}
+                phone={row.phone}
                 onCopy={handleCopy}
               />
             ))}

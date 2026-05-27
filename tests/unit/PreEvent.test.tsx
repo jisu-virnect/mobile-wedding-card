@@ -3,34 +3,64 @@ import { describe, expect, it } from 'vitest'
 import { PreEvent } from '../../src/sections/PreEvent'
 
 describe('<PreEvent />', () => {
-  it('renders the section heading "앞잔치"', () => {
+  it('renders the section heading "피로연 장소"', () => {
     render(<PreEvent />)
     expect(
-      screen.getByRole('heading', { level: 2, name: '앞잔치' }),
+      screen.getByRole('heading', { level: 2, name: '피로연 장소' }),
     ).toBeInTheDocument()
   })
 
-  it('renders the description text with line breaks preserved', () => {
-    const { container } = render(<PreEvent />)
-    const body = container.querySelector('p.whitespace-pre-line')
-    expect(body).not.toBeNull()
-    expect(body!.textContent).toContain('수원까지 오시기 어려운')
-    expect(body!.textContent).toContain('앞잔치라 부르는')
-  })
-
-  it('shows the formatted date and venue', () => {
-    render(<PreEvent />)
-    // 2026-10-01 in KST → 목요일
-    expect(screen.getByText(/2026년 10월 1일 목요일/)).toBeInTheDocument()
-    expect(screen.getByText(/오후 12시/)).toBeInTheDocument()
-    expect(screen.getByText('신부 본가')).toBeInTheDocument()
-    expect(screen.getByText('전라북도 고창군')).toBeInTheDocument()
-  })
-
-  it('shows the address-copy button (map link buttons are conditional)', () => {
+  it('renders the description body', () => {
     render(<PreEvent />)
     expect(
-      screen.getByRole('button', { name: '앞잔치 주소 복사' }),
+      screen.getByText(/수원까지 오시기 어려운/),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/식사대접을 하고자/)).toBeInTheDocument()
+  })
+
+  it('renders the signoff line', () => {
+    render(<PreEvent />)
+    expect(
+      screen.getByText('혼주 김청섭 · 이경화 올림'),
+    ).toBeInTheDocument()
+  })
+
+  it('uses the dateDisplay override when set', () => {
+    render(<PreEvent />)
+    expect(
+      screen.getByText('2026년 10월 · 날짜 추후 안내'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('오후 1시부터')).toBeInTheDocument()
+  })
+
+  it('shows the new venue + address', () => {
+    render(<PreEvent />)
+    expect(screen.getByText('상하 실내체육관')).toBeInTheDocument()
+    expect(
+      screen.getByText('전라북도 고창군 상하면 선운대로 810'),
+    ).toBeInTheDocument()
+  })
+
+  it('renders 마음 전하는 곳 cards for both 신부 + 신부 아버지', () => {
+    render(<PreEvent />)
+    // 신부 (김난슬, 카카오뱅크)
+    expect(screen.getByText('카카오뱅크')).toBeInTheDocument()
+    expect(screen.getByText('3333-30-4385686')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '신부 김난슬 계좌번호 복사' }),
+    ).toBeInTheDocument()
+    // 신부 아버지 (김청섭, 농협)
+    expect(screen.getByText('농협')).toBeInTheDocument()
+    expect(screen.getByText('356-1314-3461-83')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '신부 아버지 김청섭 계좌번호 복사' }),
+    ).toBeInTheDocument()
+  })
+
+  it('shows the address-copy button', () => {
+    render(<PreEvent />)
+    expect(
+      screen.getByRole('button', { name: '피로연 주소 복사' }),
     ).toBeInTheDocument()
   })
 })

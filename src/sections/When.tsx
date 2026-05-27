@@ -134,14 +134,22 @@ export function When() {
       <motion.div {...fade} className="flex flex-col items-center gap-2.5">
         <p
           aria-label={dday}
-          className="inline-block rounded-full bg-sage-soft px-6 py-2 font-serif text-[15px] font-medium tracking-wide text-sage-strong"
+          className="inline-flex items-center gap-2 rounded-full bg-sage-soft px-6 py-2 font-serif text-[15px] font-medium tracking-wide text-sage-strong"
         >
-          {dday}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="h-3.5 w-3.5"
+          >
+            <path d="M12 21s-7-4.5-7-10a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 6 2.8c0 5.5-7 10-7 10z" />
+          </svg>
+          <span className="break-keep">{dday}</span>
         </p>
         {finalCountdown && (
           <p
             aria-live="polite"
-            className="font-serif text-[13px] tracking-wide text-sage-strong"
+            className="font-serif text-[13px] tracking-wide text-sage-strong break-keep"
           >
             {finalCountdown}
           </p>

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
+import type { BusStop } from '../data/wedding'
 import { useClipboard } from '../lib/useClipboard'
 import { SectionHeader } from './SectionHeader'
 
@@ -33,6 +34,30 @@ function MapPlaceholder({ venueName }: { venueName: string }) {
   )
 }
 
+function TransitLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-display text-[12px] tracking-[0.35em] text-ink-mute uppercase">
+      {children}
+    </p>
+  )
+}
+
+function BusStopBlock({ stop }: { stop: BusStop }) {
+  return (
+    <div className="space-y-1">
+      <p className="text-[13px] text-ink-mute break-keep">{stop.name}</p>
+      <p className="font-serif text-[15px] tracking-[0.02em] text-ink-soft break-keep">
+        {stop.routes.join(' · ')}
+      </p>
+      {stop.express && stop.express.length > 0 && (
+        <p className="font-serif text-[14px] tracking-[0.02em] text-ink-mute break-keep">
+          직행 {stop.express.join(' · ')}
+        </p>
+      )}
+    </div>
+  )
+}
+
 export function Where() {
   const reduce = useReducedMotion()
   const { copy, copied, error } = useClipboard()
@@ -46,7 +71,8 @@ export function Where() {
         transition: { duration: 0.7, ease: 'easeOut' as const },
       }
 
-  const { name, address, detail, kakaoMapUrl, naverMapUrl } = wedding.venue
+  const { name, address, detail, transit, kakaoMapUrl, naverMapUrl } =
+    wedding.venue
 
   const handleCopy = () => {
     void copy(address)
@@ -74,7 +100,7 @@ export function Where() {
         <MapPlaceholder venueName={name} />
       </motion.div>
 
-      <motion.div {...fade} className="space-y-1.5">
+      <motion.div {...fade} className="space-y-1.5 break-keep">
         <p className="font-serif text-xl text-ink">{name}</p>
         <p className="text-[15px] text-ink-soft">{address}</p>
         {detail && (
@@ -130,6 +156,48 @@ export function Where() {
       >
         {feedback}
       </p>
+
+      {transit && (
+        <motion.div {...fade} className="mt-10 space-y-7 text-left">
+          <div
+            aria-hidden="true"
+            className="flex items-center justify-center gap-3"
+          >
+            <span className="h-px w-12 bg-line" />
+            <span className="font-display text-[11px] tracking-[0.5em] text-ink-mute uppercase">
+              오시는 방법
+            </span>
+            <span className="h-px w-12 bg-line" />
+          </div>
+
+          {transit.subway && (
+            <div className="mx-auto max-w-sm space-y-1.5">
+              <TransitLabel>지하철</TransitLabel>
+              <p className="font-serif text-[15px] text-ink break-keep">
+                {transit.subway}
+              </p>
+            </div>
+          )}
+
+          {transit.busStops && transit.busStops.length > 0 && (
+            <div className="mx-auto max-w-sm space-y-4">
+              <TransitLabel>버스</TransitLabel>
+              {transit.busStops.map((stop) => (
+                <BusStopBlock key={stop.name} stop={stop} />
+              ))}
+            </div>
+          )}
+
+          {transit.parking && (
+            <div className="mx-auto max-w-sm space-y-1.5">
+              <TransitLabel>주차</TransitLabel>
+              <p className="font-serif text-[15px] text-ink break-keep">
+                {transit.parking}
+              </p>
+            </div>
+          )}
+        </motion.div>
+      )}
     </section>
   )
 }

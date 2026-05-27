@@ -232,13 +232,13 @@ export function Cover() {
           <motion.button
             type="button"
             onClick={scrollToPreEvent}
-            aria-label="고창 앞잔치 안내로 바로 이동"
+            aria-label="고창 피로연 안내로 바로 이동"
             initial={reduce ? false : { opacity: 0 }}
             animate={reduce ? {} : { opacity: 1 }}
             transition={reduce ? undefined : { duration: 1.2, delay: 1.15 }}
             className="pointer-events-auto mt-4 inline-flex items-center gap-1.5 rounded-full border border-paper/30 px-3.5 py-1.5 font-serif text-[12px] text-paper/85 transition hover:border-paper/60 hover:bg-paper/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper/80"
           >
-            <span>고창 앞잔치 안내</span>
+            <span>고창 피로연 안내</span>
             <svg
               aria-hidden="true"
               className="h-3 w-3"

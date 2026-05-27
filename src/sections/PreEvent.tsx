@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
+import type { BankAccount } from '../data/wedding'
 import {
   formatWeddingLongDate,
   formatWeddingTimeHuman,
@@ -7,17 +9,92 @@ import {
 import { useClipboard } from '../lib/useClipboard'
 import { SectionHeader } from './SectionHeader'
 
+function CopyIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  )
+}
+
+function HairlineDivider({ label }: { label: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="mx-auto flex items-center justify-center gap-3"
+    >
+      <span className="h-px w-10 bg-line" />
+      <span className="font-display text-[12px] tracking-[0.5em] text-ink-mute uppercase">
+        {label}
+      </span>
+      <span className="h-px w-10 bg-line" />
+    </div>
+  )
+}
+
 /**
- * 앞잔치 (pre-wedding gathering) — regional Korean tradition for
- * the bride's side. Same visual language as When + Where but
- * deliberately scaled one notch smaller so it reads as supplementary
- * info, not a parallel main event.
+ * 피로연 — regional bride-side gathering held in 고창 ahead of the
+ * main wedding. Same visual language as When + Where but body type
+ * runs one notch larger since most readers are senior relatives.
  *
  * Renders nothing if `wedding.preEvent` is undefined.
  */
+function PreEventAccountCard({
+  role,
+  account,
+  onCopy,
+}: {
+  role: string
+  account: BankAccount
+  onCopy: () => void
+}) {
+  return (
+    <article className="mx-auto w-full max-w-sm overflow-hidden rounded-sm border border-line bg-paper text-left">
+      <header className="flex items-center justify-between gap-2 border-b border-line px-5 py-2.5">
+        <span className="font-display text-[12px] tracking-[0.3em] text-ink-mute uppercase">
+          {role}
+        </span>
+        <span className="font-serif text-[13px] text-ink-soft">
+          {account.holder}
+        </span>
+      </header>
+      <div className="flex items-center justify-between gap-4 px-5 py-4">
+        <div className="min-w-0">
+          <p className="text-[12px] tracking-wide text-ink-mute">
+            {account.bank}
+          </p>
+          <p className="mt-1 truncate font-serif text-base tracking-[0.02em] text-ink">
+            {account.number}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onCopy}
+          aria-label={`${role} ${account.holder} 계좌번호 복사`}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+        >
+          <CopyIcon />
+        </button>
+      </div>
+    </article>
+  )
+}
+
 export function PreEvent() {
   const reduce = useReducedMotion()
-  const { copy, copied, error } = useClipboard()
+  const { copy, copied: addrCopied, error: addrError } = useClipboard(2500)
+  const { copy: copyAcct, error: acctError } = useClipboard(2500)
+  const [acctToast, setAcctToast] = useState<string>('')
   const event = wedding.preEvent
 
   const fade = reduce
@@ -31,17 +108,29 @@ export function PreEvent() {
 
   if (!event) return null
 
-  const longDate = formatWeddingLongDate(event.dateTime)
-  const time = formatWeddingTimeHuman(event.dateTime)
+  const longDate = event.dateDisplay ?? formatWeddingLongDate(event.dateTime)
+  const time = event.timeDisplay ?? formatWeddingTimeHuman(event.dateTime)
   const { name, address, detail, kakaoMapUrl, naverMapUrl } = event.venue
 
-  const handleCopy = () => {
+  const handleAddressCopy = () => {
     void copy(address)
   }
 
-  const feedback = error
+  const handleAccountCopy = async (
+    accountNumber: string,
+    label: string,
+  ) => {
+    const ok = await copyAcct(accountNumber)
+    setAcctToast(
+      ok
+        ? `${label} 계좌번호를 복사했어요.`
+        : '복사에 실패했어요. 길게 눌러 직접 복사해주세요.',
+    )
+  }
+
+  const addrFeedback = addrError
     ? '주소 복사에 실패했어요. 길게 눌러 직접 복사해주세요.'
-    : copied
+    : addrCopied
       ? '주소를 복사했어요.'
       : ''
 
@@ -53,31 +142,39 @@ export function PreEvent() {
     >
       <SectionHeader
         index="09"
-        title="앞잔치"
+        title="피로연 장소"
         headingId="pre-event-heading"
       />
 
-      {/* Larger body type than other sections: 어르신들이 주된 독자라
-         가독성 우선. Same fonts as everywhere else so visual identity
-         is unchanged. */}
+      {/* Larger body type for senior readers. break-keep prevents
+         awkward "가족" / "과 친지" mid-word splits. */}
       <motion.p
         {...fade}
-        className="mx-auto max-w-[26ch] text-[17px] leading-[2.05] whitespace-pre-line text-ink-soft"
+        className="mx-auto max-w-[28ch] text-[17px] leading-[2.05] break-keep whitespace-pre-line text-ink-soft"
       >
         {event.description}
       </motion.p>
+
+      {event.signoff && (
+        <motion.p
+          {...fade}
+          className="mt-7 font-serif text-[15px] tracking-wide text-ink-mute break-keep"
+        >
+          {event.signoff}
+        </motion.p>
+      )}
 
       <motion.div
         {...fade}
         className="mx-auto mt-10 mb-8 max-w-xs border-y border-line py-6"
       >
-        <p className="font-serif text-[22px] text-ink">{longDate}</p>
+        <p className="font-serif text-[20px] text-ink break-keep">{longDate}</p>
         <p className="mt-2 font-display text-[17px] tracking-[0.2em] text-ink-soft">
           {time}
         </p>
       </motion.div>
 
-      <motion.div {...fade} className="space-y-2">
+      <motion.div {...fade} className="space-y-2 break-keep">
         <p className="font-serif text-[22px] text-ink">{name}</p>
         <p className="text-[17px] text-ink-soft">{address}</p>
         {detail && (
@@ -96,7 +193,7 @@ export function PreEvent() {
             href={kakaoMapUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="카카오맵으로 앞잔치 장소 열기"
+            aria-label="카카오맵으로 피로연 장소 열기"
             className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-5 py-2.5 text-[15px] font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
           >
             카카오맵
@@ -107,7 +204,7 @@ export function PreEvent() {
             href={naverMapUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="네이버지도로 앞잔치 장소 열기"
+            aria-label="네이버지도로 피로연 장소 열기"
             className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-5 py-2.5 text-[15px] font-medium tracking-wide text-ink transition hover:bg-sage-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
           >
             네이버지도
@@ -115,8 +212,8 @@ export function PreEvent() {
         )}
         <button
           type="button"
-          onClick={handleCopy}
-          aria-label="앞잔치 주소 복사"
+          onClick={handleAddressCopy}
+          aria-label="피로연 주소 복사"
           className="inline-flex items-center gap-1 rounded-full bg-sage-strong px-5 py-2.5 text-[15px] font-medium tracking-wide text-paper transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
         >
           주소 복사
@@ -128,11 +225,44 @@ export function PreEvent() {
         aria-live="polite"
         className={
           'mt-3 min-h-[1.25rem] text-[13px] ' +
-          (error ? 'text-sun' : 'text-ink-soft')
+          (addrError ? 'text-sun' : 'text-ink-soft')
         }
       >
-        {feedback}
+        {addrFeedback}
       </p>
+
+      {event.accounts && event.accounts.length > 0 && (
+        <>
+          <motion.div {...fade} className="mt-12 mb-4">
+            <HairlineDivider label="마음 전하는 곳" />
+          </motion.div>
+          <motion.div {...fade} className="mx-auto grid max-w-sm gap-3">
+            {event.accounts.map((entry) => (
+              <PreEventAccountCard
+                key={`${entry.role}-${entry.account.holder}`}
+                role={entry.role}
+                account={entry.account}
+                onCopy={() =>
+                  handleAccountCopy(
+                    entry.account.number,
+                    `${entry.role} ${entry.account.holder}`,
+                  )
+                }
+              />
+            ))}
+          </motion.div>
+          <p
+            role="status"
+            aria-live="polite"
+            className={
+              'mx-auto mt-3 min-h-[1.25rem] max-w-sm text-[13px] ' +
+              (acctError ? 'text-sun' : 'text-sage-strong')
+            }
+          >
+            {acctToast}
+          </p>
+        </>
+      )}
     </section>
   )
 }
