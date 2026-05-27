@@ -1,6 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { wedding } from '../data/wedding'
-import { ContactButtons } from './ContactButtons'
 import { SectionHeader } from './SectionHeader'
 
 function Ornament() {
@@ -78,12 +77,9 @@ interface ParentColumnProps {
   label: string
   icon: 'groom' | 'bride'
   father: string
-  fatherPhone?: string
   mother: string
-  motherPhone?: string
   relation: string
   child: string
-  childPhone?: string
   divider?: 'right' | 'left' | 'none'
 }
 
@@ -91,12 +87,9 @@ function ParentColumn({
   label,
   icon,
   father,
-  fatherPhone,
   mother,
-  motherPhone,
   relation,
   child,
-  childPhone,
   divider = 'none',
 }: ParentColumnProps) {
   return (
@@ -118,23 +111,16 @@ function ParentColumn({
       <p className="mt-2 font-display text-[12px] tracking-[0.35em] text-ink-mute uppercase">
         {label}
       </p>
+      {/* Contact buttons (☎ ✉) moved to Account section; this column now
+         shows just the name lineage for a cleaner reading flow. */}
       <ul className="mt-3 space-y-1.5 text-[15px] break-keep text-ink-soft">
-        <li>
-          <span>{father}</span>
-          {fatherPhone && <ContactButtons name={father} phone={fatherPhone} />}
-        </li>
-        <li>
-          <span>{mother}</span>
-          {motherPhone && <ContactButtons name={mother} phone={motherPhone} />}
-        </li>
+        <li>{father}</li>
+        <li>{mother}</li>
       </ul>
       <p className="mt-2 text-[13px] text-ink-mute">의 {relation}</p>
-      <div className="mt-1 flex items-center justify-center">
-        <span className="font-serif text-[17px] font-medium text-ink">
-          {child}
-        </span>
-        {childPhone && <ContactButtons name={child} phone={childPhone} />}
-      </div>
+      <p className="mt-1 font-serif text-[17px] font-medium text-ink">
+        {child}
+      </p>
     </div>
   )
 }
@@ -179,24 +165,18 @@ export function Greeting() {
           label="신랑측"
           icon="groom"
           father={wedding.groom.father}
-          fatherPhone={wedding.groom.fatherPhone}
           mother={wedding.groom.mother}
-          motherPhone={wedding.groom.motherPhone}
           relation="아들"
           child={wedding.groom.name}
-          childPhone={wedding.groom.phone}
           divider="right"
         />
         <ParentColumn
           label="신부측"
           icon="bride"
           father={wedding.bride.father}
-          fatherPhone={wedding.bride.fatherPhone}
           mother={wedding.bride.mother}
-          motherPhone={wedding.bride.motherPhone}
           relation="딸"
           child={wedding.bride.name}
-          childPhone={wedding.bride.phone}
         />
       </motion.div>
     </section>

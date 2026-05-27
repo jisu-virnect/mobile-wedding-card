@@ -1,4 +1,11 @@
 import '@testing-library/jest-dom/vitest'
+import { vi } from 'vitest'
+
+// Unit tests run in jsdom without the Kakao SDK script. Force the env
+// var to empty so KakaoMap renders its placeholder fallback and
+// kakao.ts treats the SDK as "not configured" (no script injection,
+// no infinite Promise wait).
+vi.stubEnv('VITE_KAKAO_JS_KEY', '')
 
 // jsdom does not implement IntersectionObserver, which framer-motion's
 // `whileInView` / `useInView` relies on. A permissive mock that synchronously

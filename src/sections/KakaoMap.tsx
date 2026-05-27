@@ -43,7 +43,9 @@ declare global {
   }
 }
 
-const SDK_URL_BASE = '//dapi.kakao.com/v2/maps/sdk.js'
+// Explicit https:// (not protocol-relative) so the SDK loads cleanly
+// over HTTP dev servers without browser mixed-content quirks.
+const SDK_URL_BASE = 'https://dapi.kakao.com/v2/maps/sdk.js'
 
 let sdkLoadPromise: Promise<boolean> | null = null
 
@@ -60,10 +62,21 @@ function loadSdk(key: string): Promise<boolean> {
       if (window.kakao?.maps) {
         window.kakao.maps.load(() => resolve(true))
       } else {
+        console.warn(
+          'Kakao Maps SDK loaded but window.kakao.maps missing — ' +
+            'check that VITE_KAKAO_JS_KEY is valid and the current domain ' +
+            'is registered in 카카오 개발자 콘솔 → 앱 설정 → 플랫폼 → Web.',
+        )
         resolve(false)
       }
     }
-    script.onerror = () => resolve(false)
+    script.onerror = () => {
+      console.warn(
+        'Kakao Maps SDK script failed to load. Network blocked or ' +
+          'domain not registered in 카카오 개발자 콘솔.',
+      )
+      resolve(false)
+    }
     document.head.appendChild(script)
   })
   return sdkLoadPromise
