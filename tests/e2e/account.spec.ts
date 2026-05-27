@@ -16,10 +16,10 @@ test.describe('Account section', () => {
     const section = page.locator('#account')
     await section.scrollIntoViewIfNeeded()
 
-    // Both sides' numbers should be visible immediately — no accordion.
-    // first() handles the placeholder dupes from parent rows.
-    await expect(section.getByText('110-000-000000').first()).toBeVisible()
-    await expect(section.getByText('000-000-000000').first()).toBeVisible()
+    // Both sides' account numbers should be visible immediately (no
+    // accordion). Asserting on a stable groom + bride pair.
+    await expect(section.getByText('110-223-048839')).toBeVisible()
+    await expect(section.getByText('3333-30-4385686')).toBeVisible()
 
     const brideCopy = section.getByRole('button', {
       name: /신부 김난슬 계좌번호 복사/,
@@ -29,6 +29,6 @@ test.describe('Account section', () => {
       /신부 김난슬 계좌번호를 복사했어요\./,
     )
     const copied = await page.evaluate(() => navigator.clipboard.readText())
-    expect(copied).toBe('000-000-000000')
+    expect(copied).toBe('3333-30-4385686')
   })
 })
