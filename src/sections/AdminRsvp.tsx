@@ -7,22 +7,18 @@ type LoadState =
   | { status: 'ready'; rows: RsvpRow[] }
   | { status: 'error'; message: string }
 
-type Tab = 'all' | 'groom' | 'bride' | 'absent'
+type Tab = 'all' | 'groom' | 'bride'
 
 interface Totals {
   attending: number
   notAttending: number
   guestHeadcount: number
-  groomCount: number
-  brideCount: number
 }
 
 function computeTotals(rows: RsvpRow[]): Totals {
   let attending = 0
   let notAttending = 0
   let guestHeadcount = 0
-  let groomCount = 0
-  let brideCount = 0
   for (const row of rows) {
     if (row.attending) {
       attending += 1
@@ -30,10 +26,18 @@ function computeTotals(rows: RsvpRow[]): Totals {
     } else {
       notAttending += 1
     }
-    if (row.side === 'groom') groomCount += 1
-    if (row.side === 'bride') brideCount += 1
   }
-  return { attending, notAttending, guestHeadcount, groomCount, brideCount }
+  return { attending, notAttending, guestHeadcount }
+}
+
+function sideCounts(rows: RsvpRow[]): { groom: number; bride: number } {
+  let groom = 0
+  let bride = 0
+  for (const r of rows) {
+    if (r.side === 'groom') groom += 1
+    else if (r.side === 'bride') bride += 1
+  }
+  return { groom, bride }
 }
 
 /** Group rows by device_id — surfaces "this family came in on one phone". */
@@ -152,133 +156,139 @@ export function AdminRsvp() {
     }
   }
 
-  // Totals always reflect the FULL dataset (so the tabs/cards can show
-  // accurate counts regardless of which filter is active).
-  const totals = useMemo<Totals | null>(
-    () => (load.status === 'ready' ? computeTotals(load.rows) : null),
+  const allRows = useMemo<RsvpRow[]>(
+    () => (load.status === 'ready' ? load.rows : []),
     [load],
   )
+  const sides = useMemo(() => sideCounts(allRows), [allRows])
 
-  // Apply tab + search filters before grouping.
-  const filtered = useMemo(() => {
-    if (load.status !== 'ready') return []
-    const q = search.trim().toLowerCase()
-    return load.rows.filter((row) => {
-      // Tab filter
-      if (tab === 'groom' && row.side !== 'groom') return false
-      if (tab === 'bride' && row.side !== 'bride') return false
-      if (tab === 'absent' && row.attending) return false
-      // Search filter (matches name + relationship + message)
-      if (q) {
-        const haystack =
-          row.name.toLowerCase() +
-          ' ' +
-          (row.relationship ?? '').toLowerCase() +
-          ' ' +
-          (row.message ?? '').toLowerCase()
-        if (!haystack.includes(q)) return false
-      }
-      return true
-    })
-  }, [load, tab, search])
-
-  const grouped = useMemo(() => groupByDevice(filtered), [filtered])
-  const collisions = useMemo(
+  // Tab filter first (defines the "context" for the summary cards).
+  const tabFiltered = useMemo(
     () =>
-      load.status === 'ready' ? nameCollisions(load.rows) : new Set<string>(),
-    [load],
+      allRows.filter((row) => {
+        if (tab === 'groom') return row.side === 'groom'
+        if (tab === 'bride') return row.side === 'bride'
+        return true
+      }),
+    [allRows, tab],
   )
+
+  // Summary cards reflect the active tab — switching to 신랑측 shows the
+  // groom-side headcount, not the whole party. Matches "탭이 컨텍스트" UX.
+  const totals = useMemo(() => computeTotals(tabFiltered), [tabFiltered])
+
+  // Search applies on top of the tab filter for the list display.
+  const listFiltered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return tabFiltered
+    return tabFiltered.filter((row) => {
+      const hay =
+        row.name.toLowerCase() +
+        ' ' +
+        (row.relationship ?? '').toLowerCase() +
+        ' ' +
+        (row.message ?? '').toLowerCase()
+      return hay.includes(q)
+    })
+  }, [tabFiltered, search])
+
+  const grouped = useMemo(() => groupByDevice(listFiltered), [listFiltered])
+  const collisions = useMemo(() => nameCollisions(allRows), [allRows])
 
   return (
-    <main className="mx-auto min-h-svh max-w-3xl bg-ivory px-6 py-10">
-      <header className="mb-6 flex items-baseline justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-2xl text-ink">RSVP 어드민</h1>
-          <p className="mt-1 text-[12px] text-ink-mute">
-            지수·난슬 · 2026.11.28
+    <main className="mx-auto min-h-svh max-w-3xl bg-ivory">
+      {/* Top navigation — sticky so it's always reachable while scrolling. */}
+      <nav
+        aria-label="응답 분류"
+        className="sticky top-0 z-10 border-b border-line bg-ivory/90 backdrop-blur"
+      >
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-6 py-3">
+          <div role="tablist" className="flex gap-1">
+            <TabButton
+              active={tab === 'all'}
+              onClick={() => setTab('all')}
+              label="전체"
+              count={allRows.length}
+            />
+            <TabButton
+              active={tab === 'groom'}
+              onClick={() => setTab('groom')}
+              label="신랑측"
+              count={sides.groom}
+            />
+            <TabButton
+              active={tab === 'bride'}
+              onClick={() => setTab('bride')}
+              label="신부측"
+              count={sides.bride}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (load.status === 'ready') downloadCsv(load.rows)
+            }}
+            disabled={load.status !== 'ready' || load.rows.length === 0}
+            className="rounded-full border border-line bg-paper px-3 py-1 text-[12px] font-medium text-ink-soft transition hover:bg-sage-soft disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            CSV
+          </button>
+        </div>
+      </nav>
+
+      <div className="px-6 py-6">
+        <div className="mb-5">
+          <p className="font-display text-[11px] tracking-[0.4em] text-ink-mute uppercase">
+            응답 모아보기
+          </p>
+          <p className="mt-1 font-serif text-[15px] text-ink-soft">
+            지수 · 난슬{' '}
+            <span className="text-ink-mute">· 2026.11.28</span>
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            if (load.status === 'ready') downloadCsv(load.rows)
-          }}
-          disabled={load.status !== 'ready' || load.rows.length === 0}
-          className="rounded-full border border-line bg-paper px-3 py-1.5 text-[12px] font-medium text-ink-soft transition hover:bg-sage-soft disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          CSV 내보내기
-        </button>
-      </header>
 
-      {load.status === 'loading' && (
-        <p className="text-ink-mute">불러오는 중…</p>
-      )}
+        {load.status === 'loading' && (
+          <p className="text-ink-mute">불러오는 중…</p>
+        )}
 
-      {load.status === 'error' && (
-        <p className="rounded-sm border border-sun/40 bg-paper px-4 py-3 text-sun">
-          {load.message}
-        </p>
-      )}
+        {load.status === 'error' && (
+          <p className="rounded-sm border border-sun/40 bg-paper px-4 py-3 text-sun">
+            {load.message}
+          </p>
+        )}
 
-      {load.status === 'ready' && totals && (
-        <>
-          <section
-            aria-label="요약"
-            className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4"
-          >
-            <SummaryCard label="참석" value={totals.attending} accent />
-            <SummaryCard label="불참" value={totals.notAttending} />
-            <SummaryCard
-              label="식수 합계"
-              value={totals.guestHeadcount}
-              accent
-            />
-            <SummaryCard
-              label="신랑측 / 신부측"
-              value={`${totals.groomCount} / ${totals.brideCount}`}
-            />
-          </section>
-
-          {collisions.size > 0 && (
-            <p className="mb-4 rounded-sm border border-sun/40 bg-paper px-3 py-2 text-[12px] text-sun">
-              ⚠ 동명이인 {collisions.size}건 — 같은 디바이스끼리 그룹핑된 응답을
-              확인해 주세요.
-            </p>
-          )}
-
-          {/* Tab row + search */}
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-line">
-            <div
-              aria-label="응답 필터"
-              role="tablist"
-              className="flex gap-1"
+        {load.status === 'ready' && (
+          <>
+            <section
+              aria-label={`${tabLabel(tab)} 요약`}
+              className="mb-6 grid grid-cols-3 gap-3"
             >
-              <TabButton
-                active={tab === 'all'}
-                onClick={() => setTab('all')}
-                label="전체"
-                count={load.rows.length}
+              <SummaryCard label="참석" value={totals.attending} accent />
+              <SummaryCard label="불참" value={totals.notAttending} />
+              <SummaryCard
+                label="식수 합계"
+                value={totals.guestHeadcount}
+                accent
               />
-              <TabButton
-                active={tab === 'groom'}
-                onClick={() => setTab('groom')}
-                label="신랑측"
-                count={totals.groomCount}
-              />
-              <TabButton
-                active={tab === 'bride'}
-                onClick={() => setTab('bride')}
-                label="신부측"
-                count={totals.brideCount}
-              />
-              <TabButton
-                active={tab === 'absent'}
-                onClick={() => setTab('absent')}
-                label="불참"
-                count={totals.notAttending}
-              />
-            </div>
-            <div className="relative pb-2">
+            </section>
+
+            {collisions.size > 0 && (
+              <p className="mb-4 rounded-sm border border-sun/40 bg-paper px-3 py-2 text-[12px] text-sun">
+                ⚠ 동명이인 {collisions.size}건 — 같은 디바이스끼리 그룹핑된
+                응답을 확인해 주세요.
+              </p>
+            )}
+
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <p className="text-[11px] tracking-wide text-ink-mute">
+                {listFiltered.length}건
+                {search && (
+                  <>
+                    {' · '}
+                    <span className="text-ink-soft">"{search}"</span> 검색 결과
+                  </>
+                )}
+              </p>
               <input
                 type="search"
                 value={search}
@@ -288,85 +298,91 @@ export function AdminRsvp() {
                 className="w-56 rounded-full border border-line bg-paper px-3 py-1 text-[12px] text-ink outline-none transition placeholder:text-ink-mute focus:border-sage focus:ring-2 focus:ring-sage-soft"
               />
             </div>
-          </div>
 
-          <section aria-label="응답 목록" className="space-y-4">
-            {grouped.length === 0 && (
-              <p className="rounded-sm border border-line bg-paper px-4 py-6 text-center text-ink-mute">
-                {load.rows.length === 0
-                  ? '아직 받은 응답이 없어요.'
-                  : search
-                    ? `"${search}" 에 해당하는 응답이 없어요.`
-                    : '이 탭에 해당하는 응답이 없어요.'}
-              </p>
-            )}
-            {grouped.map((group) => (
-              <article
-                key={group.deviceId}
-                className="rounded-sm border border-line bg-paper p-3"
-              >
-                <header className="mb-2 flex items-center justify-between text-[11px] tracking-wide text-ink-mute">
-                  <span>디바이스 #{group.deviceId.slice(0, 8)}</span>
-                  <span>{group.rows.length}건</span>
-                </header>
-                <ul className="divide-y divide-line">
-                  {group.rows.map((row) => (
-                    <li
-                      key={row.id}
-                      className={
-                        'py-2 text-sm ' +
-                        (collisions.has(row.name) ? 'bg-sun/5' : '')
-                      }
-                    >
-                      <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <p className="text-ink">
-                          <span className="font-serif text-[15px]">
-                            {row.name}
-                          </span>
-                          <span className="ml-2 text-[12px] text-ink-mute">
-                            {row.side === 'groom' ? '신랑측' : '신부측'}
-                            {row.relationship ? ` · ${row.relationship}` : ''}
-                          </span>
-                          {collisions.has(row.name) && (
-                            <span className="ml-2 rounded-full bg-sun/20 px-1.5 py-0.5 text-[10px] text-sun">
-                              동명이인
+            <section aria-label="응답 목록" className="space-y-4">
+              {grouped.length === 0 && (
+                <p className="rounded-sm border border-line bg-paper px-4 py-6 text-center text-ink-mute">
+                  {allRows.length === 0
+                    ? '아직 받은 응답이 없어요.'
+                    : search
+                      ? `"${search}" 에 해당하는 응답이 없어요.`
+                      : '이 분류에 해당하는 응답이 없어요.'}
+                </p>
+              )}
+              {grouped.map((group) => (
+                <article
+                  key={group.deviceId}
+                  className="rounded-sm border border-line bg-paper p-3"
+                >
+                  <header className="mb-2 flex items-center justify-between text-[11px] tracking-wide text-ink-mute">
+                    <span>디바이스 #{group.deviceId.slice(0, 8)}</span>
+                    <span>{group.rows.length}건</span>
+                  </header>
+                  <ul className="divide-y divide-line">
+                    {group.rows.map((row) => (
+                      <li
+                        key={row.id}
+                        className={
+                          'py-2 text-sm ' +
+                          (collisions.has(row.name) ? 'bg-sun/5' : '')
+                        }
+                      >
+                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                          <p className="text-ink">
+                            <span className="font-serif text-[15px]">
+                              {row.name}
                             </span>
-                          )}
-                        </p>
-                        <p className="text-[12px] text-ink-soft">
-                          {row.attending
-                            ? `참석 · ${row.guests}명`
-                            : '불참'}
-                        </p>
-                      </div>
-                      {row.message && (
-                        <p className="mt-1 text-[12px] leading-relaxed text-ink-mute break-keep">
-                          {row.message}
-                        </p>
-                      )}
-                      <div className="mt-1 flex items-center justify-between gap-2">
-                        <p className="text-[10px] text-ink-mute/70">
-                          {new Date(row.created_at).toLocaleString('ko-KR')}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(row)}
-                          aria-label={`${row.name} 응답 삭제`}
-                          className="rounded-full border border-line bg-paper px-2 py-0.5 text-[11px] font-medium text-sun transition hover:bg-sun/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun"
-                        >
-                          삭제
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </section>
-        </>
-      )}
+                            <span className="ml-2 text-[12px] text-ink-mute">
+                              {row.side === 'groom' ? '신랑측' : '신부측'}
+                              {row.relationship ? ` · ${row.relationship}` : ''}
+                            </span>
+                            {collisions.has(row.name) && (
+                              <span className="ml-2 rounded-full bg-sun/20 px-1.5 py-0.5 text-[10px] text-sun">
+                                동명이인
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-[12px] text-ink-soft">
+                            {row.attending
+                              ? `참석 · ${row.guests}명`
+                              : '불참'}
+                          </p>
+                        </div>
+                        {row.message && (
+                          <p className="mt-1 text-[12px] leading-relaxed text-ink-mute break-keep">
+                            {row.message}
+                          </p>
+                        )}
+                        <div className="mt-1 flex items-center justify-between gap-2">
+                          <p className="text-[10px] text-ink-mute/70">
+                            {new Date(row.created_at).toLocaleString('ko-KR')}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(row)}
+                            aria-label={`${row.name} 응답 삭제`}
+                            className="rounded-full border border-line bg-paper px-2 py-0.5 text-[11px] font-medium text-sun transition hover:bg-sun/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun"
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </section>
+          </>
+        )}
+      </div>
     </main>
   )
+}
+
+function tabLabel(tab: Tab): string {
+  if (tab === 'groom') return '신랑측'
+  if (tab === 'bride') return '신부측'
+  return '전체'
 }
 
 function TabButton({
@@ -387,19 +403,17 @@ function TabButton({
       aria-selected={active}
       onClick={onClick}
       className={
-        '-mb-px border-b-2 px-3 py-2 text-[13px] font-medium transition ' +
+        'rounded-full px-3 py-1.5 text-[13px] font-medium tracking-tight transition ' +
         (active
-          ? 'border-sage-strong text-ink'
-          : 'border-transparent text-ink-mute hover:text-ink-soft')
+          ? 'bg-sage-strong text-paper'
+          : 'text-ink-mute hover:bg-sage-soft hover:text-ink-soft')
       }
     >
       {label}
       <span
         className={
           'ml-1.5 inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-[10px] tabular-nums ' +
-          (active
-            ? 'bg-sage-strong/10 text-sage-strong'
-            : 'bg-line/40 text-ink-mute')
+          (active ? 'bg-paper/20 text-paper' : 'bg-line/40 text-ink-mute')
         }
       >
         {count}
