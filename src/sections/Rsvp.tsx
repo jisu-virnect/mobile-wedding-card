@@ -6,6 +6,7 @@ import {
   BRIDE_RELATIONSHIPS,
   GROOM_RELATIONSHIPS,
   RELATIONSHIP_LABELS,
+  relationshipLabel,
   rsvpDefaults,
   rsvpSchema,
   type Relationship,
@@ -208,7 +209,9 @@ export function Rsvp() {
                   {row.name}
                   <span className="ml-2 text-[12px] text-ink-mute">
                     {row.side === 'groom' ? '신랑측' : '신부측'}
-                    {row.relationship ? ` · ${row.relationship}` : ''}
+                    {row.relationship
+                      ? ` · ${relationshipLabel(row.relationship)}`
+                      : ''}
                   </span>
                 </p>
                 <p className="text-[12px] text-ink-soft">

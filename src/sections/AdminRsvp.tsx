@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { adminDeleteRsvp, fetchAllRsvps, type RsvpRow } from '../lib/rsvp'
-import {
-  RELATIONSHIP_LABELS,
-  type Relationship,
-} from '../lib/rsvpSchema'
+import { relationshipLabel } from '../lib/rsvpSchema'
 import { hasSupabase } from '../lib/supabase'
 
 type LoadState =
@@ -71,15 +68,6 @@ function nameCollisions(rows: RsvpRow[]): Set<string> {
     if (count > 1) collisions.add(name)
   }
   return collisions
-}
-
-/** Friendly label — falls back to raw value for legacy free-form rows. */
-function relationshipLabel(value: string | null): string {
-  if (!value) return ''
-  if (value in RELATIONSHIP_LABELS) {
-    return RELATIONSHIP_LABELS[value as Relationship]
-  }
-  return value
 }
 
 function downloadCsv(rows: RsvpRow[]) {

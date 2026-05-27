@@ -45,6 +45,19 @@ export function sideFromRelationship(r: Relationship): 'groom' | 'bride' {
   return r.startsWith('bride') ? 'bride' : 'groom'
 }
 
+/**
+ * Friendly Korean label for any relationship value. Falls back to the
+ * raw value (e.g. legacy free-text rows from the old schema) when not
+ * in the enum, so existing DB rows keep rendering.
+ */
+export function relationshipLabel(value: string | null | undefined): string {
+  if (!value) return ''
+  if (value in RELATIONSHIP_LABELS) {
+    return RELATIONSHIP_LABELS[value as Relationship]
+  }
+  return value
+}
+
 // `side` is no longer a separate form field — it's derived from
 // `relationship` at submit time. The schema only validates relationship,
 // attending, guests, and free-text fields.
