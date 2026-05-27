@@ -1,5 +1,6 @@
 import {
   Account,
+  AdminRsvp,
   BGMToggle,
   Cover,
   Films,
@@ -13,6 +14,20 @@ import {
   Where,
 } from './sections'
 import { wedding } from './data/wedding'
+
+/**
+ * Admin mode detection — reads `?admin=<token>` from the URL once on
+ * load and matches against VITE_ADMIN_TOKEN. Anything else falls through
+ * to the regular invitation. Done outside React render so the admin page
+ * never flashes the guest UI first.
+ */
+function isAdminRoute(): boolean {
+  if (typeof window === 'undefined') return false
+  const expected = import.meta.env.VITE_ADMIN_TOKEN as string | undefined
+  if (!expected) return false
+  const params = new URLSearchParams(window.location.search)
+  return params.get('admin') === expected
+}
 
 function SectionDivider() {
   return (
@@ -30,6 +45,9 @@ function SectionDivider() {
 }
 
 function App() {
+  if (isAdminRoute()) {
+    return <AdminRsvp />
+  }
   return (
     <main className="mx-auto flex min-h-svh max-w-[480px] flex-col bg-ivory shadow-[0_0_60px_rgba(0,0,0,0.04)]">
       {wedding.bgm && <BGMToggle config={wedding.bgm} />}

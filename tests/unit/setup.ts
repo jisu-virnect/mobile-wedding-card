@@ -7,6 +7,14 @@ import { vi } from 'vitest'
 // no infinite Promise wait).
 vi.stubEnv('VITE_KAKAO_JS_KEY', '')
 
+// Supabase backend isn't reachable from jsdom; force the env vars empty so
+// hasSupabase() returns false and components fall back to the "준비 중"
+// path. Tests that need to exercise Supabase behavior should mock the
+// module directly.
+vi.stubEnv('VITE_SUPABASE_URL', '')
+vi.stubEnv('VITE_SUPABASE_ANON_KEY', '')
+vi.stubEnv('VITE_ADMIN_TOKEN', '')
+
 // jsdom does not implement IntersectionObserver, which framer-motion's
 // `whileInView` / `useInView` relies on. A permissive mock that synchronously
 // reports the observed element as fully intersecting keeps visibility-gated

@@ -14,9 +14,22 @@ describe('rsvpSchema', () => {
     expect(rsvpSchema.safeParse(valid).success).toBe(true)
   })
 
-  it('accepts payload without `side` (it is optional)', () => {
+  it('rejects payload without `side` (now required)', () => {
     const { side: _omitSide, ...rest } = valid
     void _omitSide
+    const result = rsvpSchema.safeParse(rest)
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].path).toEqual(['side'])
+    }
+  })
+
+  it('accepts optional `relationship`', () => {
+    expect(
+      rsvpSchema.safeParse({ ...valid, relationship: '대학 동기' }).success,
+    ).toBe(true)
+    const { relationship: _omit, ...rest } = { ...valid, relationship: '' }
+    void _omit
     expect(rsvpSchema.safeParse(rest).success).toBe(true)
   })
 

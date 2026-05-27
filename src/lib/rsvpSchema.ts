@@ -1,16 +1,23 @@
 import { z } from 'zod'
 
-// `side` is genuinely optional — many guests (e.g. coworkers, mutual friends)
-// don't strictly belong to one side. Making it optional removes friction.
-// `attending` stays required but has no default: pre-checking either option
-// risks the guest submitting the wrong intent without noticing.
+// `side` is required so the admin can disambiguate same-name guests across
+// 신랑/신부 (very common in Korean weddings). `relationship` is optional —
+// the freeform hint ("대학 동기", "회사 동료") is the tiebreaker when two
+// same-name guests fall on the same side.
 export const rsvpSchema = z.object({
   name: z
     .string()
     .trim()
     .min(1, '이름을 입력해주세요.')
     .max(40, '이름은 40자 이하로 입력해주세요.'),
-  side: z.enum(['groom', 'bride']).optional(),
+  side: z.enum(['groom', 'bride'], {
+    message: '신랑측 / 신부측 중 하나를 선택해주세요.',
+  }),
+  relationship: z
+    .string()
+    .trim()
+    .max(40, '관계는 40자 이하로 입력해주세요.')
+    .optional(),
   attending: z.enum(['yes', 'no'], {
     message: '참석 여부를 선택해주세요.',
   }),
@@ -27,9 +34,10 @@ export type RsvpFormValues = z.infer<typeof rsvpSchema>
 // Defaults intentionally omit `side` and `attending` so the radio groups
 // start unchecked. At runtime react-hook-form treats missing fields as
 // undefined; the `as` cast is just a TS pacifier — submit-time zod
-// validation enforces that `attending` is picked before sending.
+// validation enforces that `side` and `attending` are picked before sending.
 export const rsvpDefaults = {
   name: '',
+  relationship: '',
   guests: 1,
   message: '',
 } as RsvpFormValues
