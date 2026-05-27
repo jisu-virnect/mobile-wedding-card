@@ -19,14 +19,15 @@ describe('<Rsvp />', () => {
     ).toBeInTheDocument()
   })
 
-  it('blocks submit when side is unpicked (now required)', async () => {
+  it('blocks submit when relationship chip is unpicked', async () => {
     const user = userEvent.setup()
     render(<Rsvp />)
     await user.type(screen.getByLabelText(/이름/), '홍길동')
     await user.click(screen.getByLabelText('참석'))
+    await user.type(screen.getByLabelText(/참석 인원/), '1')
     await user.click(screen.getByRole('button', { name: /참석 여부/ }))
     expect(
-      await screen.findByText('신랑측 / 신부측 중 하나를 선택해주세요.'),
+      await screen.findByText('관계를 선택해주세요.'),
     ).toBeInTheDocument()
   })
 
@@ -34,7 +35,8 @@ describe('<Rsvp />', () => {
     const user = userEvent.setup()
     render(<Rsvp />)
     await user.type(screen.getByLabelText(/이름/), '홍길동')
-    await user.click(screen.getByLabelText('신랑측'))
+    await user.click(screen.getByLabelText('신랑'))
+    await user.type(screen.getByLabelText(/참석 인원/), '1')
     await user.click(screen.getByRole('button', { name: /참석 여부/ }))
     expect(
       await screen.findByText('참석 여부를 선택해주세요.'),
@@ -45,17 +47,29 @@ describe('<Rsvp />', () => {
     const user = userEvent.setup()
     render(<Rsvp />)
     await user.type(screen.getByLabelText(/이름/), '김하늘')
-    await user.click(screen.getByLabelText('신랑측'))
+    await user.click(screen.getByLabelText('신랑'))
     await user.click(screen.getByLabelText('참석'))
+    await user.type(screen.getByLabelText(/참석 인원/), '1')
     await user.click(screen.getByRole('button', { name: /참석 여부/ }))
     expect(
       await screen.findByText(/아직 준비 중이에요/),
     ).toBeInTheDocument()
   })
 
-  it('exposes the optional relationship input', () => {
+  it('renders both relationship chip groups (신랑측 / 신부측)', () => {
     render(<Rsvp />)
-    expect(screen.getByLabelText(/관계/)).toBeInTheDocument()
+    const group = screen.getByRole('radiogroup', { name: '관계' })
+    expect(group).toHaveTextContent('신랑측')
+    expect(group).toHaveTextContent('신부측')
+    expect(group).toHaveTextContent('신랑')
+    expect(group).toHaveTextContent('신랑아버님')
+    expect(group).toHaveTextContent('신랑어머님')
+    expect(group).toHaveTextContent('신랑측 그 외')
+    expect(group).toHaveTextContent('신부')
+    expect(group).toHaveTextContent('신부아버님')
+    expect(group).toHaveTextContent('신부어머님')
+    expect(group).toHaveTextContent('신부동생')
+    expect(group).toHaveTextContent('신부측 그 외')
   })
 
   it('shows the transparency note that data goes to the couple', () => {

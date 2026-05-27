@@ -1,4 +1,8 @@
 import { getDeviceId } from './deviceId'
+import {
+  sideFromRelationship,
+  type Relationship,
+} from './rsvpSchema'
 import { getSupabase } from './supabase'
 
 /** Row shape as it lives in Postgres. */
@@ -15,11 +19,13 @@ export interface RsvpRow {
   updated_at: string
 }
 
-/** Form-side payload (camelCase, before mapping to DB columns). */
+/**
+ * Form-side payload — `side` is derived from `relationship`, not collected
+ * from the user directly.
+ */
 export interface RsvpInput {
   name: string
-  side: 'groom' | 'bride'
-  relationship?: string
+  relationship: Relationship
   attending: boolean
   guests: number
   message?: string
@@ -40,8 +46,8 @@ export async function submitRsvp(input: RsvpInput): Promise<RsvpRow> {
   const payload = {
     device_id: deviceId,
     name: input.name.trim(),
-    side: input.side,
-    relationship: input.relationship?.trim() || null,
+    side: sideFromRelationship(input.relationship),
+    relationship: input.relationship,
     attending: input.attending,
     guests: input.guests,
     message: input.message?.trim() || null,

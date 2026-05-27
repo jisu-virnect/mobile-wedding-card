@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { adminDeleteRsvp, fetchAllRsvps, type RsvpRow } from '../lib/rsvp'
+import {
+  RELATIONSHIP_LABELS,
+  type Relationship,
+} from '../lib/rsvpSchema'
 import { hasSupabase } from '../lib/supabase'
 
 type LoadState =
@@ -8,6 +12,7 @@ type LoadState =
   | { status: 'error'; message: string }
 
 type Tab = 'all' | 'groom' | 'bride'
+type ViewMode = 'by-time' | 'by-attending' | 'by-device'
 
 interface Totals {
   attending: number
@@ -40,7 +45,6 @@ function sideCounts(rows: RsvpRow[]): { groom: number; bride: number } {
   return { groom, bride }
 }
 
-/** Group rows by device_id — surfaces "this family came in on one phone". */
 function groupByDevice(rows: RsvpRow[]): Array<{
   deviceId: string
   rows: RsvpRow[]
@@ -57,7 +61,6 @@ function groupByDevice(rows: RsvpRow[]): Array<{
   }))
 }
 
-/** Detect same-name collisions for the "동명이인" highlight. */
 function nameCollisions(rows: RsvpRow[]): Set<string> {
   const counts = new Map<string, number>()
   for (const row of rows) {
@@ -68,6 +71,15 @@ function nameCollisions(rows: RsvpRow[]): Set<string> {
     if (count > 1) collisions.add(name)
   }
   return collisions
+}
+
+/** Friendly label — falls back to raw value for legacy free-form rows. */
+function relationshipLabel(value: string | null): string {
+  if (!value) return ''
+  if (value in RELATIONSHIP_LABELS) {
+    return RELATIONSHIP_LABELS[value as Relationship]
+  }
+  return value
 }
 
 function downloadCsv(rows: RsvpRow[]) {
@@ -93,7 +105,7 @@ function downloadCsv(rows: RsvpRow[]) {
       [
         row.name,
         row.side === 'groom' ? '신랑측' : '신부측',
-        row.relationship ?? '',
+        relationshipLabel(row.relationship),
         row.attending ? '참석' : '불참',
         row.guests,
         row.message ?? '',
@@ -104,7 +116,6 @@ function downloadCsv(rows: RsvpRow[]) {
         .join(','),
     )
   }
-  // Prepend a BOM so Excel opens UTF-8 Korean cleanly.
   const blob = new Blob(['﻿' + lines.join('\n')], {
     type: 'text/csv;charset=utf-8',
   })
@@ -128,6 +139,7 @@ export function AdminRsvp() {
   )
   const [tab, setTab] = useState<Tab>('all')
   const [search, setSearch] = useState('')
+  const [viewMode, setViewMode] = useState<ViewMode>('by-time')
 
   useEffect(() => {
     if (!backendReady) return
@@ -140,7 +152,7 @@ export function AdminRsvp() {
 
   const handleDelete = async (row: RsvpRow) => {
     const ok = window.confirm(
-      `${row.name}님의 응답을 삭제하시겠습니까?\n(${row.side === 'groom' ? '신랑측' : '신부측'}${row.relationship ? ` · ${row.relationship}` : ''})`,
+      `${row.name}님의 응답을 삭제하시겠습니까?\n(${row.side === 'groom' ? '신랑측' : '신부측'}${row.relationship ? ` · ${relationshipLabel(row.relationship)}` : ''})`,
     )
     if (!ok) return
     try {
@@ -162,7 +174,6 @@ export function AdminRsvp() {
   )
   const sides = useMemo(() => sideCounts(allRows), [allRows])
 
-  // Tab filter first (defines the "context" for the summary cards).
   const tabFiltered = useMemo(
     () =>
       allRows.filter((row) => {
@@ -173,11 +184,8 @@ export function AdminRsvp() {
     [allRows, tab],
   )
 
-  // Summary cards reflect the active tab — switching to 신랑측 shows the
-  // groom-side headcount, not the whole party. Matches "탭이 컨텍스트" UX.
   const totals = useMemo(() => computeTotals(tabFiltered), [tabFiltered])
 
-  // Search applies on top of the tab filter for the list display.
   const listFiltered = useMemo(() => {
     const q = search.trim().toLowerCase()
     if (!q) return tabFiltered
@@ -187,17 +195,17 @@ export function AdminRsvp() {
         ' ' +
         (row.relationship ?? '').toLowerCase() +
         ' ' +
+        relationshipLabel(row.relationship).toLowerCase() +
+        ' ' +
         (row.message ?? '').toLowerCase()
       return hay.includes(q)
     })
   }, [tabFiltered, search])
 
-  const grouped = useMemo(() => groupByDevice(listFiltered), [listFiltered])
   const collisions = useMemo(() => nameCollisions(allRows), [allRows])
 
   return (
     <main className="mx-auto min-h-svh max-w-3xl bg-ivory">
-      {/* Top navigation — sticky so it's always reachable while scrolling. */}
       <nav
         aria-label="응답 분류"
         className="sticky top-0 z-10 border-b border-line bg-ivory/90 backdrop-blur"
@@ -242,8 +250,7 @@ export function AdminRsvp() {
             응답 모아보기
           </p>
           <p className="mt-1 font-serif text-[15px] text-ink-soft">
-            지수 · 난슬{' '}
-            <span className="text-ink-mute">· 2026.11.28</span>
+            지수 · 난슬 <span className="text-ink-mute">· 2026.11.28</span>
           </p>
         </div>
 
@@ -263,12 +270,20 @@ export function AdminRsvp() {
               aria-label={`${tabLabel(tab)} 요약`}
               className="mb-6 grid grid-cols-3 gap-3"
             >
-              <SummaryCard label="참석" value={totals.attending} accent />
-              <SummaryCard label="불참" value={totals.notAttending} />
+              <SummaryCard
+                label="참석"
+                value={totals.attending}
+                tone="attending"
+              />
+              <SummaryCard
+                label="불참"
+                value={totals.notAttending}
+                tone="absent"
+              />
               <SummaryCard
                 label="식수 합계"
                 value={totals.guestHeadcount}
-                accent
+                tone="neutral-strong"
               />
             </section>
 
@@ -279,7 +294,7 @@ export function AdminRsvp() {
               </p>
             )}
 
-            <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-[11px] tracking-wide text-ink-mute">
                 {listFiltered.length}건
                 {search && (
@@ -289,93 +304,236 @@ export function AdminRsvp() {
                   </>
                 )}
               </p>
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="이름·관계·메시지 검색"
-                aria-label="응답 검색"
-                className="w-56 rounded-full border border-line bg-paper px-3 py-1 text-[12px] text-ink outline-none transition placeholder:text-ink-mute focus:border-sage focus:ring-2 focus:ring-sage-soft"
-              />
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value as ViewMode)}
+                  aria-label="보기 방식"
+                  className="rounded-full border border-line bg-paper px-3 py-1 text-[12px] text-ink-soft outline-none transition focus:border-sage focus:ring-2 focus:ring-sage-soft"
+                >
+                  <option value="by-time">시간순 (최신)</option>
+                  <option value="by-attending">참석/불참</option>
+                  <option value="by-device">디바이스별 (가족)</option>
+                </select>
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="이름·관계·메시지"
+                  aria-label="응답 검색"
+                  className="w-48 rounded-full border border-line bg-paper px-3 py-1 text-[12px] text-ink outline-none transition placeholder:text-ink-mute focus:border-sage focus:ring-2 focus:ring-sage-soft"
+                />
+              </div>
             </div>
 
-            <section aria-label="응답 목록" className="space-y-4">
-              {grouped.length === 0 && (
-                <p className="rounded-sm border border-line bg-paper px-4 py-6 text-center text-ink-mute">
-                  {allRows.length === 0
-                    ? '아직 받은 응답이 없어요.'
-                    : search
-                      ? `"${search}" 에 해당하는 응답이 없어요.`
-                      : '이 분류에 해당하는 응답이 없어요.'}
-                </p>
-              )}
-              {grouped.map((group) => (
-                <article
-                  key={group.deviceId}
-                  className="rounded-sm border border-line bg-paper p-3"
-                >
-                  <header className="mb-2 flex items-center justify-between text-[11px] tracking-wide text-ink-mute">
-                    <span>디바이스 #{group.deviceId.slice(0, 8)}</span>
-                    <span>{group.rows.length}건</span>
-                  </header>
-                  <ul className="divide-y divide-line">
-                    {group.rows.map((row) => (
-                      <li
-                        key={row.id}
-                        className={
-                          'py-2 text-sm ' +
-                          (collisions.has(row.name) ? 'bg-sun/5' : '')
-                        }
-                      >
-                        <div className="flex flex-wrap items-baseline justify-between gap-2">
-                          <p className="text-ink">
-                            <span className="font-serif text-[15px]">
-                              {row.name}
-                            </span>
-                            <span className="ml-2 text-[12px] text-ink-mute">
-                              {row.side === 'groom' ? '신랑측' : '신부측'}
-                              {row.relationship ? ` · ${row.relationship}` : ''}
-                            </span>
-                            {collisions.has(row.name) && (
-                              <span className="ml-2 rounded-full bg-sun/20 px-1.5 py-0.5 text-[10px] text-sun">
-                                동명이인
-                              </span>
-                            )}
-                          </p>
-                          <p className="text-[12px] text-ink-soft">
-                            {row.attending
-                              ? `참석 · ${row.guests}명`
-                              : '불참'}
-                          </p>
-                        </div>
-                        {row.message && (
-                          <p className="mt-1 text-[12px] leading-relaxed text-ink-mute break-keep">
-                            {row.message}
-                          </p>
-                        )}
-                        <div className="mt-1 flex items-center justify-between gap-2">
-                          <p className="text-[10px] text-ink-mute/70">
-                            {new Date(row.created_at).toLocaleString('ko-KR')}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(row)}
-                            aria-label={`${row.name} 응답 삭제`}
-                            className="rounded-full border border-line bg-paper px-2 py-0.5 text-[11px] font-medium text-sun transition hover:bg-sun/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun"
-                          >
-                            삭제
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </section>
+            <ResponseList
+              rows={listFiltered}
+              viewMode={viewMode}
+              search={search}
+              totalRows={allRows.length}
+              collisions={collisions}
+              onDelete={handleDelete}
+            />
           </>
         )}
       </div>
     </main>
+  )
+}
+
+interface ResponseListProps {
+  rows: RsvpRow[]
+  viewMode: ViewMode
+  search: string
+  totalRows: number
+  collisions: Set<string>
+  onDelete: (row: RsvpRow) => void
+}
+
+function ResponseList({
+  rows,
+  viewMode,
+  search,
+  totalRows,
+  collisions,
+  onDelete,
+}: ResponseListProps) {
+  if (rows.length === 0) {
+    return (
+      <p className="rounded-sm border border-line bg-paper px-4 py-6 text-center text-ink-mute">
+        {totalRows === 0
+          ? '아직 받은 응답이 없어요.'
+          : search
+            ? `"${search}" 에 해당하는 응답이 없어요.`
+            : '이 분류에 해당하는 응답이 없어요.'}
+      </p>
+    )
+  }
+
+  if (viewMode === 'by-device') {
+    const grouped = groupByDevice(rows)
+    return (
+      <section aria-label="응답 목록" className="space-y-4">
+        {grouped.map((group) => (
+          <article
+            key={group.deviceId}
+            className="rounded-sm border border-line bg-paper p-3"
+          >
+            <header className="mb-2 flex items-center justify-between text-[11px] tracking-wide text-ink-mute">
+              <span>디바이스 #{group.deviceId.slice(0, 8)}</span>
+              <span>{group.rows.length}건</span>
+            </header>
+            <ul className="divide-y divide-line">
+              {group.rows.map((row) => (
+                <ResponseRow
+                  key={row.id}
+                  row={row}
+                  collisions={collisions}
+                  onDelete={onDelete}
+                />
+              ))}
+            </ul>
+          </article>
+        ))}
+      </section>
+    )
+  }
+
+  if (viewMode === 'by-attending') {
+    const attending = rows
+      .filter((r) => r.attending)
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      )
+    const absent = rows
+      .filter((r) => !r.attending)
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      )
+    return (
+      <section aria-label="응답 목록" className="space-y-4">
+        {attending.length > 0 && (
+          <article className="rounded-sm border border-line bg-paper p-3">
+            <header className="mb-2 flex items-center justify-between text-[11px] tracking-wide">
+              <span className="text-emerald-600">참석</span>
+              <span className="text-ink-mute">{attending.length}건</span>
+            </header>
+            <ul className="divide-y divide-line">
+              {attending.map((row) => (
+                <ResponseRow
+                  key={row.id}
+                  row={row}
+                  collisions={collisions}
+                  onDelete={onDelete}
+                />
+              ))}
+            </ul>
+          </article>
+        )}
+        {absent.length > 0 && (
+          <article className="rounded-sm border border-line bg-paper p-3">
+            <header className="mb-2 flex items-center justify-between text-[11px] tracking-wide">
+              <span className="text-rose-600">불참</span>
+              <span className="text-ink-mute">{absent.length}건</span>
+            </header>
+            <ul className="divide-y divide-line">
+              {absent.map((row) => (
+                <ResponseRow
+                  key={row.id}
+                  row={row}
+                  collisions={collisions}
+                  onDelete={onDelete}
+                />
+              ))}
+            </ul>
+          </article>
+        )}
+      </section>
+    )
+  }
+
+  // by-time: flat list, latest first.
+  const sorted = [...rows].sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  )
+  return (
+    <section
+      aria-label="응답 목록"
+      className="rounded-sm border border-line bg-paper p-3"
+    >
+      <ul className="divide-y divide-line">
+        {sorted.map((row) => (
+          <ResponseRow
+            key={row.id}
+            row={row}
+            collisions={collisions}
+            onDelete={onDelete}
+          />
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+interface ResponseRowProps {
+  row: RsvpRow
+  collisions: Set<string>
+  onDelete: (row: RsvpRow) => void
+}
+
+function ResponseRow({ row, collisions, onDelete }: ResponseRowProps) {
+  return (
+    <li
+      className={
+        'py-2 text-sm ' + (collisions.has(row.name) ? 'bg-sun/5' : '')
+      }
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-ink">
+          <span className="font-serif text-[15px]">{row.name}</span>
+          <span className="ml-2 text-[12px] text-ink-mute">
+            {row.side === 'groom' ? '신랑측' : '신부측'}
+            {row.relationship
+              ? ` · ${relationshipLabel(row.relationship)}`
+              : ''}
+          </span>
+          {collisions.has(row.name) && (
+            <span className="ml-2 rounded-full bg-sun/20 px-1.5 py-0.5 text-[10px] text-sun">
+              동명이인
+            </span>
+          )}
+        </p>
+        <p
+          className={
+            'text-[12px] font-medium ' +
+            (row.attending ? 'text-emerald-600' : 'text-rose-600')
+          }
+        >
+          {row.attending ? `참석 · ${row.guests}명` : '불참'}
+        </p>
+      </div>
+      {row.message && (
+        <p className="mt-1 text-[12px] leading-relaxed text-ink-mute break-keep">
+          {row.message}
+        </p>
+      )}
+      <div className="mt-1 flex items-center justify-between gap-2">
+        <p className="text-[10px] text-ink-mute/70">
+          {new Date(row.created_at).toLocaleString('ko-KR')}
+        </p>
+        <button
+          type="button"
+          onClick={() => onDelete(row)}
+          aria-label={`${row.name} 응답 삭제`}
+          className="rounded-full border border-line bg-paper px-2 py-0.5 text-[11px] font-medium text-sun transition hover:bg-sun/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun"
+        >
+          삭제
+        </button>
+      </div>
+    </li>
   )
 }
 
@@ -425,28 +583,37 @@ function TabButton({
 function SummaryCard({
   label,
   value,
-  accent,
+  tone,
 }: {
   label: string
   value: number | string
-  accent?: boolean
+  tone: 'attending' | 'absent' | 'neutral-strong' | 'neutral'
 }) {
+  // Mapping kept here so future palette tweaks live in one place.
+  const valueColor =
+    tone === 'attending'
+      ? 'text-emerald-600'
+      : tone === 'absent'
+        ? 'text-rose-600'
+        : tone === 'neutral-strong'
+          ? 'text-sage-strong'
+          : 'text-ink'
+  const borderColor =
+    tone === 'attending'
+      ? 'border-emerald-200'
+      : tone === 'absent'
+        ? 'border-rose-200'
+        : tone === 'neutral-strong'
+          ? 'border-sage'
+          : 'border-line'
   return (
     <div
       className={
-        'rounded-sm border bg-paper p-3 text-center ' +
-        (accent ? 'border-sage' : 'border-line')
+        'rounded-sm border bg-paper p-3 text-center ' + borderColor
       }
     >
       <p className="text-[11px] tracking-wide text-ink-mute">{label}</p>
-      <p
-        className={
-          'mt-1 font-serif text-2xl ' +
-          (accent ? 'text-sage-strong' : 'text-ink')
-        }
-      >
-        {value}
-      </p>
+      <p className={'mt-1 font-serif text-2xl ' + valueColor}>{value}</p>
     </div>
   )
 }
