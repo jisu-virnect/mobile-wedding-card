@@ -64,7 +64,7 @@ describe('<Films />', () => {
   it('renders the section heading with the Korean title only', () => {
     render(<Films />)
     expect(
-      screen.getByRole('heading', { level: 2, name: '함께한 순간' }),
+      screen.getByRole('heading', { level: 2, name: '우리의 시간' }),
     ).toBeInTheDocument()
   })
 })

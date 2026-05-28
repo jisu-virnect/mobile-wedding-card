@@ -32,7 +32,7 @@ export function Gallery() {
     >
       <SectionHeader
         index="05"
-        title="우리의 시간"
+        title="우리의 순간"
         headingId="gallery-heading"
       />
 

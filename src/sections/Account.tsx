@@ -7,7 +7,10 @@ import { ContactButtons } from './ContactButtons'
 import { SectionHeader } from './SectionHeader'
 
 interface AccountCardProps {
-  role: '본인' | '아버지' | '어머니'
+  /** Side-prefixed role label e.g. "신랑", "신랑 아버지". The column heading
+   *  already shows 신랑측/신부측 once, but each card duplicates the prefix
+   *  so the role is unambiguous when scrolling cards individually. */
+  role: string
   /** Toast-friendly description, e.g. "신랑 김지수". */
   label: string
   account: BankAccount
@@ -114,7 +117,7 @@ function AccountCard({ role, label, account, phone, onCopy }: AccountCardProps) 
 
 interface SideRow {
   side: 'groom' | 'bride'
-  role: '본인' | '아버지' | '어머니'
+  role: string
   label: string
   account: BankAccount
   phone?: string
@@ -129,7 +132,7 @@ function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
   if (person.account) {
     out.push({
       side,
-      role: '본인',
+      role: sideLabel,
       label: `${sideLabel} ${person.name}`,
       account: person.account,
       phone: person.phone,
@@ -138,7 +141,7 @@ function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
   if (person.fatherAccount) {
     out.push({
       side,
-      role: '아버지',
+      role: `${sideLabel} 아버지`,
       label: `${sideLabel} 아버지 ${person.father}`,
       account: person.fatherAccount,
       phone: person.fatherPhone,
@@ -147,7 +150,7 @@ function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
   if (person.motherAccount) {
     out.push({
       side,
-      role: '어머니',
+      role: `${sideLabel} 어머니`,
       label: `${sideLabel} 어머니 ${person.mother}`,
       account: person.motherAccount,
       phone: person.motherPhone,
