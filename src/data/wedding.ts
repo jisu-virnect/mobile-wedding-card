@@ -28,6 +28,8 @@ export interface Person {
   /** Father/mother phones — same buttons rendered next to their names. */
   fatherPhone?: string
   motherPhone?: string
+  /** Sibling phone — only the bride side has one in this card. */
+  siblingPhone?: string
   account?: BankAccount
   fatherAccount?: BankAccount
   motherAccount?: BankAccount
@@ -152,9 +154,9 @@ export const wedding: WeddingInfo = {
     father: '김창길',
     mother: '김영미',
     // TODO(jisu): 실제 번호로 교체. 필드 삭제하면 ☎/✉ 버튼이 안 보임.
-    phone: '010-0000-0000',
-    fatherPhone: '010-0000-0000',
-    motherPhone: '010-0000-0000',
+    phone: '010-9872-2444',
+    fatherPhone: '010-5345-5668',
+    motherPhone: '010-3241-3306',
     account: { bank: '신한은행', number: '110-223-048839', holder: '김지수' },
     fatherAccount: {
       bank: '농협',
@@ -171,9 +173,10 @@ export const wedding: WeddingInfo = {
     name: '김난슬',
     father: '김청섭',
     mother: '이경화',
-    phone: '010-0000-0000',
-    fatherPhone: '010-0000-0000',
-    motherPhone: '010-0000-0000',
+    phone: '010-8558-6075',
+    fatherPhone: '010-4745-5191',
+    motherPhone: '010-4754-6075',
+    siblingPhone: '010-4054-6075',
     account: {
       bank: '카카오뱅크',
       number: '3333-30-4385686',
@@ -269,8 +272,8 @@ export const wedding: WeddingInfo = {
           number: '356-1314-3461-83',
           holder: '김청섭',
         },
-        // 신부 아버지 — bride.fatherPhone 과 동일 placeholder.
-        phone: '010-0000-0000',
+        // bride.fatherPhone 과 동일.
+        phone: '010-4745-5191',
       },
       {
         role: '신부',
@@ -279,8 +282,8 @@ export const wedding: WeddingInfo = {
           number: '3333-30-4385686',
           holder: '김난슬',
         },
-        // 신부 본인 — bride.phone 과 동일 placeholder (실제 번호로 교체 시 둘 다 갱신).
-        phone: '010-0000-0000',
+        // bride.phone 과 동일.
+        phone: '010-8558-6075',
       },
     ],
   },
