@@ -43,3 +43,4 @@ export function buildGalleryImages(
     alt: `웨딩 갤러리 샘플 ${i + 1}`,
   }))
 }
+

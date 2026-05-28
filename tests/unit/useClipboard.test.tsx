@@ -43,7 +43,10 @@ describe('useClipboard', () => {
     expect(result.current.copied).toBe(false)
   })
 
-  it('surfaces an error when clipboard.writeText rejects', async () => {
+  it('surfaces an error when both modern + legacy clipboard paths fail', async () => {
+    // Modern API rejects, and jsdom's execCommand fallback also fails
+    // (no real selection). The hook surfaces a unified "unavailable"
+    // error so the UI can show one fallback message.
     writeText.mockRejectedValueOnce(new Error('denied'))
     const { result } = renderHook(() => useClipboard())
     let ok: boolean | undefined
@@ -52,6 +55,6 @@ describe('useClipboard', () => {
     })
     expect(ok).toBe(false)
     expect(result.current.copied).toBe(false)
-    expect(result.current.error?.message).toBe('denied')
+    expect(result.current.error?.message).toBe('Clipboard unavailable')
   })
 })

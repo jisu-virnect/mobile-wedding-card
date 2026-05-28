@@ -1,20 +1,15 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { Rsvp } from '../../src/sections/Rsvp'
 
+// Supabase env is stubbed to '' in tests/unit/setup.ts → hasSupabase() is
+// false and submitRsvp() never fires. We exercise the validation paths
+// (required fields) + the "backend not configured" fallback, which is the
+// real-world state until the wedding party rolls out the deployed
+// .env.local on Vercel.
+
 describe('<Rsvp />', () => {
-  let fetchMock: ReturnType<typeof vi.fn>
-
-  beforeEach(() => {
-    fetchMock = vi.fn()
-    vi.stubGlobal('fetch', fetchMock)
-  })
-
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
-
   it('blocks submit when the name is empty and shows an error', async () => {
     const user = userEvent.setup()
     render(<Rsvp />)
@@ -22,46 +17,71 @@ describe('<Rsvp />', () => {
     expect(
       await screen.findByText('이름을 입력해주세요.'),
     ).toBeInTheDocument()
-    expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('submits a serialized payload and shows the success message on 201', async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 201,
-      json: async () => ({ id: 'abc' }),
-    } as Response)
+  it('blocks submit when relationship chip is unpicked', async () => {
     const user = userEvent.setup()
     render(<Rsvp />)
     await user.type(screen.getByLabelText(/이름/), '홍길동')
+    await user.click(screen.getByLabelText('참석'))
+    await user.type(screen.getByLabelText(/참석 인원/), '1')
     await user.click(screen.getByRole('button', { name: /참석 여부/ }))
-
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
-    const [url, init] = fetchMock.mock.calls[0]
-    expect(url).toBe('/api/rsvp')
-    expect(init.method).toBe('POST')
-    const body = JSON.parse(init.body as string)
-    expect(body).toMatchObject({
-      name: '홍길동',
-      side: 'groom',
-      attending: true,
-      guests: 1,
-    })
     expect(
-      await screen.findByText(/참석 여부를 전달했어요/),
+      await screen.findByText('관계를 선택해주세요.'),
     ).toBeInTheDocument()
   })
 
-  it('shows a retry-hint message when the fetch rejects', async () => {
-    fetchMock.mockRejectedValue(new Error('offline'))
+  it('blocks submit when attending is unpicked (no default checked)', async () => {
+    const user = userEvent.setup()
+    render(<Rsvp />)
+    await user.type(screen.getByLabelText(/이름/), '홍길동')
+    await user.click(screen.getByLabelText('신랑'))
+    await user.type(screen.getByLabelText(/참석 인원/), '1')
+    await user.click(screen.getByRole('button', { name: /참석 여부/ }))
+    expect(
+      await screen.findByText('참석 여부를 선택해주세요.'),
+    ).toBeInTheDocument()
+  })
+
+  it('shows the "backend not configured" notice when Supabase env is missing', async () => {
     const user = userEvent.setup()
     render(<Rsvp />)
     await user.type(screen.getByLabelText(/이름/), '김하늘')
-    await act(async () => {
-      await user.click(screen.getByRole('button', { name: /참석 여부/ }))
-    })
+    await user.click(screen.getByLabelText('신랑'))
+    await user.click(screen.getByLabelText('참석'))
+    await user.type(screen.getByLabelText(/참석 인원/), '1')
+    await user.click(screen.getByRole('button', { name: /참석 여부/ }))
     expect(
-      await screen.findByText(/잠시 후 다시 시도해주세요/),
+      await screen.findByText(/아직 준비 중이에요/),
+    ).toBeInTheDocument()
+  })
+
+  it('renders both relationship chip groups (신랑측 / 신부측, family-only)', () => {
+    render(<Rsvp />)
+    const group = screen.getByRole('radiogroup', { name: '관계' })
+    expect(group).toHaveTextContent('신랑측')
+    expect(group).toHaveTextContent('신부측')
+    expect(group).toHaveTextContent('신랑')
+    expect(group).toHaveTextContent('신랑 아버지')
+    expect(group).toHaveTextContent('신랑 어머니')
+    expect(group).toHaveTextContent('신부')
+    expect(group).toHaveTextContent('신부 아버지')
+    expect(group).toHaveTextContent('신부 어머니')
+    expect(group).toHaveTextContent('신부 동생')
+    // "그 외" chips removed — non-family guests use the always-on
+    // "관계 한 줄" input below the chips.
+    expect(group).not.toHaveTextContent('그 외')
+  })
+
+  it('always shows the optional 관계 한 줄 input', () => {
+    render(<Rsvp />)
+    expect(screen.getByLabelText(/관계 한 줄/)).toBeInTheDocument()
+  })
+
+  it('shows the transparency note that data goes to the couple', () => {
+    render(<Rsvp />)
+    expect(
+      screen.getByText(/전달된 정보는 신랑.신부에게만 안내됩니다/),
     ).toBeInTheDocument()
   })
 })

@@ -13,7 +13,7 @@ describe('<Cover />', () => {
 
   it('renders the wedding date as YYYY.MM.DD · 요일', () => {
     render(<Cover />)
-    expect(screen.getByText(/2026\.10\.10\s·\s토요일/)).toBeInTheDocument()
+    expect(screen.getByText(/2026\.11\.28\s·\s토요일/)).toBeInTheDocument()
   })
 
   it('exposes a scroll indicator with an aria-label', () => {

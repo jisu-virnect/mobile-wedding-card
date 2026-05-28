@@ -8,9 +8,9 @@ test.describe('Cover section', () => {
     const cover = page.locator('#cover')
     await expect(cover).toBeVisible()
 
-    await expect(cover.getByRole('heading', { level: 1 })).toContainText('김철수')
-    await expect(cover.getByRole('heading', { level: 1 })).toContainText('이영희')
-    await expect(cover.getByText(/2026\.10\.10\s·\s토요일/)).toBeVisible()
+    await expect(cover.getByRole('heading', { level: 1 })).toContainText('김지수')
+    await expect(cover.getByRole('heading', { level: 1 })).toContainText('김난슬')
+    await expect(cover.getByText(/2026\.11\.28\s·\s토요일/)).toBeVisible()
 
     const scroll = page.getByRole('button', { name: '다음 섹션으로 스크롤' })
     await expect(scroll).toBeVisible()

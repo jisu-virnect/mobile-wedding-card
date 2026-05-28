@@ -1,5 +1,11 @@
 import { defineConfig, devices } from '@playwright/test'
 
+// Default port for the preview webServer. Override with E2E_PORT=5180 to
+// dodge a stale dev server occupying 5173 (see pipeline/E2E_PLAYBOOK.md
+// case #9). CI always uses 5173 since the runner is a clean sandbox.
+const PORT = process.env.E2E_PORT ?? '5173'
+const URL = `http://127.0.0.1:${PORT}`
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
@@ -15,7 +21,7 @@ export default defineConfig({
     ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL: URL,
     // Always capture an end-of-test screenshot (success + failure) so we can
     // browse success frames alongside failures in the HTML report/artifacts.
     screenshot: 'on',
@@ -34,8 +40,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm preview --port 5173 --host 127.0.0.1',
-    url: 'http://127.0.0.1:5173',
+    command: `pnpm preview --port ${PORT} --host 127.0.0.1`,
+    url: URL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

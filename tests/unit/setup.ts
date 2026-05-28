@@ -1,4 +1,29 @@
 import '@testing-library/jest-dom/vitest'
+import { vi } from 'vitest'
+
+// Unit tests run in jsdom without the Kakao SDK script. Force the env
+// var to empty so KakaoMap renders its placeholder fallback and
+// kakao.ts treats the SDK as "not configured" (no script injection,
+// no infinite Promise wait).
+vi.stubEnv('VITE_KAKAO_JS_KEY', '')
+
+// Supabase backend isn't reachable from jsdom; force the env vars empty so
+// hasSupabase() returns false and components fall back to the "준비 중"
+// path. Tests that need to exercise Supabase behavior should mock the
+// module directly.
+vi.stubEnv('VITE_SUPABASE_URL', '')
+vi.stubEnv('VITE_SUPABASE_ANON_KEY', '')
+vi.stubEnv('VITE_ADMIN_TOKEN', '')
+
+// jsdom reports window.isSecureContext as undefined. useClipboard now
+// routes to a legacy execCommand fallback in non-secure contexts, but
+// jsdom doesn't implement execCommand either — so flag the test window
+// as secure to exercise the navigator.clipboard mock path the existing
+// tests set up.
+Object.defineProperty(window, 'isSecureContext', {
+  value: true,
+  configurable: true,
+})
 
 // jsdom does not implement IntersectionObserver, which framer-motion's
 // `whileInView` / `useInView` relies on. A permissive mock that synchronously

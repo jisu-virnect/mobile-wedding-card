@@ -16,10 +16,16 @@
     "e2e": "playwright test",
     "e2e:install": "playwright install chromium",
     "lighthouse": "lhci autorun",
-    "gates": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm lighthouse"
+    "gates": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm lighthouse",
+    "gen-og": "node scripts/gen-og-image.mjs",
+    "gen-cover-slides": "node scripts/gen-cover-slides.mjs",
+    "gen-video-posters": "node scripts/gen-video-posters.mjs",
+    "resize-gallery": "node scripts/resize-gallery.mjs",
+    "encode-video": "node scripts/encode-video.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@supabase/supabase-js": "^2.106.2",
     "@tailwindcss/vite": "^4.2.3",
     "framer-motion": "^12.38.0",
     "react": "^19.2.5",
@@ -39,6 +45,7 @@
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
@@ -50,6 +57,7 @@
     "msw": "^2.13.4",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "sharp": "^0.34.5",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.9",
@@ -58,6 +66,12 @@
   "msw": {
     "workerDirectory": [
       "public"
+    ]
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "msw"
     ]
   }
 }

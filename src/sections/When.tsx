@@ -5,7 +5,8 @@ import {
   formatWeddingTimeHuman,
   kstYmd,
 } from '../lib/formatDate'
-import { formatDDay } from '../lib/dday'
+import { useFinalDayCountdown, useLiveDDay } from '../lib/dday'
+import { SectionHeader } from './SectionHeader'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'] as const
 
@@ -29,20 +30,20 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
       aria-label={`${year}년 ${month}월 캘린더`}
       role="group"
     >
-      <div className="mb-3 text-center text-sm font-medium tracking-widest text-gray-500">
-        {year}. {String(month).padStart(2, '0')}
+      <div className="mb-4 text-center font-display text-base tracking-[0.3em] text-ink-soft">
+        {year}.{String(month).padStart(2, '0')}
       </div>
-      <div className="grid grid-cols-7 text-xs">
+      <div className="grid grid-cols-7 text-[11px]">
         {WEEKDAYS.map((wd, i) => (
           <div
             key={wd}
             className={
-              'pb-2 text-center ' +
+              'pb-2 text-center tracking-widest ' +
               (i === 0
-                ? 'text-rose-600'
+                ? 'text-sun/80'
                 : i === 6
-                  ? 'text-sky-600'
-                  : 'text-gray-500')
+                  ? 'text-sat/80'
+                  : 'text-ink-mute')
             }
           >
             {wd}
@@ -58,26 +59,36 @@ function MonthCalendar({ year, month, highlight }: CalendarProps) {
           const weekCol = i % 7
           const weekColor =
             weekCol === 0
-              ? 'text-rose-600'
+              ? 'text-sun/80'
               : weekCol === 6
-                ? 'text-sky-600'
-                : 'text-gray-700'
+                ? 'text-sat/80'
+                : 'text-ink-soft'
           const base =
-            'mx-auto flex h-9 w-9 items-center justify-center rounded-full'
+            'mx-auto flex h-9 w-9 items-center justify-center rounded-full transition-colors'
+          if (isWedding) {
+            return (
+              <span
+                key={i}
+                aria-label={`${year}년 ${month}월 ${d}일 결혼식 날`}
+                className={`${base} relative bg-sage-strong font-medium text-paper ring-4 ring-sage-soft`}
+              >
+                <span>{d}</span>
+                {/* Pulsing red heart sitting on the top-left of the
+                    wedding day cell (outside the green circle for
+                    extra pop). Decorative only — aria-hidden. */}
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="heart-pulse absolute -top-2 -left-2 h-4 w-4 text-[#E11D48] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                >
+                  <path d="M12 21s-7-4.5-7-10a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 6 2.8c0 5.5-7 10-7 10z" />
+                </svg>
+              </span>
+            )
+          }
           return (
-            <span
-              key={i}
-              aria-label={
-                isWedding
-                  ? `${year}년 ${month}월 ${d}일 결혼식 날`
-                  : undefined
-              }
-              className={
-                isWedding
-                  ? `${base} bg-rose-600 font-semibold text-white`
-                  : `${base} ${weekColor}`
-              }
-            >
+            <span key={i} className={`${base} ${weekColor}`}>
               {d}
             </span>
           )
@@ -100,42 +111,60 @@ export function When() {
 
   const longDate = formatWeddingLongDate(wedding.dateTime)
   const time = formatWeddingTimeHuman(wedding.dateTime)
-  const dday = formatDDay(wedding.dateTime)
+  const dday = useLiveDDay(wedding.dateTime)
+  const finalCountdown = useFinalDayCountdown(wedding.dateTime)
   const { year, month, day } = kstYmd(wedding.dateTime)
 
   return (
     <section
       id="when"
       aria-labelledby="when-heading"
-      className="px-6 py-20 text-center"
+      className="px-6 pt-24 pb-20 text-center"
     >
-      <motion.h2
-        id="when-heading"
-        {...fade}
-        className="mb-8 text-xl font-semibold tracking-wide text-gray-900"
-      >
-        예식 일시
-      </motion.h2>
+      <SectionHeader
+        index="03"
+        title="함께할 시간"
+        headingId="when-heading"
+      />
 
       <motion.div
         {...fade}
-        className="mx-auto mb-10 max-w-xs rounded-lg bg-white/80 px-6 py-5 shadow-sm ring-1 ring-gray-100"
+        className="mx-auto mb-12 max-w-xs border-y border-line py-6"
       >
-        <p className="text-base text-gray-900">{longDate}</p>
-        <p className="mt-2 text-sm text-gray-600">{time}</p>
+        <p className="font-serif text-xl text-ink">{longDate}</p>
+        <p className="mt-2 font-display text-[15px] tracking-[0.22em] text-ink-soft">
+          {time}
+        </p>
       </motion.div>
 
       <motion.div {...fade} className="mb-10">
         <MonthCalendar year={year} month={month} highlight={day} />
       </motion.div>
 
-      <motion.p
-        {...fade}
-        aria-label={`결혼식까지 ${dday}`}
-        className="inline-block rounded-full bg-rose-100 px-4 py-1 text-sm font-medium tracking-wide text-rose-700"
-      >
-        {dday}
-      </motion.p>
+      <motion.div {...fade} className="flex flex-col items-center gap-2.5">
+        <p
+          aria-label={dday}
+          className="inline-flex items-center gap-2 rounded-full bg-sage-soft px-6 py-2 font-serif text-[15px] font-medium tracking-wide text-sage-strong"
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="h-3.5 w-3.5"
+          >
+            <path d="M12 21s-7-4.5-7-10a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 6 2.8c0 5.5-7 10-7 10z" />
+          </svg>
+          <span className="break-keep">{dday}</span>
+        </p>
+        {finalCountdown && (
+          <p
+            aria-live="polite"
+            className="font-serif text-[13px] tracking-wide text-sage-strong break-keep"
+          >
+            {finalCountdown}
+          </p>
+        )}
+      </motion.div>
     </section>
   )
 }

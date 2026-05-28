@@ -36,20 +36,22 @@ describe('daysUntilWedding', () => {
 })
 
 describe('formatDDay', () => {
-  it('formats future days as D-N', () => {
+  it('formats future days in Korean ("결혼식까지 N일 남았어요")', () => {
     const reference = new Date('2026-04-21T09:00:00+09:00')
-    expect(formatDDay(WEDDING, reference)).toBe('D-172')
+    expect(formatDDay(WEDDING, reference)).toBe(
+      '결혼식까지 172일 남았어요',
+    )
   })
 
-  it('formats the wedding day as D-Day', () => {
+  it('formats the wedding day in Korean', () => {
     expect(
       formatDDay(WEDDING, new Date('2026-10-10T08:00:00+09:00')),
-    ).toBe('D-Day')
+    ).toBe('오늘이 결혼식이에요')
   })
 
-  it('formats past days as D+N', () => {
+  it('formats post-wedding days in Korean', () => {
     expect(
       formatDDay(WEDDING, new Date('2026-10-15T08:00:00+09:00')),
-    ).toBe('D+5')
+    ).toBe('결혼한 지 5일이 지났어요')
   })
 })

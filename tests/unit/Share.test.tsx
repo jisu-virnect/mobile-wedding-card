@@ -88,4 +88,24 @@ describe('<Share />', () => {
       await screen.findByText(/링크를 복사했어요/),
     ).toBeInTheDocument()
   })
+
+  it('always shows the KakaoTalk share button', () => {
+    render(<Share />)
+    expect(
+      screen.getByRole('button', { name: '카카오톡으로 공유하기' }),
+    ).toBeInTheDocument()
+  })
+
+  it('falls back to link-copy when Kakao SDK is not configured', async () => {
+    render(<Share />)
+    const btn = screen.getByRole('button', { name: '카카오톡으로 공유하기' })
+    await act(async () => {
+      fireEvent.click(btn)
+    })
+    // Without VITE_KAKAO_JS_KEY set, kakaoShare resolves false and the
+    // handler degrades to link-copy (no Web Share in this test).
+    await waitFor(() =>
+      expect(writeText).toHaveBeenCalledWith(window.location.href),
+    )
+  })
 })

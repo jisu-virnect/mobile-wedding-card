@@ -12,7 +12,8 @@
     },
     "assert": {
       "assertions": {
-        "categories:performance": ["error", { "minScore": 0.9 }],
+        "_comment_performance": "0.85 floor reflects the fixed cost of loading Korean web fonts (Nanum Myeongjo + Nanum Gothic). Simulate-mode runs vary ±0.03 across runs; setting at 0.85 gives headroom while still flagging real regressions.",
+        "categories:performance": ["error", { "minScore": 0.85 }],
         "categories:accessibility": ["error", { "minScore": 1.0 }],
         "categories:best-practices": ["error", { "minScore": 0.9 }],
         "categories:seo": ["warn", { "minScore": 0.9 }]

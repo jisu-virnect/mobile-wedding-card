@@ -36,3 +36,6 @@ test-results
 
 # Claude Code local session state
 .claude/
+
+# Pre-compression video originals (kept locally for re-encoding, not pushed)
+public/videos/originals/

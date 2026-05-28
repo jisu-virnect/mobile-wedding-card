@@ -4,14 +4,20 @@ import { Greeting } from '../../src/sections/Greeting'
 import { wedding } from '../../src/data/wedding'
 
 describe('<Greeting />', () => {
-  it('renders the invitation text preserving line breaks via whitespace-pre-line', () => {
-    const { container } = render(<Greeting />)
-    const body = container.querySelector('p.whitespace-pre-line')
-    expect(body).not.toBeNull()
-    // The raw text node keeps the literal "\n"s; the CSS (whitespace-pre-line)
-    // is what renders them as line breaks in the browser.
-    expect(body!.textContent).toContain('\n')
-    expect(body!.textContent).toContain('평생을 함께할 것을 약속하는 날')
+  it('renders the invitation body with bold emphasis on the key phrase', () => {
+    render(<Greeting />)
+    // Line breaks are now `<br/>` (from renderInlineBold) and the
+    // **...** segment becomes a real <strong>.
+    expect(
+      screen.getByText('평생을 함께하기로 약속하는 자리'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('평생을 함께하기로 약속하는 자리').tagName.toLowerCase(),
+    ).toBe('strong')
+    // Plain segments still rendered too.
+    expect(
+      screen.getByText('저희 두 사람의 소중한 만남이'),
+    ).toBeInTheDocument()
   })
 
   it('shows both sets of parents grouped by side', () => {
@@ -30,7 +36,7 @@ describe('<Greeting />', () => {
   it('has a labelled h2 heading', () => {
     render(<Greeting />)
     expect(
-      screen.getByRole('heading', { level: 2, name: '초대합니다' }),
+      screen.getByRole('heading', { level: 2, name: '결혼합니다' }),
     ).toBeInTheDocument()
   })
 })

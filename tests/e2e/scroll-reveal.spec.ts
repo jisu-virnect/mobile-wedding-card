@@ -6,8 +6,10 @@ const SECTION_IDS = [
   'when',
   'where',
   'gallery',
+  'films',
   'rsvp',
   'account',
+  'pre-event',
   'share',
 ] as const
 
@@ -42,7 +44,7 @@ test.describe('Section reveal on scroll', () => {
     // heading renders immediately at opacity 1 before any scroll.
     const heading = page.locator('#greeting').getByRole('heading', {
       level: 2,
-      name: '초대합니다',
+      name: '결혼합니다',
     })
     await expect(heading).toBeVisible()
     const opacity = await heading.evaluate((el) =>
