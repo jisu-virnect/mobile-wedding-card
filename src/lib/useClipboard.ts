@@ -15,46 +15,68 @@ export interface UseClipboardResult {
 /**
  * Cross-context clipboard fallback. iOS Safari + non-secure contexts
  * (LAN IP HTTP dev servers) can't use the async Clipboard API, so we
- * synthesize a temporary off-screen <textarea>, select it via
- * Range + setSelectionRange, and run `document.execCommand('copy')`
- * within the same user-gesture tick. Returns false if the gesture
- * window already closed or execCommand reports failure.
+ * synthesize a temporary on-screen-but-tiny `<textarea>`, give it a
+ * real selection range, and run `document.execCommand('copy')` inside
+ * the same user-gesture tick.
+ *
+ * iOS Safari gotchas that all bite copy-to-clipboard implementations:
+ *   - off-screen via `left: -9999px` works but `opacity:0` / display:none
+ *     silently skip the copy.
+ *   - the element must have a non-zero (>= 1×1px) bounding box.
+ *   - `-webkit-user-select: text` has to be explicit; iOS strips it from
+ *     non-input elements by default.
+ *   - the element needs both a DOM Range AND a textarea selection range
+ *     to count as "selected" for execCommand.
+ *   - if the page later scrolls the element into view its font-size has
+ *     to be 16px to avoid the iOS auto-zoom flash.
  */
 function legacyCopy(text: string): boolean {
   if (typeof document === 'undefined' || !document.body) return false
 
-  const textarea = document.createElement('textarea')
-  textarea.value = text
-  // iOS Safari requires contenteditable + a real selection range; opacity
-  // 0 / visibility hidden / display:none all silently skip the copy.
-  // Off-screen via left:-9999px keeps it invisible to the user without
-  // breaking selection.
-  textarea.setAttribute('readonly', '')
-  textarea.contentEditable = 'true'
-  textarea.style.position = 'absolute'
-  textarea.style.left = '-9999px'
-  textarea.style.top = '0'
-  // 16px prevents iOS auto-zoom if the element ever scrolls into view.
-  textarea.style.fontSize = '16px'
+  const ta = document.createElement('textarea')
+  ta.value = text
+  ta.setAttribute('readonly', '')
+  ta.style.cssText = [
+    'position:fixed',
+    'top:0',
+    'left:0',
+    'width:1px',
+    'height:1px',
+    'padding:0',
+    'border:0',
+    'outline:0',
+    'box-shadow:none',
+    'background:transparent',
+    'color:transparent',
+    'font-size:16px',
+    '-webkit-user-select:text',
+    'user-select:text',
+    'z-index:-1',
+  ].join(';')
 
-  document.body.appendChild(textarea)
+  document.body.appendChild(ta)
 
-  // Cache the prior selection so we can restore it after the copy.
-  const previousSelection = document.getSelection()
+  // Preserve whatever the user had selected before.
+  const docSel = document.getSelection()
   const previousRange =
-    previousSelection && previousSelection.rangeCount > 0
-      ? previousSelection.getRangeAt(0)
-      : null
+    docSel && docSel.rangeCount > 0 ? docSel.getRangeAt(0) : null
 
-  const range = document.createRange()
-  range.selectNodeContents(textarea)
-  const selection = window.getSelection()
-  if (selection) {
-    selection.removeAllRanges()
-    selection.addRange(range)
+  // iOS-specific selection path. Older Android Chromes work either way.
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || '')
+  if (isIOS) {
+    const range = document.createRange()
+    range.selectNodeContents(ta)
+    const sel = window.getSelection()
+    if (sel) {
+      sel.removeAllRanges()
+      sel.addRange(range)
+    }
+    ta.setSelectionRange(0, text.length)
+  } else {
+    ta.focus()
+    ta.select()
+    ta.setSelectionRange(0, text.length)
   }
-  // iOS Safari also wants the textarea's own input selection set.
-  textarea.setSelectionRange(0, text.length)
 
   let ok = false
   try {
@@ -63,11 +85,12 @@ function legacyCopy(text: string): boolean {
     ok = false
   }
 
-  if (selection) {
-    selection.removeAllRanges()
-    if (previousRange) selection.addRange(previousRange)
+  const sel = window.getSelection()
+  if (sel) {
+    sel.removeAllRanges()
+    if (previousRange) sel.addRange(previousRange)
   }
-  document.body.removeChild(textarea)
+  document.body.removeChild(ta)
   return ok
 }
 
