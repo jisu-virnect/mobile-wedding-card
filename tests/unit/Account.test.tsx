@@ -74,13 +74,14 @@ describe('<Account />', () => {
     expect(tossLink.getAttribute('href')).toMatch(/^supertoss:\/\/send\?/)
   })
 
-  it('hides the Kakao send link when kakaoPayUrl is not set', () => {
+  it('renders a Kakao send link (falls back to send screen)', () => {
     render(<Account />)
-    expect(
-      screen.queryByRole('link', {
-        name: `신부 ${wedding.bride.name} 카카오로 송금`,
-      }),
-    ).toBeNull()
+    const kakaoLink = screen.getByRole('link', {
+      name: `신부 ${wedding.bride.name} 카카오로 송금`,
+    })
+    expect(kakaoLink.getAttribute('href')).toMatch(
+      /^(kakaotalk:\/\/kakaopay|https:\/\/qr\.kakaopay\.com)/,
+    )
   })
 
   it('surfaces a retry hint when the clipboard call rejects', async () => {

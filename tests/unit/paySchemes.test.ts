@@ -27,10 +27,12 @@ describe('paySchemes', () => {
     expect(kakaoPaySendUrl(override)).toBe('https://qr.kakaopay.com/abc123')
   })
 
-  it('kakaoPaySendUrl returns null without an explicit override (no unofficial deeplink)', () => {
-    // The unofficial kakaotalk:// scheme never reliably populated the send
-    // screen, so accounts without a kakaoPayUrl simply hide the chip.
-    expect(kakaoPaySendUrl(kakao)).toBeNull()
-    expect(kakaoPaySendUrl(unknown)).toBeNull()
+  it('kakaoPaySendUrl falls back to the kakaotalk:// send screen for any account', () => {
+    // No override → open KakaoPay's send screen so the user can paste
+    // the account number they just copied from the card.
+    expect(kakaoPaySendUrl(kakao)).toBe('kakaotalk://kakaopay/money/to/bank')
+    expect(kakaoPaySendUrl(unknown)).toBe(
+      'kakaotalk://kakaopay/money/to/bank',
+    )
   })
 })

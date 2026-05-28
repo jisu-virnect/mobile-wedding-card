@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Lightbox from 'yet-another-react-lightbox'
 import Zoom from 'yet-another-react-lightbox/plugins/zoom'
 import 'yet-another-react-lightbox/styles.css'
@@ -18,17 +19,54 @@ export default function LightboxView({
   onClose,
   onView,
 }: LightboxViewProps) {
+  // Single-tap on the slide toggles the chrome (close button, arrows,
+  // toolbar). Gestures (pinch zoom, drag pan, swipe to next, pull-down
+  // to close) keep working regardless — the chrome is just a visual
+  // layer whose pointer-events are disabled when hidden.
+  const [chromeHidden, setChromeHidden] = useState(false)
+
+  // Reset chrome state on close so a fresh viewing session always opens
+  // with the controls visible.
+  const handleClose = () => {
+    setChromeHidden(false)
+    onClose()
+  }
+
+  const hiddenStyle = chromeHidden
+    ? {
+        opacity: 0,
+        pointerEvents: 'none' as const,
+        transition: 'opacity 200ms ease',
+      }
+    : {
+        opacity: 1,
+        transition: 'opacity 200ms ease',
+      }
+
   return (
     <Lightbox
       open={open}
-      close={onClose}
+      close={handleClose}
       index={index}
-      on={{ view: ({ index: i }) => onView(i) }}
+      on={{
+        view: ({ index: i }) => onView(i),
+        click: () => setChromeHidden((prev) => !prev),
+      }}
       slides={images.map((img) => ({ src: img.src, alt: img.alt }))}
-      controller={{ closeOnBackdropClick: true }}
+      controller={{
+        closeOnBackdropClick: true,
+        // Pull-down gesture closes the lightbox — matches the iOS photo
+        // app pattern. Up-swipe is reserved for system gestures (status
+        // bar / app switcher) so we only enable the downward direction.
+        closeOnPullDown: true,
+      }}
       plugins={[Zoom]}
+      styles={{
+        toolbar: hiddenStyle,
+        navigationPrev: hiddenStyle,
+        navigationNext: hiddenStyle,
+      }}
       zoom={{
-        // Tap (mobile) / double-click (desktop) to zoom in.
         maxZoomPixelRatio: 5,
         zoomInMultiplier: 2,
         doubleTapDelay: 300,

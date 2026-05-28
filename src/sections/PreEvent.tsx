@@ -69,13 +69,13 @@ function PreEventAccountCard({
   const kakaoUrl = kakaoPaySendUrl(account)
 
   return (
-    <article className="mx-auto w-full max-w-sm overflow-hidden rounded-sm border border-line bg-paper text-left">
-      <header className="border-b border-line px-5 py-2.5">
-        <div className="flex items-baseline justify-between gap-2">
-          <span className="font-display text-[12px] tracking-[0.3em] text-ink-mute uppercase">
+    <article className="overflow-hidden rounded-sm border border-line bg-paper text-left">
+      <header className="border-b border-line px-3 py-2">
+        <div className="flex items-baseline justify-between gap-1.5">
+          <span className="font-display text-[11px] tracking-[0.25em] text-ink-mute uppercase">
             {role}
           </span>
-          <span className="font-serif text-[13px] text-ink-soft break-keep">
+          <span className="font-serif text-[12px] text-ink-soft break-keep">
             {account.holder}
           </span>
         </div>
@@ -85,14 +85,14 @@ function PreEventAccountCard({
           </div>
         )}
       </header>
-      <div className="px-5 py-4">
-        <p className="text-[12px] tracking-wide text-ink-mute">
+      <div className="px-3 py-3">
+        <p className="text-[11px] tracking-wide text-ink-mute">
           {account.bank}
         </p>
-        <p className="mt-1 break-all font-serif text-base tracking-[0.02em] text-ink">
+        <p className="mt-1 break-all font-serif text-[13px] tracking-[0.01em] text-ink">
           {account.number}
         </p>
-        <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+        <div className="mt-2 flex flex-wrap items-center justify-end gap-1.5">
           {tossUrl && (
             <a
               href={tossUrl}
@@ -103,7 +103,7 @@ function PreEventAccountCard({
                 src="/pay/toss.png"
                 alt=""
                 aria-hidden="true"
-                className="h-9 w-9 shrink-0 rounded-xl"
+                className="h-7 w-7 shrink-0 rounded-xl"
               />
             </a>
           )}
@@ -117,7 +117,7 @@ function PreEventAccountCard({
                 src="/pay/kakaopay.png"
                 alt=""
                 aria-hidden="true"
-                className="h-9 w-9 shrink-0 rounded-xl"
+                className="h-7 w-7 shrink-0 rounded-xl"
               />
             </a>
           )}
@@ -125,7 +125,7 @@ function PreEventAccountCard({
             type="button"
             onClick={onCopy}
             aria-label={`${label} 계좌번호 복사`}
-            className="flex h-8 items-center gap-1 rounded-full bg-sage-soft px-3 text-[12px] font-medium tracking-wide text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
+            className="flex h-7 items-center gap-1 rounded-full bg-sage-soft px-2.5 text-[11px] font-medium tracking-wide text-sage-strong transition hover:bg-sage-strong hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-strong"
           >
             <CopyIcon />
             복사
@@ -262,9 +262,12 @@ export function PreEvent() {
       {event.accounts && event.accounts.length > 0 && (
         <>
           <motion.div {...fade} className="mt-12 mb-4">
-            <HairlineDivider label="마음 전하는 곳" />
+            <HairlineDivider label="마음 전하실 곳" />
           </motion.div>
-          <motion.div {...fade} className="mx-auto grid max-w-sm gap-3">
+          <motion.div
+            {...fade}
+            className="mx-auto grid max-w-md grid-cols-2 gap-2.5"
+          >
             {event.accounts.map((entry) => (
               <PreEventAccountCard
                 key={`${entry.role}-${entry.account.holder}`}

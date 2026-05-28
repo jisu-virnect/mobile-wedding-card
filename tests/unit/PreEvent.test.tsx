@@ -72,14 +72,14 @@ describe('<PreEvent />', () => {
     ).toBeInTheDocument()
   })
 
-  it('hides Kakao send links when kakaoPayUrl is not set', () => {
+  it('renders Kakao send links on each account card (fallback send screen)', () => {
     render(<PreEvent />)
     expect(
-      screen.queryByRole('link', { name: '신부 김난슬 카카오로 송금' }),
-    ).toBeNull()
+      screen.getByRole('link', { name: '신부 김난슬 카카오로 송금' }),
+    ).toBeInTheDocument()
     expect(
-      screen.queryByRole('link', { name: '신부 아버지 김청섭 카카오로 송금' }),
-    ).toBeNull()
+      screen.getByRole('link', { name: '신부 아버지 김청섭 카카오로 송금' }),
+    ).toBeInTheDocument()
   })
 
   it('renders tel/sms contact buttons next to each account holder', () => {

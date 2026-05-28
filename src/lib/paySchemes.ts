@@ -38,21 +38,19 @@ export function tossSendUrl(account: BankAccount): string | null {
 }
 
 /**
- * KakaoPay send-money link — override-only.
+ * KakaoPay send-money link.
  *
- * Earlier attempts at an unofficial `kakaotalk://kakaopay/money/to/bank?…`
- * deeplink opened KakaoTalk but the send screen never auto-filled across
- * the KakaoTalk versions we tested. Since a broken button is worse than
- * no button, the helper now returns `null` unless the recipient supplies
- * an explicit `kakaoPayUrl`.
- *
- * To get an override:
- *   카카오톡 → 더보기 → pay → 송금 → 받기 → QR 코드 → URL 복사.
- *   Example: 'https://qr.kakaopay.com/Ej7n3Hk2zS'.
- *
- * Tapping that URL on a phone opens the official KakaoPay send sheet
- * with the recipient already filled in.
+ * Resolution order:
+ *   1. `account.kakaoPayUrl` — official QR URL the recipient issued from
+ *      카카오톡 → 더보기 → pay → 송금 → 받기 → QR 코드. Tapping this
+ *      opens the KakaoPay send sheet with the recipient pre-filled.
+ *   2. Unofficial `kakaotalk://kakaopay/money/to/bank` fallback. Kakao's
+ *      security policy strips the parameters so the account number isn't
+ *      auto-pasted, but the send screen DOES open — and the guest has
+ *      already tapped 복사 on the card right above, so pasting the
+ *      number takes one tap. Better than no button at all.
  */
 export function kakaoPaySendUrl(account: BankAccount): string | null {
-  return account.kakaoPayUrl ?? null
+  if (account.kakaoPayUrl) return account.kakaoPayUrl
+  return 'kakaotalk://kakaopay/money/to/bank'
 }
