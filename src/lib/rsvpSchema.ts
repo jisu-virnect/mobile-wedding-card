@@ -28,12 +28,12 @@ export type Relationship = (typeof RELATIONSHIPS)[number]
 
 export const RELATIONSHIP_LABELS: Record<Relationship, string> = {
   groom: '신랑',
-  'groom-father': '신랑아버님',
-  'groom-mother': '신랑어머님',
+  'groom-father': '신랑 아버지',
+  'groom-mother': '신랑 어머니',
   bride: '신부',
-  'bride-father': '신부아버님',
-  'bride-mother': '신부어머님',
-  'bride-sibling': '신부동생',
+  'bride-father': '신부 아버지',
+  'bride-mother': '신부 어머니',
+  'bride-sibling': '신부 동생',
 }
 
 /** Derive `side` from the relationship enum (`groom-*` → groom, etc.). */

@@ -55,10 +55,10 @@ export default function LightboxView({
       slides={images.map((img) => ({ src: img.src, alt: img.alt }))}
       controller={{
         closeOnBackdropClick: true,
-        // Pull-down gesture closes the lightbox — matches the iOS photo
-        // app pattern. Up-swipe is reserved for system gestures (status
-        // bar / app switcher) so we only enable the downward direction.
+        // Both vertical swipes close the lightbox — pull-down matches
+        // the iOS photo app, pull-up adds an extra mid-thumb fallback.
         closeOnPullDown: true,
+        closeOnPullUp: true,
       }}
       plugins={[Zoom]}
       styles={{
