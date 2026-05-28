@@ -299,7 +299,7 @@ export function Rsvp() {
           <div
             role="radiogroup"
             aria-label="관계"
-            className="mt-2 space-y-3"
+            className="mt-2 grid grid-cols-2 gap-3"
           >
             <ChipRow
               title="신랑측"
@@ -456,19 +456,19 @@ function ChipRow({
 }) {
   return (
     <div>
-      <p className="mb-1.5 font-display text-[11px] tracking-[0.3em] text-ink-mute uppercase">
+      <p className="mb-2 text-center font-display text-[11px] tracking-[0.35em] text-ink-mute uppercase">
         {title}
       </p>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-col gap-1.5">
         {values.map((value) => (
-          <label key={value} className="cursor-pointer">
+          <label key={value} className="block cursor-pointer">
             <input
               type="radio"
               value={value}
               {...register}
               className="peer sr-only"
             />
-            <span className="inline-flex items-center rounded-full border border-line bg-paper px-3 py-1 text-[12px] font-medium tracking-tight text-ink-soft transition hover:bg-sage-soft peer-checked:border-sage-strong peer-checked:bg-sage-strong peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-sage-strong">
+            <span className="block w-full rounded-full border border-line bg-paper px-3 py-1.5 text-center text-[12px] font-medium tracking-tight text-ink-soft transition hover:bg-sage-soft peer-checked:border-sage-strong peer-checked:bg-sage-strong peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-sage-strong">
               {RELATIONSHIP_LABELS[value]}
             </span>
           </label>
