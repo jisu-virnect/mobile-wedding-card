@@ -31,19 +31,16 @@ describe('rsvpSchema', () => {
     }
   })
 
-  it('requires relationshipDetail when relationship is `*-other`', () => {
-    for (const r of ['groom-other', 'bride-other'] as const) {
-      // Missing detail → rejected.
-      const missing = rsvpSchema.safeParse({ ...valid, relationship: r })
-      expect(missing.success).toBe(false)
-      // With detail → accepted.
-      const withDetail = rsvpSchema.safeParse({
+  it('accepts an optional relationshipDetail string', () => {
+    expect(
+      rsvpSchema.safeParse({
         ...valid,
-        relationship: r,
         relationshipDetail: '대학 동기',
-      })
-      expect(withDetail.success).toBe(true)
-    }
+      }).success,
+    ).toBe(true)
+    expect(
+      rsvpSchema.safeParse({ ...valid, relationshipDetail: '' }).success,
+    ).toBe(true)
   })
 
   it('rejects payload without `relationship` (now required)', () => {

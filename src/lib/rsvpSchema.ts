@@ -2,15 +2,14 @@ import { z } from 'zod'
 
 /**
  * Fixed set of relationship chips shown to the guest, grouped by side.
- * The "그 외" slot is split into 신랑측/신부측 variants so we can derive
- * `side` from the relationship alone — no separate "어느 쪽 손님?" field
- * needed on the form.
+ * Family-only — non-family guests pick whichever side they came on and
+ * use the freeform "관계 한 줄" input below to clarify (대학 동기,
+ * 회사 동료, etc.).
  */
 export const GROOM_RELATIONSHIPS = [
   'groom',
   'groom-father',
   'groom-mother',
-  'groom-other',
 ] as const
 
 export const BRIDE_RELATIONSHIPS = [
@@ -18,7 +17,6 @@ export const BRIDE_RELATIONSHIPS = [
   'bride-father',
   'bride-mother',
   'bride-sibling',
-  'bride-other',
 ] as const
 
 export const RELATIONSHIPS = [
@@ -32,12 +30,10 @@ export const RELATIONSHIP_LABELS: Record<Relationship, string> = {
   groom: '신랑',
   'groom-father': '신랑아버님',
   'groom-mother': '신랑어머님',
-  'groom-other': '신랑측 그 외',
   bride: '신부',
   'bride-father': '신부아버님',
   'bride-mother': '신부어머님',
   'bride-sibling': '신부동생',
-  'bride-other': '신부측 그 외',
 }
 
 /** Derive `side` from the relationship enum (`groom-*` → groom, etc.). */
@@ -58,53 +54,37 @@ export function relationshipLabel(value: string | null | undefined): string {
   return value
 }
 
-/** True when the chip is one of the two "그 외" buckets. */
-export function isOtherRelationship(r: Relationship | undefined): boolean {
-  return r === 'groom-other' || r === 'bride-other'
-}
-
-// `side` is no longer a separate form field — it's derived from
-// `relationship` at submit time. The schema only validates relationship,
-// attending, guests, and free-text fields. `relationshipDetail` is
-// conditionally required when the chip ends in `-other`.
-export const rsvpSchema = z
-  .object({
-    name: z
-      .string()
-      .trim()
-      .min(1, '이름을 입력해주세요.')
-      .max(40, '이름은 40자 이하로 입력해주세요.'),
-    relationship: z.enum(RELATIONSHIPS, {
-      message: '관계를 선택해주세요.',
-    }),
-    relationshipDetail: z
-      .string()
-      .trim()
-      .max(40, '관계 설명은 40자 이하로 입력해주세요.')
-      .optional(),
-    attending: z.enum(['yes', 'no'], {
-      message: '참석 여부를 선택해주세요.',
-    }),
-    guests: z
-      .number({ message: '참석 인원을 숫자로 입력해주세요.' })
-      .int('참석 인원은 정수만 입력 가능합니다.')
-      .min(1, '참석 인원은 1명 이상이어야 합니다.')
-      .max(10, '참석 인원은 최대 10명까지 입력 가능합니다.'),
-    message: z
-      .string()
-      .trim()
-      .max(500, '메시지는 500자 이하로 입력해주세요.'),
-  })
-  .refine(
-    (data) =>
-      !isOtherRelationship(data.relationship) ||
-      (typeof data.relationshipDetail === 'string' &&
-        data.relationshipDetail.trim().length > 0),
-    {
-      message: '관계를 자세히 알려주세요. (예: 신랑 친구, 회사 동료)',
-      path: ['relationshipDetail'],
-    },
-  )
+// `side` is derived from `relationship` at submit time, not collected
+// from the user. `relationshipDetail` is a freeform one-liner that's
+// always optional — used by friends / coworkers to specify the
+// relationship the chip can't express (대학 동기, 회사 동료 등).
+export const rsvpSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, '이름을 입력해주세요.')
+    .max(40, '이름은 40자 이하로 입력해주세요.'),
+  relationship: z.enum(RELATIONSHIPS, {
+    message: '관계를 선택해주세요.',
+  }),
+  relationshipDetail: z
+    .string()
+    .trim()
+    .max(40, '관계 한 줄은 40자 이하로 입력해주세요.')
+    .optional(),
+  attending: z.enum(['yes', 'no'], {
+    message: '참석 여부를 선택해주세요.',
+  }),
+  guests: z
+    .number({ message: '참석 인원을 숫자로 입력해주세요.' })
+    .int('참석 인원은 정수만 입력 가능합니다.')
+    .min(1, '참석 인원은 1명 이상이어야 합니다.')
+    .max(10, '참석 인원은 최대 10명까지 입력 가능합니다.'),
+  message: z
+    .string()
+    .trim()
+    .max(500, '메시지는 500자 이하로 입력해주세요.'),
+})
 
 export type RsvpFormValues = z.infer<typeof rsvpSchema>
 

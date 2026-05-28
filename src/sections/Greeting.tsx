@@ -41,7 +41,7 @@ function SideIcon({ icon }: { icon: 'groom' | 'bride' }) {
           '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif',
       }}
     >
-      {icon === 'groom' ? '🤵' : '👰'}
+      {icon === 'groom' ? '🤵🏻' : '👰🏻‍♀️'}
     </span>
   )
 }

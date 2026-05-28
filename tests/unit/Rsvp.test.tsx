@@ -56,7 +56,7 @@ describe('<Rsvp />', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders both relationship chip groups (신랑측 / 신부측)', () => {
+  it('renders both relationship chip groups (신랑측 / 신부측, family-only)', () => {
     render(<Rsvp />)
     const group = screen.getByRole('radiogroup', { name: '관계' })
     expect(group).toHaveTextContent('신랑측')
@@ -64,12 +64,18 @@ describe('<Rsvp />', () => {
     expect(group).toHaveTextContent('신랑')
     expect(group).toHaveTextContent('신랑아버님')
     expect(group).toHaveTextContent('신랑어머님')
-    expect(group).toHaveTextContent('신랑측 그 외')
     expect(group).toHaveTextContent('신부')
     expect(group).toHaveTextContent('신부아버님')
     expect(group).toHaveTextContent('신부어머님')
     expect(group).toHaveTextContent('신부동생')
-    expect(group).toHaveTextContent('신부측 그 외')
+    // "그 외" chips removed — non-family guests use the always-on
+    // "관계 한 줄" input below the chips.
+    expect(group).not.toHaveTextContent('그 외')
+  })
+
+  it('always shows the optional 관계 한 줄 input', () => {
+    render(<Rsvp />)
+    expect(screen.getByLabelText(/관계 한 줄/)).toBeInTheDocument()
   })
 
   it('shows the transparency note that data goes to the couple', () => {

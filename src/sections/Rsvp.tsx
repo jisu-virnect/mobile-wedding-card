@@ -1,16 +1,11 @@
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import {
-  useForm,
-  useWatch,
-  type UseFormRegisterReturn,
-} from 'react-hook-form'
+import { useForm, type UseFormRegisterReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   BRIDE_RELATIONSHIPS,
   GROOM_RELATIONSHIPS,
   RELATIONSHIP_LABELS,
-  isOtherRelationship,
   relationshipLabel,
   rsvpDefaults,
   rsvpSchema,
@@ -43,26 +38,12 @@ export function Rsvp() {
     register,
     handleSubmit,
     reset,
-    setValue,
-    control,
     formState: { errors, isSubmitting },
   } = useForm<RsvpFormValues>({
     resolver: zodResolver(rsvpSchema),
     defaultValues: rsvpDefaults,
     mode: 'onBlur',
   })
-
-  // useWatch (control-based) reacts to relationship changes without the
-  // React Compiler / memoization warnings that come with form.watch().
-  const watchedRelationship = useWatch({ control, name: 'relationship' })
-  const showRelationshipDetail = isOtherRelationship(watchedRelationship)
-  // Clear the conditional detail input the moment the guest moves to a
-  // non-other chip — otherwise a stale entry could leak into the upsert.
-  useEffect(() => {
-    if (!showRelationshipDetail) {
-      setValue('relationshipDetail', '', { shouldValidate: false })
-    }
-  }, [showRelationshipDetail, setValue])
 
   // Load any responses this device has already submitted (for the
   // "내가 보낸 응답" card stack above the form).
@@ -326,11 +307,13 @@ export function Rsvp() {
           >
             <ChipRow
               title="신랑측"
+              icon="groom"
               values={GROOM_RELATIONSHIPS}
               register={register('relationship')}
             />
             <ChipRow
               title="신부측"
+              icon="bride"
               values={BRIDE_RELATIONSHIPS}
               register={register('relationship')}
             />
@@ -341,31 +324,31 @@ export function Rsvp() {
             </p>
           )}
 
-          {showRelationshipDetail && (
-            <div className="mt-3">
-              <label
-                htmlFor="rsvp-relationship-detail"
-                className="mb-1 block text-[12px] tracking-wide text-ink-mute"
-              >
-                구체적인 관계 <span className="text-sage-strong">*</span>
-                <span className="ml-1 text-ink-mute/70">(예: 대학 동기)</span>
-              </label>
-              <input
-                id="rsvp-relationship-detail"
-                type="text"
-                autoComplete="off"
-                placeholder="예: 신랑 친구, 회사 동료"
-                aria-invalid={errors.relationshipDetail ? 'true' : undefined}
-                {...register('relationshipDetail')}
-                className={inputCls}
-              />
-              {errors.relationshipDetail && (
-                <p role="alert" className="mt-1 text-xs text-sun">
-                  {errors.relationshipDetail.message}
-                </p>
-              )}
-            </div>
-          )}
+          <div className="mt-3">
+            <label
+              htmlFor="rsvp-relationship-detail"
+              className="mb-1 block text-[12px] tracking-wide text-ink-mute"
+            >
+              관계 한 줄{' '}
+              <span className="text-ink-mute/70">
+                (선택 · 예: 대학 동기, 회사 동료)
+              </span>
+            </label>
+            <input
+              id="rsvp-relationship-detail"
+              type="text"
+              autoComplete="off"
+              placeholder="예: 대학 동기"
+              aria-invalid={errors.relationshipDetail ? 'true' : undefined}
+              {...register('relationshipDetail')}
+              className={inputCls}
+            />
+            {errors.relationshipDetail && (
+              <p role="alert" className="mt-1 text-xs text-sun">
+                {errors.relationshipDetail.message}
+              </p>
+            )}
+          </div>
         </fieldset>
 
         <fieldset className="rounded-sm border border-line bg-paper p-3">
@@ -496,16 +479,30 @@ export function Rsvp() {
  */
 function ChipRow({
   title,
+  icon,
   values,
   register,
 }: {
   title: string
+  icon?: 'groom' | 'bride'
   values: readonly Relationship[]
   register: UseFormRegisterReturn
 }) {
   return (
     <div>
-      <p className="mb-2 text-center font-display text-[11px] tracking-[0.35em] text-ink-mute uppercase">
+      <p className="mb-2 flex items-center justify-center gap-1.5 text-center font-display text-[11px] tracking-[0.35em] text-ink-mute uppercase">
+        {icon && (
+          <span
+            aria-hidden="true"
+            className="text-base leading-none"
+            style={{
+              fontFamily:
+                '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif',
+            }}
+          >
+            {icon === 'groom' ? '🤵🏻' : '👰🏻‍♀️'}
+          </span>
+        )}
         {title}
       </p>
       <div className="flex flex-col gap-1.5">

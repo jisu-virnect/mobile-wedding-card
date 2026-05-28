@@ -159,13 +159,30 @@ function rowsFor(person: Person, side: 'groom' | 'bride'): SideRow[] {
   return out
 }
 
-function ColumnHeading({ children }: { children: React.ReactNode }) {
+function ColumnHeading({
+  icon,
+  children,
+}: {
+  icon?: 'groom' | 'bride'
+  children: React.ReactNode
+}) {
   return (
     <div
       aria-hidden="true"
       className="mb-2 flex items-center justify-center gap-2"
     >
       <span className="h-px w-4 bg-line" />
+      {icon && (
+        <span
+          className="text-base leading-none"
+          style={{
+            fontFamily:
+              '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif',
+          }}
+        >
+          {icon === 'groom' ? '🤵🏻' : '👰🏻‍♀️'}
+        </span>
+      )}
       <span className="font-display text-[11px] tracking-[0.4em] text-ink-mute uppercase">
         {children}
       </span>
@@ -214,7 +231,7 @@ export function Account() {
       >
         {groomRows.length > 0 && (
           <div className="space-y-2.5">
-            <ColumnHeading>신랑측</ColumnHeading>
+            <ColumnHeading icon="groom">신랑측</ColumnHeading>
             {groomRows.map((row) => (
               <AccountCard
                 key={`groom-${row.role}`}
@@ -229,7 +246,7 @@ export function Account() {
         )}
         {brideRows.length > 0 && (
           <div className="space-y-2.5">
-            <ColumnHeading>신부측</ColumnHeading>
+            <ColumnHeading icon="bride">신부측</ColumnHeading>
             {brideRows.map((row) => (
               <AccountCard
                 key={`bride-${row.role}`}
