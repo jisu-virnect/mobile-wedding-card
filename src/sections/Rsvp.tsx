@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { useForm, type UseFormRegisterReturn } from 'react-hook-form'
+import {
+  useForm,
+  useWatch,
+  type UseFormRegisterReturn,
+} from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   BRIDE_RELATIONSHIPS,
   GROOM_RELATIONSHIPS,
   RELATIONSHIP_LABELS,
+  isOtherRelationship,
   relationshipLabel,
   rsvpDefaults,
   rsvpSchema,
@@ -38,12 +43,26 @@ export function Rsvp() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<RsvpFormValues>({
     resolver: zodResolver(rsvpSchema),
     defaultValues: rsvpDefaults,
     mode: 'onBlur',
   })
+
+  // useWatch (control-based) reacts to relationship changes without the
+  // React Compiler / memoization warnings that come with form.watch().
+  const watchedRelationship = useWatch({ control, name: 'relationship' })
+  const showRelationshipDetail = isOtherRelationship(watchedRelationship)
+  // Clear the conditional detail input the moment the guest moves to a
+  // non-other chip — otherwise a stale entry could leak into the upsert.
+  useEffect(() => {
+    if (!showRelationshipDetail) {
+      setValue('relationshipDetail', '', { shouldValidate: false })
+    }
+  }, [showRelationshipDetail, setValue])
 
   // Load any responses this device has already submitted (for the
   // "내가 보낸 응답" card stack above the form).
@@ -92,6 +111,7 @@ export function Rsvp() {
       const row = await submitRsvp({
         name: values.name,
         relationship: values.relationship,
+        relationshipDetail: values.relationshipDetail,
         attending: values.attending === 'yes',
         guests: values.guests,
         message: values.message,
@@ -129,6 +149,7 @@ export function Rsvp() {
     reset({
       name: row.name,
       relationship: (row.relationship ?? undefined) as Relationship,
+      relationshipDetail: row.relationship_detail ?? '',
       attending: row.attending ? 'yes' : 'no',
       guests: row.guests,
       message: row.message ?? '',
@@ -271,11 +292,13 @@ export function Rsvp() {
             className="mb-1 block text-[13px] tracking-wide text-ink-mute"
           >
             이름 <span className="text-sage-strong">*</span>
+            <span className="ml-1 text-ink-mute/70">(예: 김지수)</span>
           </label>
           <input
             id="rsvp-name"
             type="text"
             autoComplete="name"
+            placeholder="예: 김지수"
             aria-invalid={errors.name ? 'true' : undefined}
             aria-describedby={errors.name ? 'rsvp-name-error' : undefined}
             {...register('name')}
@@ -316,6 +339,32 @@ export function Rsvp() {
             <p role="alert" className="mt-2 text-xs text-sun">
               {errors.relationship.message}
             </p>
+          )}
+
+          {showRelationshipDetail && (
+            <div className="mt-3">
+              <label
+                htmlFor="rsvp-relationship-detail"
+                className="mb-1 block text-[12px] tracking-wide text-ink-mute"
+              >
+                구체적인 관계 <span className="text-sage-strong">*</span>
+                <span className="ml-1 text-ink-mute/70">(예: 대학 동기)</span>
+              </label>
+              <input
+                id="rsvp-relationship-detail"
+                type="text"
+                autoComplete="off"
+                placeholder="예: 신랑 친구, 회사 동료"
+                aria-invalid={errors.relationshipDetail ? 'true' : undefined}
+                {...register('relationshipDetail')}
+                className={inputCls}
+              />
+              {errors.relationshipDetail && (
+                <p role="alert" className="mt-1 text-xs text-sun">
+                  {errors.relationshipDetail.message}
+                </p>
+              )}
+            </div>
           )}
         </fieldset>
 

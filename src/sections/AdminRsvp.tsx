@@ -75,6 +75,7 @@ function downloadCsv(rows: RsvpRow[]) {
     '이름',
     '소속',
     '관계',
+    '구체적인 관계',
     '참석여부',
     '인원',
     '메시지',
@@ -94,6 +95,7 @@ function downloadCsv(rows: RsvpRow[]) {
         row.name,
         row.side === 'groom' ? '신랑측' : '신부측',
         relationshipLabel(row.relationship),
+        row.relationship_detail ?? '',
         row.attending ? '참석' : '불참',
         row.guests,
         row.message ?? '',
@@ -486,6 +488,9 @@ function ResponseRow({ row, collisions, onDelete }: ResponseRowProps) {
             {row.side === 'groom' ? '신랑측' : '신부측'}
             {row.relationship
               ? ` · ${relationshipLabel(row.relationship)}`
+              : ''}
+            {row.relationship_detail
+              ? ` (${row.relationship_detail})`
               : ''}
           </span>
           {collisions.has(row.name) && (

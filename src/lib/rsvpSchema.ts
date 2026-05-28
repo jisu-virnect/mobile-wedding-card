@@ -58,28 +58,53 @@ export function relationshipLabel(value: string | null | undefined): string {
   return value
 }
 
+/** True when the chip is one of the two "그 외" buckets. */
+export function isOtherRelationship(r: Relationship | undefined): boolean {
+  return r === 'groom-other' || r === 'bride-other'
+}
+
 // `side` is no longer a separate form field — it's derived from
 // `relationship` at submit time. The schema only validates relationship,
-// attending, guests, and free-text fields.
-export const rsvpSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, '이름을 입력해주세요.')
-    .max(40, '이름은 40자 이하로 입력해주세요.'),
-  relationship: z.enum(RELATIONSHIPS, {
-    message: '관계를 선택해주세요.',
-  }),
-  attending: z.enum(['yes', 'no'], {
-    message: '참석 여부를 선택해주세요.',
-  }),
-  guests: z
-    .number({ message: '참석 인원을 숫자로 입력해주세요.' })
-    .int('참석 인원은 정수만 입력 가능합니다.')
-    .min(1, '참석 인원은 1명 이상이어야 합니다.')
-    .max(10, '참석 인원은 최대 10명까지 입력 가능합니다.'),
-  message: z.string().trim().max(500, '메시지는 500자 이하로 입력해주세요.'),
-})
+// attending, guests, and free-text fields. `relationshipDetail` is
+// conditionally required when the chip ends in `-other`.
+export const rsvpSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(1, '이름을 입력해주세요.')
+      .max(40, '이름은 40자 이하로 입력해주세요.'),
+    relationship: z.enum(RELATIONSHIPS, {
+      message: '관계를 선택해주세요.',
+    }),
+    relationshipDetail: z
+      .string()
+      .trim()
+      .max(40, '관계 설명은 40자 이하로 입력해주세요.')
+      .optional(),
+    attending: z.enum(['yes', 'no'], {
+      message: '참석 여부를 선택해주세요.',
+    }),
+    guests: z
+      .number({ message: '참석 인원을 숫자로 입력해주세요.' })
+      .int('참석 인원은 정수만 입력 가능합니다.')
+      .min(1, '참석 인원은 1명 이상이어야 합니다.')
+      .max(10, '참석 인원은 최대 10명까지 입력 가능합니다.'),
+    message: z
+      .string()
+      .trim()
+      .max(500, '메시지는 500자 이하로 입력해주세요.'),
+  })
+  .refine(
+    (data) =>
+      !isOtherRelationship(data.relationship) ||
+      (typeof data.relationshipDetail === 'string' &&
+        data.relationshipDetail.trim().length > 0),
+    {
+      message: '관계를 자세히 알려주세요. (예: 신랑 친구, 회사 동료)',
+      path: ['relationshipDetail'],
+    },
+  )
 
 export type RsvpFormValues = z.infer<typeof rsvpSchema>
 
@@ -90,5 +115,6 @@ export type RsvpFormValues = z.infer<typeof rsvpSchema>
 // the missing fields before submit.
 export const rsvpDefaults = {
   name: '',
+  relationshipDetail: '',
   message: '',
 } as RsvpFormValues

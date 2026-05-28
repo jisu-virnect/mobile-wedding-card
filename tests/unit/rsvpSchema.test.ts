@@ -14,22 +14,35 @@ describe('rsvpSchema', () => {
     expect(rsvpSchema.safeParse(valid).success).toBe(true)
   })
 
-  it('accepts every relationship enum value', () => {
+  it('accepts every non-other relationship enum value', () => {
     const all = [
       'groom',
       'groom-father',
       'groom-mother',
-      'groom-other',
       'bride',
       'bride-father',
       'bride-mother',
       'bride-sibling',
-      'bride-other',
     ] as const
     for (const r of all) {
       expect(rsvpSchema.safeParse({ ...valid, relationship: r }).success).toBe(
         true,
       )
+    }
+  })
+
+  it('requires relationshipDetail when relationship is `*-other`', () => {
+    for (const r of ['groom-other', 'bride-other'] as const) {
+      // Missing detail → rejected.
+      const missing = rsvpSchema.safeParse({ ...valid, relationship: r })
+      expect(missing.success).toBe(false)
+      // With detail → accepted.
+      const withDetail = rsvpSchema.safeParse({
+        ...valid,
+        relationship: r,
+        relationshipDetail: '대학 동기',
+      })
+      expect(withDetail.success).toBe(true)
     }
   })
 

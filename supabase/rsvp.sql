@@ -6,17 +6,24 @@
 -- 1. Table
 -- =========================================================================
 create table if not exists public.rsvp (
-  id           uuid primary key default gen_random_uuid(),
-  device_id    text        not null,
-  name         text        not null,
-  side         text        not null check (side in ('groom', 'bride')),
-  relationship text,
-  attending    boolean     not null,
-  guests       int         not null default 1 check (guests between 0 and 10),
-  message      text,
-  created_at   timestamptz not null default now(),
-  updated_at   timestamptz not null default now()
+  id                  uuid primary key default gen_random_uuid(),
+  device_id           text        not null,
+  name                text        not null,
+  side                text        not null check (side in ('groom', 'bride')),
+  relationship        text,
+  -- Freeform detail filled in only when relationship is `*-other`.
+  relationship_detail text,
+  attending           boolean     not null,
+  guests              int         not null default 1 check (guests between 0 and 10),
+  message             text,
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
 );
+
+-- Idempotent add: if you've already applied an earlier version of this
+-- file (without relationship_detail), re-running adds the column safely.
+alter table public.rsvp
+  add column if not exists relationship_detail text;
 
 -- (device_id, name) is the upsert key: same phone re-submitting under the
 -- same name edits the existing row; a different name from the same phone

@@ -12,6 +12,11 @@ export interface RsvpRow {
   name: string
   side: 'groom' | 'bride'
   relationship: string | null
+  /**
+   * Freeform detail only filled in when relationship is `*-other`
+   * (e.g. "대학 동기", "회사 동료"). null otherwise.
+   */
+  relationship_detail: string | null
   attending: boolean
   guests: number
   message: string | null
@@ -26,6 +31,8 @@ export interface RsvpRow {
 export interface RsvpInput {
   name: string
   relationship: Relationship
+  /** Required when relationship is `groom-other` / `bride-other`. */
+  relationshipDetail?: string
   attending: boolean
   guests: number
   message?: string
@@ -48,6 +55,7 @@ export async function submitRsvp(input: RsvpInput): Promise<RsvpRow> {
     name: input.name.trim(),
     side: sideFromRelationship(input.relationship),
     relationship: input.relationship,
+    relationship_detail: input.relationshipDetail?.trim() || null,
     attending: input.attending,
     guests: input.guests,
     message: input.message?.trim() || null,
